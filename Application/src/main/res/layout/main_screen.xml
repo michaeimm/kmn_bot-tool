@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/app_style"
-        android:popupTheme="@style/app_style"
         android:background="?attr/colorPrimary">
 
     </android.support.v7.widget.Toolbar>
@@ -24,7 +23,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="0dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:layout_width="match_parent"
