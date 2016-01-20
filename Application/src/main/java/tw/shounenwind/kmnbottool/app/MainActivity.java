@@ -3,13 +3,19 @@ package tw.shounenwind.kmnbottool.app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
@@ -18,12 +24,15 @@ import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    private KmnBotHandler handler = new KmnBotHandler(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
 
         screenPrepare();
+        getBotData();
     }
 
     private void screenPrepare(){
@@ -43,28 +52,49 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void getBotData(){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    URL url = new URL("http://133.130.102.121:9163/petInfos/8433188.json");
+                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(Proxy.NO_PROXY);
+                    httpURLConnection.setUseCaches(false);
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.connect();
+                    BufferedReader bufferedReader;
+                    if(httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
+                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+                    }else{
+                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
+                    }
+
+                    String line;
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line);
+                        stringBuilder.append("\n");
+                    }
+                    bufferedReader.close();
+                    Message message = new Message();
+                    message.obj = stringBuilder.toString();
+                    message.what = handler.READ_BOT_DATA;
+                    handler.sendMessage(message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void readBotData(String data){
         try {
-            URL url = new URL("http://133.130.102.121:9163/petInfos/8433188.json");
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(Proxy.NO_PROXY);
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.connect();
-            BufferedReader bufferedReader;
-            if(httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
-                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
-            }else{
-                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
-            }
-
-            String line;
-            StringBuilder stringBuilder = new StringBuilder();
-
-            while((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
-                stringBuilder.append("\n");
-            }
-            bufferedReader.close();
-
+            JSONObject player = (new JSONObject(data)).getJSONObject("玩家");
+            JSONArray mons = (new JSONObject(data)).getJSONArray("寵物");
+            //Log.d("player", player.toString());
+            //Log.d("mons", mons.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,4 +137,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }*/
     // END_INCLUDE(menu_item_selected)
+
+    private class KmnBotHandler extends Handler{
+        public final int READ_BOT_DATA = 0;
+        private final WeakReference<MainActivity> mActivity;
+
+        public KmnBotHandler(MainActivity activity){
+            mActivity = new WeakReference<MainActivity>(activity);
+        }
+
+        public void handleMessage (Message msg){
+            MainActivity activity = mActivity.get();
+            if(activity != null){
+                switch (msg.what){
+                    case READ_BOT_DATA:
+                        activity.readBotData((String)msg.obj);
+                        break;
+                }
+            }
+
+        }
+    }
 }
