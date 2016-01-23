@@ -3,28 +3,31 @@ package tw.shounenwind.kmnbottool.app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
-
-    private KmnBotHandler handler = new KmnBotHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +35,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_screen);
 
         screenPrepare();
-        getBotData();
+        getBotData("8433188");
     }
 
     private void screenPrepare(){
         Button bot_draw = (Button) findViewById(R.id.bot_draw);
         bot_draw.setOnClickListener(bot_draw_command);
+        Button exp_draw = (Button) findViewById(R.id.bot_exp);
+        exp_draw.setOnClickListener(exprience_command);
+        Button bot_battle = (Button) findViewById(R.id.bot_battle);
+        bot_battle.setOnClickListener(battle_command);
+        Button bot_hell_battle = (Button) findViewById(R.id.bot_hell_battle);
+        bot_hell_battle.setOnClickListener(hell_battle_command);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,42 +60,108 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void getBotData(){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    URL url = new URL("http://133.130.102.121:9163/petInfos/8433188.json");
-                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(Proxy.NO_PROXY);
-                    httpURLConnection.setUseCaches(false);
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.connect();
-                    BufferedReader bufferedReader;
-                    if(httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
-                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
-                    }else{
-                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
-                    }
-
-                    String line;
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    while((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line);
-                        stringBuilder.append("\n");
-                    }
-                    bufferedReader.close();
-                    Message message = new Message();
-                    message.obj = stringBuilder.toString();
-                    message.what = handler.READ_BOT_DATA;
-                    handler.sendMessage(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    private View.OnClickListener exprience_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner)findViewById(R.id.attacter);
+            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
+                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+            }else {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
+                startActivity(intent);
             }
-        });
-        thread.start();
+        }
+    };
+
+    private View.OnClickListener battle_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner)findViewById(R.id.attacter);
+            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
+                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+            }else {
+                String target = spinner.getSelectedItem().toString();
+                Spinner support = (Spinner)findViewById(R.id.supporter);
+                if(support.getSelectedItemPosition() != 0){
+                    target += " "+support.getSelectedItem().toString();
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
+                startActivity(intent);
+            }
+        }
+    };
+
+    private View.OnClickListener hell_battle_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner)findViewById(R.id.attacter);
+            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
+                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+            }else {
+                String target = spinner.getSelectedItem().toString();
+                Spinner support = (Spinner)findViewById(R.id.supporter);
+                if(support.getSelectedItemPosition() != 0){
+                    target += " "+support.getSelectedItem().toString();
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
+                startActivity(intent);
+            }
+        }
+    };
+
+    private void getBotData(final String plurk_id){
+        Observable
+                .create(new Observable.OnSubscribe<String>() {
+                    @Override
+                    public void call(Subscriber<? super String> subscriber) {
+                        try {
+                            URL url = new URL("http://133.130.102.121:9163/petInfos/"+plurk_id+".json");
+                            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+                            httpURLConnection.setUseCaches(false);
+                            httpURLConnection.setRequestMethod("GET");
+                            httpURLConnection.connect();
+                            BufferedReader bufferedReader;
+                            if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+                            } else {
+                                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
+                            }
+
+                            String line;
+                            StringBuilder stringBuilder = new StringBuilder();
+
+                            while ((line = bufferedReader.readLine()) != null) {
+                                stringBuilder.append(line);
+                                stringBuilder.append("\n");
+                            }
+                            bufferedReader.close();
+                            subscriber.onNext(stringBuilder.toString());
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+                        subscriber.onCompleted();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        readBotData(s);
+                    }
+                });
+
+
     }
 
     private void readBotData(String data){
@@ -95,10 +170,24 @@ public class MainActivity extends AppCompatActivity {
             JSONArray mons = (new JSONObject(data)).getJSONArray("寵物");
             //Log.d("player", player.toString());
             //Log.d("mons", mons.toString());
+            int len = mons.length();
+            String[] monstersArray = new String[len+1];
+            monstersArray[0] = "請選擇";
+            for(int i = 0; i < len; i++){
+                monstersArray[i+1] = mons.getJSONObject(i).getString("寵物名稱");
+            }
+            Spinner attacter = (Spinner)findViewById(R.id.attacter);
+            Spinner supporter = (Spinner)findViewById(R.id.supporter);
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            supporter.setAdapter(adapter);
+            attacter.setAdapter(adapter);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
     // BEGIN_INCLUDE(create_menu)
     /**
@@ -138,24 +227,4 @@ public class MainActivity extends AppCompatActivity {
     }*/
     // END_INCLUDE(menu_item_selected)
 
-    private class KmnBotHandler extends Handler{
-        public final int READ_BOT_DATA = 0;
-        private final WeakReference<MainActivity> mActivity;
-
-        public KmnBotHandler(MainActivity activity){
-            mActivity = new WeakReference<MainActivity>(activity);
-        }
-
-        public void handleMessage (Message msg){
-            MainActivity activity = mActivity.get();
-            if(activity != null){
-                switch (msg.what){
-                    case READ_BOT_DATA:
-                        activity.readBotData((String)msg.obj);
-                        break;
-                }
-            }
-
-        }
-    }
 }

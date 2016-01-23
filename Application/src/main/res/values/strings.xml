@@ -19,7 +19,11 @@
     <string name="menu_location">Location</string>
     <string name="menu_settings">Settings</string>
     <string name="bot_draw">機器狼 轉蛋</string>
-    <string name="command_draw">http://www.plurk.com/m?content=機器狼 轉蛋  (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
+    <string name="command_draw">http://www.plurk.com/m?content=機器狼 轉蛋 (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
     <string name="bot_exp">經驗值轉蛋</string>
-    <string name="command_exp"> 經驗值轉蛋 (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_exp">http://www.plurk.com/m?content=%s 經驗值轉蛋 (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
+    <string name="bot_battle">遊玩地城</string>
+    <string name="command_battle">http://www.plurk.com/m?content=%s (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
+    <string name="bot_hell_battle">遊玩地獄級地城</string>
+    <string name="command_hell_battle">http://www.plurk.com/m?content=地獄級 %s (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
 </resources>
