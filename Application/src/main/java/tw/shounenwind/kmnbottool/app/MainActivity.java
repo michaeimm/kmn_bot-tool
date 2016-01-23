@@ -1,10 +1,15 @@
 package tw.shounenwind.kmnbottool.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -12,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,6 +34,8 @@ import rx.schedulers.Schedulers;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
+
+    private JSONObject player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +78,13 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
                 startActivity(intent);
             }
+            PreferenceManager
+                    .getDefaultSharedPreferences(MainActivity.this)
+                    .edit()
+                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
+                    .commit();
         }
+
     };
 
     private View.OnClickListener battle_command = new View.OnClickListener() {
@@ -88,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
                 startActivity(intent);
             }
+            PreferenceManager
+                    .getDefaultSharedPreferences(MainActivity.this)
+                    .edit()
+                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
+                    .putString("supporter", ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
+                    .commit();
         }
     };
 
@@ -106,6 +126,12 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
                 startActivity(intent);
             }
+            PreferenceManager
+                    .getDefaultSharedPreferences(MainActivity.this)
+                    .edit()
+                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
+                    .putString("supporter", ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
+                    .commit();
         }
     };
 
@@ -166,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void readBotData(String data){
         try {
-            JSONObject player = (new JSONObject(data)).getJSONObject("玩家");
+            player = (new JSONObject(data)).getJSONObject("玩家");
             JSONArray mons = (new JSONObject(data)).getJSONArray("寵物");
             //Log.d("player", player.toString());
             //Log.d("mons", mons.toString());
@@ -182,6 +208,17 @@ public class MainActivity extends AppCompatActivity {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             supporter.setAdapter(adapter);
             attacter.setAdapter(adapter);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            String defaultAttacter = sharedPref.getString("attacter", "請選擇");
+            String defaultSupporter = sharedPref.getString("supporter", "請選擇");
+            for (int i = 0; i < len; i++){
+                if(defaultAttacter.equals(monstersArray[i])){
+                    attacter.setSelection(i);
+                }
+                if(defaultSupporter.equals(monstersArray[i])){
+                    supporter.setSelection(i);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,21 +231,16 @@ public class MainActivity extends AppCompatActivity {
      * Use this method to instantiate your menu, and add your items to it. You
      * should return true if you have added items to it and want the menu to be displayed.
      */
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
         getMenuInflater().inflate(R.menu.main, menu);
 
         // It is also possible add items here. Use a generated id from
         // resources (ids.xml) to ensure that all menu ids are distinct.
-        MenuItem locationItem = menu.add(0, R.id.menu_location, 0, R.string.menu_location);
-        locationItem.setIcon(R.drawable.ic_action_location);
-
-        // Need to use MenuItemCompat methods to call any action item related methods
-        MenuItemCompat.setShowAsAction(locationItem, MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return true;
-    }*/
+    }
     // END_INCLUDE(create_menu)
 
     // BEGIN_INCLUDE(menu_item_selected)
@@ -217,14 +249,33 @@ public class MainActivity extends AppCompatActivity {
      * can be on the Action Bar, the overflow menu, or the standard options menu. You
      * should return true if you handle the selection.
      */
-    /*@Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             //TODO: menu item
+            case R.id.menu_profile:
+                String s;
+                if(player == null){
+                    s = "無資料";
+                }else{
+                    try {
+                        s = player.getString("蒐集完成度");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        s = "無資料";
+                    }
+                }
+
+                AlertDialog alertDialog = new AlertDialog.Builder(this)
+                        .setMessage("蒐集完成度: " + s)
+                        .setPositiveButton("確認", null)
+                        .create();
+                alertDialog.show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
-    }*/
+    }
     // END_INCLUDE(menu_item_selected)
 
 }
