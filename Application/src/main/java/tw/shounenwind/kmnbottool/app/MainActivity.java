@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_screen);
 
         screenPrepare();
-        getBotData("8433188");
+        //getBotData("8433188");
+        getBotData("6820974");
     }
 
     private void screenPrepare(){
