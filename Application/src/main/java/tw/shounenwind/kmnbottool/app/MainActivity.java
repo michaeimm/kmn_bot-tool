@@ -1,5 +1,7 @@
 package tw.shounenwind.kmnbottool.app;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -8,11 +10,14 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -25,17 +30,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.HashMap;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import tw.shounenwind.PlurkConnection;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private JSONObject player;
+    private String APPKEY = "jmhU8XgtEHkn";
+    private String APPSECRET = "zfKBevAPuLNq3od4lbVGy7dgxVDSB2LD";
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,18 +53,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_screen);
 
         screenPrepare();
-        //getBotData("8433188");
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
         if(user_id != null)
-            getBotData("6820974");
+            getBotData(user_id);
         else{
             showPlurkIdInput();
         }
     }
 
     private void showPlurkIdInput() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.plurk_name_dialog, (ViewGroup) findViewById(R.id.dialog));
+        final EditText input = (EditText)layout.findViewById(R.id.name);
+        new AlertDialog.Builder(this)
+                .setTitle("請輸入噗浪帳號")
+                .setView(layout)
+                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            showProgressDialog("正在讀取噗浪帳號");
+                            getPlurkId(input.getText().toString());
+                            dialog.dismiss();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .show();
+    }
 
+    private void showProgressDialog(String text){
+        progressDialog = ProgressDialog.show(this,
+                "讀取中", text, true);
+    }
+
+    private void dismissProgressDialog(){
+        try{
+            progressDialog.dismiss();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void screenPrepare(){
@@ -147,12 +187,13 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void getBotData(final String plurk_id){
+        showProgressDialog("正在載入寵物資料");
         Observable
                 .create(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> subscriber) {
                         try {
-                            URL url = new URL("http://133.130.102.121:9163/petInfos/"+plurk_id+".json");
+                            URL url = new URL("http://133.130.102.121:9163/petInfos/" + plurk_id + ".json");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
                             httpURLConnection.setUseCaches(false);
                             httpURLConnection.setRequestMethod("GET");
@@ -173,10 +214,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                             bufferedReader.close();
                             subscriber.onNext(stringBuilder.toString());
+                            subscriber.onCompleted();
                         } catch (Exception e) {
                             subscriber.onError(e);
                         }
-                        subscriber.onCompleted();
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -195,6 +236,56 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onNext(String s) {
                         readBotData(s);
+                        dismissProgressDialog();
+                    }
+                });
+
+
+    }
+
+    private void getPlurkId(final String plurk_name){
+        Observable
+                .create(new Observable.OnSubscribe<String>() {
+                    @Override
+                    public void call(Subscriber<? super String> subscriber) {
+                        try {
+                            PlurkConnection plurkConnection = new PlurkConnection(APPKEY, APPSECRET, true);
+                            HashMap<String, String> args = new HashMap<String, String>();
+                            args.put("query", plurk_name);
+                            plurkConnection.startConnect("UserSearch/search", args);
+                            if(plurkConnection.getStatusCode() != 200){
+                                throw new Exception(plurkConnection.getResponse());
+                            }
+                            JSONObject jsonObject = new JSONObject(plurkConnection.getResponse());
+                            subscriber.onNext(jsonObject.getJSONArray("users").getJSONObject(0).getString("id"));
+                            subscriber.onCompleted();
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dismissProgressDialog();
+                        Toast.makeText(MainActivity.this, "無法載入噗浪帳號", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+                        sharedPreferences.edit().putString("user_id", s).commit();
+                        findViewById(R.id.bot_draw).setEnabled(true);
+                        dismissProgressDialog();
+                        getBotData(s);
                     }
                 });
 
@@ -230,8 +321,14 @@ public class MainActivity extends AppCompatActivity {
                     supporter.setSelection(i);
                 }
             }
+            findViewById(R.id.attacter).setEnabled(true);
+            findViewById(R.id.supporter).setEnabled(true);
+            findViewById(R.id.bot_exp).setEnabled(true);
+            findViewById(R.id.bot_battle).setEnabled(true);
+            findViewById(R.id.bot_hell_battle).setEnabled(true);
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(this, "無法載入寵物資料", Toast.LENGTH_LONG).show();
         }
     }
 
