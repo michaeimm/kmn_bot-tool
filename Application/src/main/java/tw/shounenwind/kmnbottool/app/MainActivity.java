@@ -44,7 +44,17 @@ public class MainActivity extends AppCompatActivity {
 
         screenPrepare();
         //getBotData("8433188");
-        getBotData("6820974");
+        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        String user_id = sharedPreferences.getString("user_id", null);
+        if(user_id != null)
+            getBotData("6820974");
+        else{
+            showPlurkIdInput();
+        }
+    }
+
+    private void showPlurkIdInput() {
+
     }
 
     private void screenPrepare(){
