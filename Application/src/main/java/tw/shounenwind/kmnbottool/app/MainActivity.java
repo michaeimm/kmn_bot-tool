@@ -321,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
                     supporter.setSelection(i);
                 }
             }
+            findViewById(R.id.bot_draw).setEnabled(true);
             findViewById(R.id.attacter).setEnabled(true);
             findViewById(R.id.supporter).setEnabled(true);
             findViewById(R.id.bot_exp).setEnabled(true);

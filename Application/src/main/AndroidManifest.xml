@@ -39,7 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".app.GetPlurkIdActivity"></activity>
+        <activity android:name=".app.GetPlurkIdActivity" />
     </application>
 
 </manifest>
