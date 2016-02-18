@@ -96,4 +96,16 @@
         android:layout_marginTop="8dp"
         android:enabled="false"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="機器狼BOX"
+        android:id="@+id/bot_mons_box"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"/>
+
 </LinearLayout>

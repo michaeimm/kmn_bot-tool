@@ -43,6 +43,7 @@ import tw.shounenwind.kmnbottool.R;
 public class MainActivity extends AppCompatActivity {
 
     private JSONObject player;
+    private JSONArray monsters;
     private String APPKEY = "jmhU8XgtEHkn";
     private String APPSECRET = "zfKBevAPuLNq3od4lbVGy7dgxVDSB2LD";
     private ProgressDialog progressDialog;
@@ -106,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
         bot_battle.setOnClickListener(battle_command);
         Button bot_hell_battle = (Button) findViewById(R.id.bot_hell_battle);
         bot_hell_battle.setOnClickListener(hell_battle_command);
+        Button bot_mons_box = (Button) findViewById(R.id.bot_mons_box);
+        bot_mons_box.setOnClickListener(box_command);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -183,6 +186,15 @@ public class MainActivity extends AppCompatActivity {
                     .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
                     .putString("supporter", ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
                     .commit();
+        }
+    };
+
+    private View.OnClickListener box_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
+            intent.putExtra("monster", monsters.toString());
+            startActivity(intent);
         }
     };
 
@@ -295,14 +307,14 @@ public class MainActivity extends AppCompatActivity {
     private void readBotData(String data){
         try {
             player = (new JSONObject(data)).getJSONObject("玩家");
-            JSONArray mons = (new JSONObject(data)).getJSONArray("寵物");
+            monsters = (new JSONObject(data)).getJSONArray("寵物");
             //Log.d("player", player.toString());
             //Log.d("mons", mons.toString());
-            int len = mons.length();
+            int len = monsters.length();
             String[] monstersArray = new String[len+1];
             monstersArray[0] = "請選擇";
             for(int i = 0; i < len; i++){
-                monstersArray[i+1] = mons.getJSONObject(i).getString("寵物名稱");
+                monstersArray[i+1] = monsters.getJSONObject(i).getString("寵物名稱");
             }
             Spinner attacter = (Spinner)findViewById(R.id.attacter);
             Spinner supporter = (Spinner)findViewById(R.id.supporter);
@@ -327,6 +339,45 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.bot_exp).setEnabled(true);
             findViewById(R.id.bot_battle).setEnabled(true);
             findViewById(R.id.bot_hell_battle).setEnabled(true);
+            findViewById(R.id.bot_mons_box).setEnabled(true);
+
+
+            /*attacter.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(position == 0){
+                        return false;
+                    }
+                    else{
+                        try {
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle(monsters.getJSONObject(position - 1).getString("寵物名稱"))
+                                    .setMessage(
+                                            new StringBuilder()
+                                                    .append("原TYPE：")
+                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("原TYPE"))
+                                                    .append("\n")
+                                                    .append("下場TYPE：")
+                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("下場TYPE"))
+                                                    .append("\n")
+                                                    .append("等級 ")
+                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("等級"))
+                                                    .append(" / ")
+                                                    .append("階級 ")
+                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("階級"))
+                                                    .append("\n")
+                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("技能"))
+                                    ).setPositiveButton("確認", null)
+                                    .show();
+                            return true;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+                }
+            });*/
+
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "無法載入寵物資料", Toast.LENGTH_LONG).show();

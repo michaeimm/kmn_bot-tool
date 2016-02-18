@@ -39,7 +39,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".app.GetPlurkIdActivity" />
+        <activity
+            android:name=".app.MonsDataActivity"
+            android:theme="@style/app_style"
+            android:label="機器狼BOX"/>
     </application>
 
 </manifest>
