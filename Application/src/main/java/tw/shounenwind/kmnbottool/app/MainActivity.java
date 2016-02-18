@@ -11,8 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -22,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -194,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
             intent.putExtra("monster", monsters.toString());
+            intent.putExtra("player", player.toString());
             startActivity(intent);
         }
     };
@@ -384,58 +382,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    // BEGIN_INCLUDE(create_menu)
-    /**
-     * Use this method to instantiate your menu, and add your items to it. You
-     * should return true if you have added items to it and want the menu to be displayed.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate our menu from the resources by using the menu inflater.
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        // It is also possible add items here. Use a generated id from
-        // resources (ids.xml) to ensure that all menu ids are distinct.
-
-        return true;
-    }
-    // END_INCLUDE(create_menu)
-
-    // BEGIN_INCLUDE(menu_item_selected)
-    /**
-     * This method is called when one of the menu items to selected. These items
-     * can be on the Action Bar, the overflow menu, or the standard options menu. You
-     * should return true if you handle the selection.
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            //TODO: menu item
-            case R.id.menu_profile:
-                String s;
-                if(player == null){
-                    s = "無資料";
-                }else{
-                    try {
-                        s = player.getString("蒐集完成度");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        s = "無資料";
-                    }
-                }
-
-                AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setMessage("蒐集完成度: " + s)
-                        .setPositiveButton("確認", null)
-                        .create();
-                alertDialog.show();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    // END_INCLUDE(menu_item_selected)
 
 }
