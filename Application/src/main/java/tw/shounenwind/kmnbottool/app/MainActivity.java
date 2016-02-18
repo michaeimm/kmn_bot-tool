@@ -241,6 +241,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        dismissProgressDialog();
+                        Toast.makeText(MainActivity.this, "無法載入寵物資料", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
