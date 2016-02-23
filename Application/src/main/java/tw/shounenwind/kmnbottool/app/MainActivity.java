@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getBotData(final String plurk_id){
         showProgressDialog("正在載入寵物資料");
+        Log.d("kmn-bot", "id: "+plurk_id);
         Observable
                 .create(new Observable.OnSubscribe<String>() {
                     @Override
