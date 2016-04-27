@@ -28,22 +28,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.HashMap;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import tw.shounenwind.PlurkConnection;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private JSONObject player;
     private JSONArray monsters;
-    private String APPKEY = "jmhU8XgtEHkn";
-    private String APPSECRET = "zfKBevAPuLNq3od4lbVGy7dgxVDSB2LD";
     private ProgressDialog progressDialog;
 
     @Override
@@ -72,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
-                            showProgressDialog("正在讀取噗浪帳號");
-                            getPlurkId(input.getText().toString());
+//                            showProgressDialog("正在讀取噗浪帳號");
+                            getBotData(input.getText().toString());
                             dialog.dismiss();
                         }catch (Exception e){
                             e.printStackTrace();
@@ -205,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void call(Subscriber<? super String> subscriber) {
                         try {
-                            URL url = new URL("http://133.130.102.121:9163/petInfos/" + plurk_id + ".json");
+                            URL url = new URL("http://kmnbot.servegame.com/pets/" + plurk_id + ".json");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
                             httpURLConnection.setUseCaches(false);
                             httpURLConnection.setRequestMethod("GET");
@@ -257,54 +253,62 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getPlurkId(final String plurk_name){
-        Observable
-                .create(new Observable.OnSubscribe<String>() {
-                    @Override
-                    public void call(Subscriber<? super String> subscriber) {
-                        try {
-                            PlurkConnection plurkConnection = new PlurkConnection(APPKEY, APPSECRET, true);
-                            HashMap<String, String> args = new HashMap<String, String>();
-                            args.put("query", plurk_name);
-                            plurkConnection.startConnect("UserSearch/search", args);
-                            if(plurkConnection.getStatusCode() != 200){
-                                throw new Exception(plurkConnection.getResponse());
-                            }
-                            JSONObject jsonObject = new JSONObject(plurkConnection.getResponse());
-                            subscriber.onNext(jsonObject.getJSONArray("users").getJSONObject(0).getString("id"));
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onCompleted() {
+//    private void getPlurkId(String plurk_name){
+//        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+//        sharedPreferences.edit().putString("user_id", plurk_name).commit();
+//        findViewById(R.id.bot_draw).setEnabled(true);
+//        dismissProgressDialog();
+//        getBotData(plurk_name);
+//    }
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        dismissProgressDialog();
-                        Toast.makeText(MainActivity.this, "無法載入噗浪帳號", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-                        sharedPreferences.edit().putString("user_id", s).commit();
-                        findViewById(R.id.bot_draw).setEnabled(true);
-                        dismissProgressDialog();
-                        getBotData(s);
-                    }
-                });
-
-
-    }
+//    private void getPlurkId(final String plurk_name){
+//        Observable
+//                .create(new Observable.OnSubscribe<String>() {
+//                    @Override
+//                    public void call(Subscriber<? super String> subscriber) {
+//                        try {
+//                            PlurkConnection plurkConnection = new PlurkConnection(APPKEY, APPSECRET, true);
+//                            HashMap<String, String> args = new HashMap<String, String>();
+//                            args.put("query", plurk_name);
+//                            plurkConnection.startConnect("UserSearch/search", args);
+//                            if(plurkConnection.getStatusCode() != 200){
+//                                throw new Exception(plurkConnection.getResponse());
+//                            }
+//                            JSONObject jsonObject = new JSONObject(plurkConnection.getResponse());
+//                            subscriber.onNext(jsonObject.getJSONArray("users").getJSONObject(0).getString("id"));
+//                            subscriber.onCompleted();
+//                        } catch (Exception e) {
+//                            subscriber.onError(e);
+//                        }
+//                    }
+//                })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<String>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                        dismissProgressDialog();
+//                        Toast.makeText(MainActivity.this, "無法載入噗浪帳號", Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onNext(String s) {
+//                        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+//                        sharedPreferences.edit().putString("user_id", s).commit();
+//                        findViewById(R.id.bot_draw).setEnabled(true);
+//                        dismissProgressDialog();
+//                        getBotData(s);
+//                    }
+//                });
+//
+//
+//    }
 
     private void readBotData(String data){
         try {

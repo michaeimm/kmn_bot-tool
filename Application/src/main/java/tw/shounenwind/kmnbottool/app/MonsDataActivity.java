@@ -1,16 +1,18 @@
 package tw.shounenwind.kmnbottool.app;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,8 +22,6 @@ import tw.shounenwind.kmnbottool.R;
 
 public class MonsDataActivity extends AppCompatActivity {
 
-    String[] list;
-    String[] detail;
     private JSONObject player;
 
     @Override
@@ -36,36 +36,14 @@ public class MonsDataActivity extends AppCompatActivity {
         try {
             JSONArray monsters = new JSONArray(intent.getStringExtra("monster"));
             player = new JSONObject(intent.getStringExtra("player"));
-            int len = monsters.length();
-            list = new String[len];
-            detail = new String[len];
-            ListView listView;
+            RecyclerView listView;
 
-            ArrayAdapter<String> listAdapter;
+            ArrayAdapter listAdapter;
 
-            for(int i = 0; i < len; i++){
-                JSONObject monster = monsters.getJSONObject(i);
-                list[i] = monster.getString("寵物名稱");
-                detail[i] =
-                        "原TYPE：" + monster.getString("原TYPE") + "\n" +
-                        "下場TYPE：" + monster.getString("下場TYPE") + "\n" +
-                        "等級：" + monster.getString("等級") + "\n" +
-                        "階級：" + monster.getString("階級") + "\n" +
-                        "\n" + monster.getString("技能");
-            }
-            listView = (ListView)findViewById(R.id.list);
-            listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+            listView = (RecyclerView)findViewById(R.id.list);
+            listView.setLayoutManager(new LinearLayoutManager(this));
+            listAdapter = new ArrayAdapter(monsters);
             listView.setAdapter(listAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    new AlertDialog.Builder(MonsDataActivity.this)
-                            .setTitle(list[position])
-                            .setMessage(detail[position])
-                            .setPositiveButton("關閉", null)
-                            .show();
-                }
-            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,5 +96,65 @@ public class MonsDataActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    class ArrayAdapter extends RecyclerView.Adapter{
+        private JSONArray monsters;
+
+        public ArrayAdapter(JSONArray monsters) {
+            this.monsters = monsters;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.mon_list, null));
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            JSONObject monster = null;
+            try {
+                monster = monsters.getJSONObject(position);
+                ((ListViewHolder)holder).textView.setText(monster.getString("寵物名稱"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            final JSONObject finalMonster = monster;
+            ((ListViewHolder)holder).textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try{
+                        new AlertDialog.Builder(MonsDataActivity.this)
+                                .setTitle(finalMonster.getString("寵物名稱"))
+                                .setMessage(
+                                        "原TYPE：" + finalMonster.getString("原TYPE") + "\n" +
+                                        "下場TYPE：" + finalMonster.getString("下場TYPE") + "\n" +
+                                        "等級：" + finalMonster.getString("等級") + "\n" +
+                                        "階級：" + finalMonster.getString("階級") + "\n" +
+                                        "\n" + finalMonster.getString("技能")
+                                ).setPositiveButton("關閉", null)
+                                .show();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+        }
+
+        public class ListViewHolder extends RecyclerView.ViewHolder{
+            public TextView textView;
+
+            public ListViewHolder(View itemView) {
+                super(itemView);
+                textView = (TextView)itemView.findViewById(android.R.id.text1);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return monsters.length();
+        }
     }
 }

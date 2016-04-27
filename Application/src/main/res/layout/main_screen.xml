@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="前鋒寵物(經驗值轉蛋對象)"
@@ -29,7 +29,7 @@
                 android:layout_marginBottom="0dp"
                 android:layout_marginTop="16dp"/>
 
-            <Spinner
+            <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/attacter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:layout_marginRight="16dp"
                 android:enabled="false"/>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="後衛寵物"
@@ -46,7 +46,7 @@
                 android:layout_marginBottom="0dp"
                 android:layout_marginTop="16dp"/>
 
-            <Spinner
+            <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/supporter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:layout_marginRight="16dp"
                 android:enabled="false"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bot_draw"
@@ -66,7 +66,7 @@
                 android:layout_marginTop="16dp"
                 android:enabled="false"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bot_exp"
@@ -78,7 +78,7 @@
                 android:layout_marginTop="8dp"
                 android:enabled="false"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bot_battle"
@@ -90,7 +90,7 @@
                 android:layout_marginTop="8dp"
                 android:enabled="false"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bot_hell_battle"
@@ -102,7 +102,7 @@
                 android:layout_marginTop="8dp"
                 android:enabled="false"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="機器狼BOX"
