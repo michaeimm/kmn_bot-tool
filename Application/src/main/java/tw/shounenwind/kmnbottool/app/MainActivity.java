@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private JSONObject player;
     private JSONArray monsters;
     private ProgressDialog progressDialog;
+    private Spinner attacter;
+    private Spinner supporter;
+    private Spinner team;
+    private String[] monstersArray;
+    private int oldTeam;
+
+    private static String TAG = "kmnBot";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,11 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
                 startActivity(intent);
             }
-            PreferenceManager
-                    .getDefaultSharedPreferences(MainActivity.this)
-                    .edit()
-                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
-                    .commit();
+            writeTeamInfo();
         }
 
     };
@@ -152,12 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
                 startActivity(intent);
             }
-            PreferenceManager
-                    .getDefaultSharedPreferences(MainActivity.this)
-                    .edit()
-                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
-                    .putString("supporter", ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
-                    .commit();
+            writeTeamInfo();
         }
     };
 
@@ -175,13 +174,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
                 startActivity(intent);
+                writeTeamInfo();
             }
-            PreferenceManager
-                    .getDefaultSharedPreferences(MainActivity.this)
-                    .edit()
-                    .putString("attacter", ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
-                    .putString("supporter", ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
-                    .commit();
+
         }
     };
 
@@ -251,7 +246,88 @@ public class MainActivity extends AppCompatActivity {
                         dismissProgressDialog();
                     }
                 });
+    }
 
+    private void writeTeamInfo(){
+        String defaultAttacter = "attacter";
+        String defaultSupporter = "supporter";
+        switch (oldTeam){
+            case 0:
+                defaultAttacter = "attacter";
+                defaultSupporter = "supporter";
+                break;
+            case 1:
+                defaultAttacter = "attacter1";
+                defaultSupporter = "supporter1";
+                break;
+            case 2:
+                defaultAttacter = "attacter2";
+                defaultSupporter = "supporter2";
+                break;
+            case 3:
+                defaultAttacter = "attacter3";
+                defaultSupporter = "supporter3";
+                break;
+            case 4:
+                defaultAttacter = "attacter4";
+                defaultSupporter = "supporter4";
+                break;
+            case 5:
+                defaultAttacter = "attacter5";
+                defaultSupporter = "supporter5";
+                break;
+        }
+        PreferenceManager
+                .getDefaultSharedPreferences(MainActivity.this)
+                .edit()
+                .putString(defaultAttacter, ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
+                .putString(defaultSupporter, ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
+                .putInt("team", ((Spinner) findViewById(R.id.team)).getSelectedItemPosition())
+                .commit();
+    }
+
+    private void readTeamInfo(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultAttacter = "請選擇";
+        String defaultSupporter = "請選擇";
+        int defaultTeam = sharedPref.getInt("team", 0);
+        oldTeam = defaultTeam;
+        switch (defaultTeam){
+            case 0:
+                defaultAttacter = sharedPref.getString("attacter", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter", "請選擇");
+                break;
+            case 1:
+                defaultAttacter = sharedPref.getString("attacter1", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter1", "請選擇");
+                break;
+            case 2:
+                defaultAttacter = sharedPref.getString("attacter2", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter2", "請選擇");
+                break;
+            case 3:
+                defaultAttacter = sharedPref.getString("attacter3", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter3", "請選擇");
+                break;
+            case 4:
+                defaultAttacter = sharedPref.getString("attacter4", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter4", "請選擇");
+                break;
+            case 5:
+                defaultAttacter = sharedPref.getString("attacter5", "請選擇");
+                defaultSupporter = sharedPref.getString("supporter5", "請選擇");
+                break;
+        }
+        int len = monstersArray.length;
+        for (int i = 0; i < len; i++){
+            if(defaultAttacter.equals(monstersArray[i])){
+                attacter.setSelection(i);
+            }
+            if(defaultSupporter.equals(monstersArray[i])){
+                supporter.setSelection(i);
+            }
+        }
+        team.setSelection(defaultTeam);
 
     }
 
@@ -260,28 +336,44 @@ public class MainActivity extends AppCompatActivity {
             player = (new JSONObject(data)).getJSONObject("玩家");
             monsters = (new JSONObject(data)).getJSONArray("寵物");
             int len = monsters.length();
-            String[] monstersArray = new String[len+1];
+            monstersArray = new String[len+1];
             monstersArray[0] = "請選擇";
             for(int i = 0; i < len; i++){
                 monstersArray[i+1] = monsters.getJSONObject(i).getString("寵物名稱");
             }
-            Spinner attacter = (Spinner)findViewById(R.id.attacter);
-            Spinner supporter = (Spinner)findViewById(R.id.supporter);
+            attacter = (Spinner)findViewById(R.id.attacter);
+            supporter = (Spinner)findViewById(R.id.supporter);
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             supporter.setAdapter(adapter);
             attacter.setAdapter(adapter);
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            String defaultAttacter = sharedPref.getString("attacter", "請選擇");
-            String defaultSupporter = sharedPref.getString("supporter", "請選擇");
-            for (int i = 0; i < len; i++){
-                if(defaultAttacter.equals(monstersArray[i])){
-                    attacter.setSelection(i);
+            String[] teamArray = new String[6];
+            teamArray[0] = "1";
+            teamArray[1] = "2";
+            teamArray[2] = "3";
+            teamArray[3] = "4";
+            teamArray[4] = "5";
+            teamArray[5] = "6";
+            team = (Spinner)findViewById(R.id.team);
+            ArrayAdapter<CharSequence> teamAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, teamArray);
+            teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            team.setAdapter(teamAdapter);
+
+            team.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    writeTeamInfo();
+                    readTeamInfo();
                 }
-                if(defaultSupporter.equals(monstersArray[i])){
-                    supporter.setSelection(i);
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
                 }
-            }
+            });
+
+            readTeamInfo();
+
             findViewById(R.id.bot_draw).setEnabled(true);
             findViewById(R.id.attacter).setEnabled(true);
             findViewById(R.id.supporter).setEnabled(true);
@@ -296,5 +388,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onDestroy() {
+        writeTeamInfo();
+        super.onDestroy();
+    }
 }
