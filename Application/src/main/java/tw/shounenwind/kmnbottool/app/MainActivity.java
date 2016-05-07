@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         screenPrepare();
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
-        if(user_id != null)
+        int user_id_ver = sharedPreferences.getInt("user_id_ver", 1);
+        if(user_id != null && user_id_ver == 2)
             getBotData(user_id);
         else{
             showPlurkIdInput();
@@ -68,9 +69,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
-//                            showProgressDialog("正在讀取噗浪帳號");
+                            SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+                            sharedPreferences.edit().putInt("user_id_ver", 2).commit();
+                            sharedPreferences.edit().putString("user_id", input.getText().toString()).commit();
                             getBotData(input.getText().toString());
-                            dialog.dismiss();
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -253,69 +255,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void getPlurkId(String plurk_name){
-//        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-//        sharedPreferences.edit().putString("user_id", plurk_name).commit();
-//        findViewById(R.id.bot_draw).setEnabled(true);
-//        dismissProgressDialog();
-//        getBotData(plurk_name);
-//    }
-
-//    private void getPlurkId(final String plurk_name){
-//        Observable
-//                .create(new Observable.OnSubscribe<String>() {
-//                    @Override
-//                    public void call(Subscriber<? super String> subscriber) {
-//                        try {
-//                            PlurkConnection plurkConnection = new PlurkConnection(APPKEY, APPSECRET, true);
-//                            HashMap<String, String> args = new HashMap<String, String>();
-//                            args.put("query", plurk_name);
-//                            plurkConnection.startConnect("UserSearch/search", args);
-//                            if(plurkConnection.getStatusCode() != 200){
-//                                throw new Exception(plurkConnection.getResponse());
-//                            }
-//                            JSONObject jsonObject = new JSONObject(plurkConnection.getResponse());
-//                            subscriber.onNext(jsonObject.getJSONArray("users").getJSONObject(0).getString("id"));
-//                            subscriber.onCompleted();
-//                        } catch (Exception e) {
-//                            subscriber.onError(e);
-//                        }
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<String>() {
-//                    @Override
-//                    public void onCompleted() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        e.printStackTrace();
-//                        dismissProgressDialog();
-//                        Toast.makeText(MainActivity.this, "無法載入噗浪帳號", Toast.LENGTH_LONG).show();
-//                    }
-//
-//                    @Override
-//                    public void onNext(String s) {
-//                        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-//                        sharedPreferences.edit().putString("user_id", s).commit();
-//                        findViewById(R.id.bot_draw).setEnabled(true);
-//                        dismissProgressDialog();
-//                        getBotData(s);
-//                    }
-//                });
-//
-//
-//    }
-
     private void readBotData(String data){
         try {
             player = (new JSONObject(data)).getJSONObject("玩家");
             monsters = (new JSONObject(data)).getJSONArray("寵物");
-            //Log.d("player", player.toString());
-            //Log.d("mons", mons.toString());
             int len = monsters.length();
             String[] monstersArray = new String[len+1];
             monstersArray[0] = "請選擇";
@@ -346,43 +289,6 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.bot_battle).setEnabled(true);
             findViewById(R.id.bot_hell_battle).setEnabled(true);
             findViewById(R.id.bot_mons_box).setEnabled(true);
-
-
-            /*attacter.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(position == 0){
-                        return false;
-                    }
-                    else{
-                        try {
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setTitle(monsters.getJSONObject(position - 1).getString("寵物名稱"))
-                                    .setMessage(
-                                            new StringBuilder()
-                                                    .append("原TYPE：")
-                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("原TYPE"))
-                                                    .append("\n")
-                                                    .append("下場TYPE：")
-                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("下場TYPE"))
-                                                    .append("\n")
-                                                    .append("等級 ")
-                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("等級"))
-                                                    .append(" / ")
-                                                    .append("階級 ")
-                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("階級"))
-                                                    .append("\n")
-                                                    .append(monsters.getJSONObject((int) (id - 1)).getString("技能"))
-                                    ).setPositiveButton("確認", null)
-                                    .show();
-                            return true;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-                }
-            });*/
 
         } catch (Exception e) {
             e.printStackTrace();
