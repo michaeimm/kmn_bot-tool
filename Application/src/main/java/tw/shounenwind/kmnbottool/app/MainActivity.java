@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void call(Subscriber<? super String> subscriber) {
                         try {
-                            URL url = new URL("http://kmnbot.servegame.com/pets/" + plurk_id + ".json");
+                            URL url = new URL("http://www.kmnbot.ga/pets/" + plurk_id + ".json");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
                             httpURLConnection.setUseCaches(false);
                             httpURLConnection.setRequestMethod("GET");
@@ -390,7 +390,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        writeTeamInfo();
+        try {
+            writeTeamInfo();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 }
