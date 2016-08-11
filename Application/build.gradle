@@ -49,6 +49,19 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles 'proguard-rules.txt'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles 'proguard-rules.txt'
+        }
+    }
+
     sourceSets {
         main {
             dirs.each { dir ->
