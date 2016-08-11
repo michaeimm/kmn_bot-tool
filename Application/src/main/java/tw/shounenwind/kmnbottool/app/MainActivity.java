@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -63,6 +67,33 @@ public class MainActivity extends AppCompatActivity {
             getBotData(user_id);
         else{
             showPlurkIdInput();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode != 0){
+            return;
+        }
+        if(resultCode == RESULT_OK && data != null && data.getStringExtra("response") != null){
+            try {
+                final String id = Long.toString(new JSONObject(data.getStringExtra("response")).getLong("plurk_id"), 36);
+                LinearLayout wv = (LinearLayout) findViewById(R.id.main_layout);
+                Snackbar snackbar = Snackbar.make(wv, "已成功送出", Snackbar.LENGTH_LONG)
+                        .setAction("開啟", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.plurk.com/m/p/"+id));
+                                startActivity(intent);
+                            }
+                        });
+                TextView sbtv = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+                sbtv.setTextColor(Color.WHITE);
+                snackbar.show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -122,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
-            startActivity(intent);
+            startActivityForResult(intent, 0);
         }
     };
 
@@ -134,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
             }else {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
             writeTeamInfo();
         }
@@ -154,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     target += " "+support.getSelectedItem().toString();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
             writeTeamInfo();
         }
@@ -173,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     target += " "+support.getSelectedItem().toString();
                 }
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
-                startActivity(intent);
+                startActivityForResult(intent, 0);
                 writeTeamInfo();
             }
 
