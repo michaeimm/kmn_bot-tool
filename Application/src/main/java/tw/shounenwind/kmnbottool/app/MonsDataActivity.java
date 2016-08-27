@@ -52,22 +52,12 @@ public class MonsDataActivity extends AppCompatActivity {
 
     }
 
-    // BEGIN_INCLUDE(create_menu)
-    /**
-     * Use this method to instantiate your menu, and add your items to it. You
-     * should return true if you have added items to it and want the menu to be displayed.
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate our menu from the resources by using the menu inflater.
         getMenuInflater().inflate(R.menu.main, menu);
-
-        // It is also possible add items here. Use a generated id from
-        // resources (ids.xml) to ensure that all menu ids are distinct.
 
         return true;
     }
-    // END_INCLUDE(create_menu)
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -77,20 +67,20 @@ public class MonsDataActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_profile:
                 String s;
-                if(player == null){
-                    s = "無資料";
-                }else{
-                    try {
-                        s = player.getString("蒐集完成度");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        s = "無資料";
+
+
+                try {
+                    if(player == null){
+                        throw new Exception();
                     }
+                    s = player.getString("蒐集完成度");
+                } catch (Exception e) {
+                    s = getString(R.string.no_data);
                 }
 
                 android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(this)
-                        .setMessage("蒐集完成度: " + s)
-                        .setPositiveButton("確認", null)
+                        .setMessage(getString(R.string.completion) + ": " + s)
+                        .setPositiveButton(R.string.confirm, null)
                         .create();
                 alertDialog.show();
                 break;
@@ -123,18 +113,17 @@ public class MonsDataActivity extends AppCompatActivity {
             ((ListViewHolder)holder).textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try{
+                    try {
                         new AlertDialog.Builder(MonsDataActivity.this)
                                 .setTitle(finalMonster.getString("寵物名稱"))
-                                .setMessage(
-                                        "原TYPE：" + finalMonster.getString("原TYPE") + "\n" +
-                                        "下場TYPE：" + finalMonster.getString("下場TYPE") + "\n" +
-                                        "等級：" + finalMonster.getString("等級") + "\n" +
-                                        "階級：" + finalMonster.getString("階級") + "\n" +
-                                        "\n" + finalMonster.getString("技能")
-                                ).setPositiveButton("關閉", null)
+                                .setMessage(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
+                                                getString(R.string.battle_type) + "：" + finalMonster.getString("下場TYPE") + "\n" +
+                                                getString(R.string.monster_level) + finalMonster.getString("等級") + "\n" +
+                                                getString(R.string.monster_class) + finalMonster.getString("階級") + "\n" +
+                                                "\n" + finalMonster.getString("技能")
+                                ).setPositiveButton(R.string.close, null)
                                 .show();
-                    }catch (Exception e){
+                    }catch (Exception e) {
                         e.printStackTrace();
                     }
 
