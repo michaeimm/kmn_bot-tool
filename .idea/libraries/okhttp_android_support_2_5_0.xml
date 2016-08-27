@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="okhttp-android-support-2.5.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Application/libs/okhttp-android-support-2.5.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
