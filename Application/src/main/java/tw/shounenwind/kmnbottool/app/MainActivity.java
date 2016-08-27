@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 final String id = Long.toString(new JSONObject(data.getStringExtra("response")).getLong("plurk_id"), 36);
                 LinearLayout wv = (LinearLayout) findViewById(R.id.main_layout);
-                Snackbar snackbar = Snackbar.make(wv, "已成功送出", Snackbar.LENGTH_LONG)
-                        .setAction("開啟", new View.OnClickListener() {
+                Snackbar snackbar = Snackbar.make(wv, R.string.submit_success, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.open, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.plurk.com/m/p/"+id));
@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
         View layout = inflater.inflate(R.layout.plurk_name_dialog, (ViewGroup) findViewById(R.id.dialog));
         final EditText input = (EditText)layout.findViewById(R.id.name);
         new AlertDialog.Builder(this)
-                .setTitle("請輸入噗浪帳號")
+                .setTitle(R.string.input_plurk_username)
                 .setView(layout)
-                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showProgressDialog(String text){
         progressDialog = ProgressDialog.show(this,
-                "讀取中", text, true);
+                getString(R.string.loading), text, true);
     }
 
     private void dismissProgressDialog(){
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Spinner spinner = (Spinner)findViewById(R.id.attacter);
             if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
             }else {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
                 startActivityForResult(intent, 0);
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Spinner spinner = (Spinner)findViewById(R.id.attacter);
             if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
             }else {
                 String target = spinner.getSelectedItem().toString();
                 Spinner support = (Spinner)findViewById(R.id.supporter);
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Spinner spinner = (Spinner)findViewById(R.id.attacter);
             if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, "未選擇對象", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
             }else {
                 String target = spinner.getSelectedItem().toString();
                 Spinner support = (Spinner)findViewById(R.id.supporter);
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void getBotData(final String plurk_id){
-        showProgressDialog("正在載入寵物資料");
+        showProgressDialog(getString(R.string.monster_loading));
         Log.d("kmn-bot", "id: "+plurk_id);
         Observable
                 .create(new Observable.OnSubscribe<String>() {
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         dismissProgressDialog();
-                        Toast.makeText(MainActivity.this, "無法載入寵物資料", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -319,34 +319,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void readTeamInfo(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String defaultAttacter = "請選擇";
-        String defaultSupporter = "請選擇";
+        String defaultAttacter = getString(R.string.select_one);
+        String defaultSupporter = getString(R.string.select_one);
         int defaultTeam = sharedPref.getInt("team", 0);
         oldTeam = defaultTeam;
         switch (defaultTeam){
             case 0:
-                defaultAttacter = sharedPref.getString("attacter", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter", getString(R.string.select_one));
                 break;
             case 1:
-                defaultAttacter = sharedPref.getString("attacter1", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter1", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter1", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter1", getString(R.string.select_one));
                 break;
             case 2:
-                defaultAttacter = sharedPref.getString("attacter2", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter2", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter2", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter2", getString(R.string.select_one));
                 break;
             case 3:
-                defaultAttacter = sharedPref.getString("attacter3", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter3", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter3", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter3", getString(R.string.select_one));
                 break;
             case 4:
-                defaultAttacter = sharedPref.getString("attacter4", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter4", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter4", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter4", getString(R.string.select_one));
                 break;
             case 5:
-                defaultAttacter = sharedPref.getString("attacter5", "請選擇");
-                defaultSupporter = sharedPref.getString("supporter5", "請選擇");
+                defaultAttacter = sharedPref.getString("attacter5", getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter5", getString(R.string.select_one));
                 break;
         }
         int len = monstersArray.length;
@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
             monsters = (new JSONObject(data)).getJSONArray("寵物");
             int len = monsters.length();
             monstersArray = new String[len+1];
-            monstersArray[0] = "請選擇";
+            monstersArray[0] = getString(R.string.select_one);
             for(int i = 0; i < len; i++){
                 monstersArray[i+1] = monsters.getJSONObject(i).getString("寵物名稱");
             }
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "無法載入寵物資料", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
         }
     }
 

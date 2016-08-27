@@ -26,4 +26,13 @@
     <string name="command_battle">http://www.plurk.com/m?content=%s (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
     <string name="bot_hell_battle">遊玩地獄級地城</string>
     <string name="command_hell_battle">http://www.plurk.com/m?content=地獄級 %s (bz)(bz)(bz)(bz)(bz)(bz)&amp;qualifier=shares</string>
+    <string name="submit_success">已成功送出</string>
+    <string name="open">開啟</string>
+    <string name="input_plurk_username">請輸入噗浪帳號</string>
+    <string name="confirm">確定</string>
+    <string name="loading">讀取中</string>
+    <string name="no_selection">未選擇對象</string>
+    <string name="monster_loading">正在載入寵物資料</string>
+    <string name="load_monster_failed">無法載入寵物資料</string>
+    <string name="select_one">請選擇</string>
 </resources>
