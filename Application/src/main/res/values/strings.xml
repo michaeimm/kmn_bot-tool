@@ -43,4 +43,8 @@
     <string name="monster_class">階級</string>
     <string name="monster_skill">技能</string>
     <string name="close">關閉</string>
+    <string name="team">隊伍</string>
+    <string name="monster_front">前鋒寵物(經驗值轉蛋對象)</string>
+    <string name="monster_support">後衛寵物</string>
+    <string name="monster_box">機器狼BOX</string>
 </resources>

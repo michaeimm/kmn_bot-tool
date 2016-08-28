@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -144,6 +145,32 @@ public class MainActivity extends AppCompatActivity {
         bot_hell_battle.setOnClickListener(hell_battle_command);
         Button bot_mons_box = (Button) findViewById(R.id.bot_mons_box);
         bot_mons_box.setOnClickListener(box_command);
+        CardView team_card = (CardView)findViewById(R.id.team_card);
+        CardView attacter_card = (CardView)findViewById(R.id.attacter_card);
+        CardView supporter_card = (CardView)findViewById(R.id.supporter_card);
+
+        team = (Spinner)findViewById(R.id.team);
+        attacter = (Spinner)findViewById(R.id.attacter);
+        supporter = (Spinner)findViewById(R.id.supporter);
+
+        team_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                team.performClick();
+            }
+        });
+        attacter_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attacter.performClick();
+            }
+        });
+        supporter_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                supporter.performClick();
+            }
+        });
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -372,8 +399,6 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < len; i++){
                 monstersArray[i+1] = monsters.getJSONObject(i).getString("寵物名稱");
             }
-            attacter = (Spinner)findViewById(R.id.attacter);
-            supporter = (Spinner)findViewById(R.id.supporter);
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             supporter.setAdapter(adapter);
@@ -385,7 +410,6 @@ public class MainActivity extends AppCompatActivity {
             teamArray[3] = "4";
             teamArray[4] = "5";
             teamArray[5] = "6";
-            team = (Spinner)findViewById(R.id.team);
             ArrayAdapter<CharSequence> teamAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, teamArray);
             teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             team.setAdapter(teamAdapter);
