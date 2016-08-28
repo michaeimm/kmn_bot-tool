@@ -35,11 +35,6 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -250,60 +245,53 @@ public class MainActivity extends AppCompatActivity {
 
     private void getBotData(final String plurk_id){
         showProgressDialog(getString(R.string.monster_loading));
-        Log.d("kmn-bot", "id: "+plurk_id);
-        Observable
-                .create(new Observable.OnSubscribe<String>() {
-                    @Override
-                    public void call(Subscriber<? super String> subscriber) {
-                        try {
-                            URL url = new URL("http://www.kmnbot.ga/pets/" + plurk_id + ".json");
-                            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
-                            httpURLConnection.setUseCaches(false);
-                            httpURLConnection.setRequestMethod("GET");
-                            httpURLConnection.connect();
-                            BufferedReader bufferedReader;
-                            if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
-                            } else {
-                                bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
-                            }
+        Log.d(TAG, "id: "+plurk_id);
 
-                            String line;
-                            StringBuilder stringBuilder = new StringBuilder();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("http://www.kmnbot.ga/pets/" + plurk_id + ".json");
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+                    httpURLConnection.setUseCaches(false);
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.connect();
+                    BufferedReader bufferedReader;
+                    if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+                    } else {
+                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
+                    }
 
-                            while ((line = bufferedReader.readLine()) != null) {
-                                stringBuilder.append(line);
-                                stringBuilder.append("\n");
-                            }
-                            bufferedReader.close();
-                            subscriber.onNext(stringBuilder.toString());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
+                    String line;
+                    final StringBuilder stringBuilder = new StringBuilder();
+
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line);
+                        stringBuilder.append("\n");
+                    }
+                    bufferedReader.close();
+                    httpURLConnection.disconnect();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            readBotData(stringBuilder.toString());
+                            dismissProgressDialog();
                         }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onCompleted() {
+                    });
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        dismissProgressDialog();
-                        Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        readBotData(s);
-                        dismissProgressDialog();
-                    }
-                });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismissProgressDialog();
+                            Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     private void writeTeamInfo(){
