@@ -28,6 +28,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
+import com.squareup.okhttp.Protocol;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -36,11 +40,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.Arrays;
 
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static String TAG = "kmnBot";
     private JSONObject player;
     private JSONArray monsters;
     private ProgressDialog progressDialog;
@@ -49,8 +55,73 @@ public class MainActivity extends AppCompatActivity {
     private Spinner team;
     private String[] monstersArray;
     private int oldTeam;
+    private View.OnClickListener bot_draw_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
+            startActivityForResult(intent, 0);
+        }
+    };
+    private View.OnClickListener exprience_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner) findViewById(R.id.attacter);
+            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
+                startActivityForResult(intent, 0);
+            }
+            writeTeamInfo();
+        }
 
-    private static String TAG = "kmnBot";
+    };
+    private View.OnClickListener battle_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner) findViewById(R.id.attacter);
+            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+            } else {
+                String target = spinner.getSelectedItem().toString();
+                Spinner support = (Spinner) findViewById(R.id.supporter);
+                if (support.getSelectedItemPosition() != 0) {
+                    target += " " + support.getSelectedItem().toString();
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
+                startActivityForResult(intent, 0);
+            }
+            writeTeamInfo();
+        }
+    };
+    private View.OnClickListener hell_battle_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Spinner spinner = (Spinner) findViewById(R.id.attacter);
+            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+            } else {
+                String target = spinner.getSelectedItem().toString();
+                Spinner support = (Spinner) findViewById(R.id.supporter);
+                if (support.getSelectedItemPosition() != 0) {
+                    target += " " + support.getSelectedItem().toString();
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
+                startActivityForResult(intent, 0);
+                writeTeamInfo();
+            }
+
+        }
+    };
+    private View.OnClickListener box_command = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
+            intent.putExtra("monster", monsters.toString());
+            intent.putExtra("player", player.toString());
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void screenPrepare(){
+    private void screenPrepare() {
         Button bot_draw = (Button) findViewById(R.id.bot_draw);
         bot_draw.setOnClickListener(bot_draw_command);
         Button exp_draw = (Button) findViewById(R.id.bot_exp);
@@ -162,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
         bot_hell_battle.setOnClickListener(hell_battle_command);
         Button bot_mons_box = (Button) findViewById(R.id.bot_mons_box);
         bot_mons_box.setOnClickListener(box_command);
-        CardView team_card = (CardView)findViewById(R.id.team_card);
-        CardView attacter_card = (CardView)findViewById(R.id.attacter_card);
-        CardView supporter_card = (CardView)findViewById(R.id.supporter_card);
+        CardView team_card = (CardView) findViewById(R.id.team_card);
+        CardView attacter_card = (CardView) findViewById(R.id.attacter_card);
+        CardView supporter_card = (CardView) findViewById(R.id.supporter_card);
 
-        team = (Spinner)findViewById(R.id.team);
-        attacter = (Spinner)findViewById(R.id.attacter);
-        supporter = (Spinner)findViewById(R.id.supporter);
+        team = (Spinner) findViewById(R.id.team);
+        attacter = (Spinner) findViewById(R.id.attacter);
+        supporter = (Spinner) findViewById(R.id.supporter);
 
         team_card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,81 +260,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
-
-    private View.OnClickListener bot_draw_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
-            startActivityForResult(intent, 0);
-        }
-    };
-
-    private View.OnClickListener exprience_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner)findViewById(R.id.attacter);
-            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            }else {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
-                startActivityForResult(intent, 0);
-            }
-            writeTeamInfo();
-        }
-
-    };
-
-    private View.OnClickListener battle_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner)findViewById(R.id.attacter);
-            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            }else {
-                String target = spinner.getSelectedItem().toString();
-                Spinner support = (Spinner)findViewById(R.id.supporter);
-                if(support.getSelectedItemPosition() != 0){
-                    target += " "+support.getSelectedItem().toString();
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
-                startActivityForResult(intent, 0);
-            }
-            writeTeamInfo();
-        }
-    };
-
-    private View.OnClickListener hell_battle_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner)findViewById(R.id.attacter);
-            if(spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null){
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            }else {
-                String target = spinner.getSelectedItem().toString();
-                Spinner support = (Spinner)findViewById(R.id.supporter);
-                if(support.getSelectedItemPosition() != 0){
-                    target += " "+support.getSelectedItem().toString();
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
-                startActivityForResult(intent, 0);
-                writeTeamInfo();
-            }
-
-        }
-    };
-
-    private View.OnClickListener box_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
-            intent.putExtra("monster", monsters.toString());
-            intent.putExtra("player", player.toString());
-            startActivity(intent);
-        }
-    };
 
     private void getBotData(final String plurk_id){
         showProgressDialog(getString(R.string.monster_loading));
@@ -274,7 +273,11 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL url = new URL("http://www.kmnbot.ga/pets/" + plurk_id + ".json");
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    okHttpClient.setProxy(Proxy.NO_PROXY);
+                    okHttpClient.setProtocols(Arrays.asList(Protocol.HTTP_2, Protocol.SPDY_3, Protocol.HTTP_1_1));
+                    OkUrlFactory factory = new OkUrlFactory(okHttpClient);
+                    HttpURLConnection httpURLConnection = factory.open(url);
                     httpURLConnection.setUseCaches(false);
                     httpURLConnection.setRequestMethod("GET");
                     httpURLConnection.connect();

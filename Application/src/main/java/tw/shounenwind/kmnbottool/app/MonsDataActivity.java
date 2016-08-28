@@ -24,13 +24,18 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.InputStream;
 
 import tw.shounenwind.kmnbottool.R;
 
@@ -47,6 +52,8 @@ public class MonsDataActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Glide.get(this)
+                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(new OkHttpClient()));
         Intent intent = getIntent();
         try {
             JSONArray monsters = new JSONArray(intent.getStringExtra("monster"));
@@ -190,6 +197,11 @@ public class MonsDataActivity extends AppCompatActivity {
 
         }
 
+        @Override
+        public int getItemCount() {
+            return monsters.length();
+        }
+
         public class ListViewHolder extends RecyclerView.ViewHolder{
             public RelativeLayout monster_unit;
             public ImageView monsterImg;
@@ -203,11 +215,6 @@ public class MonsDataActivity extends AppCompatActivity {
                 monsterName = (TextView)itemView.findViewById(R.id.monster_name);
                 monsterType = (TextView)itemView.findViewById(R.id.monster_type);
             }
-        }
-
-        @Override
-        public int getItemCount() {
-            return monsters.length();
         }
     }
 }
