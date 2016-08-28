@@ -43,6 +43,11 @@
             android:name=".app.MonsDataActivity"
             android:theme="@style/app_style"
             android:label="機器狼BOX"/>
+
+        <activity
+            android:name=".app.LicenseActivity"
+            android:theme="@style/app_style"
+            android:label="License"/>
     </application>
 
 </manifest>

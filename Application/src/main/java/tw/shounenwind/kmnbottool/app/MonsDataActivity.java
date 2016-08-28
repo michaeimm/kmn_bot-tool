@@ -68,7 +68,7 @@ public class MonsDataActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.mons_data_menu, menu);
 
         return true;
     }
