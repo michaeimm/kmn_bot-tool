@@ -2,11 +2,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@android:layout/simple_list_item_1"/>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#9E9E9E"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"/>
+    <include layout="@layout/monster_unit"/>
 </LinearLayout>
