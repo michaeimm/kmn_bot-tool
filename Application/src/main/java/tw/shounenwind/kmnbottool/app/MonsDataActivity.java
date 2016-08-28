@@ -2,6 +2,8 @@ package tw.shounenwind.kmnbottool.app;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -10,14 +12,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -146,9 +149,19 @@ public class MonsDataActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     try {
-                        LinearLayout m_dialogView = (LinearLayout)getLayoutInflater().inflate(R.layout.monster_dialog, null);
+                        ScrollView m_dialogView = (ScrollView)getLayoutInflater().inflate(R.layout.monster_dialog, null);
                         ImageView m_imageView = (ImageView) m_dialogView.findViewById(R.id.monster_img);
                         TextView m_textView = ((TextView) m_dialogView.findViewById(R.id.monster_type));
+                        Display display = getWindowManager().getDefaultDisplay();
+                        Point size = new Point();
+                        int imageWidth;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                            display.getSize(size);
+                            imageWidth = size.x;
+                        }else{
+                            imageWidth = display.getWidth();
+                        }
+                        imageWidth -= 150;
                         Glide.with(MonsDataActivity.this)
                                 .load(finalMonster.getString("圖片"))
                                 .asBitmap()
@@ -156,7 +169,7 @@ public class MonsDataActivity extends AppCompatActivity {
                                 .fitCenter()
                                 .error(R.drawable.ic_launcher)
                                 .placeholder(R.drawable.ic_launcher)
-                                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                .override(Target.SIZE_ORIGINAL, imageWidth)
                                 .into(m_imageView);
                         m_textView.setText(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
                                 getString(R.string.battle_type) + "：" + finalMonster.getString("下場TYPE") + "\n" +
