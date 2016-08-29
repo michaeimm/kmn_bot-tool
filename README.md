@@ -1,1 +1,18 @@
-機器狼地城說明 https://docs.google.com/presentation/d/1si-3Yv7xi7Jwwb3fiw_s9B2wtFa0N3bMOEd8wfy7658/edit#slide=id.p
+##安裝
+[Click here to install](https://play.google.com/store/apps/details?id=tw.shounenwind.kmnbottool)
+
+## Licensed
+
+Copyright 2016 少年ウィンド
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
