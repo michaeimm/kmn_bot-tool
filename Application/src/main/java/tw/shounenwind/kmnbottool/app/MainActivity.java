@@ -47,81 +47,13 @@ import tw.shounenwind.kmnbottool.R;
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = "kmnBot";
-    private JSONObject player;
-    private JSONArray monsters;
     private ProgressDialog progressDialog;
-    private Spinner attacter;
+    private Spinner attacker;
     private Spinner supporter;
     private Spinner team;
     private String[] monstersArray;
     private int oldTeam;
-    private View.OnClickListener bot_draw_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
-            startActivityForResult(intent, 0);
-        }
-    };
-    private View.OnClickListener exprience_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner) findViewById(R.id.attacter);
-            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
-                startActivityForResult(intent, 0);
-            }
-            writeTeamInfo();
-        }
-
-    };
-    private View.OnClickListener battle_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner) findViewById(R.id.attacter);
-            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            } else {
-                String target = spinner.getSelectedItem().toString();
-                Spinner support = (Spinner) findViewById(R.id.supporter);
-                if (support.getSelectedItemPosition() != 0) {
-                    target += " " + support.getSelectedItem().toString();
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
-                startActivityForResult(intent, 0);
-            }
-            writeTeamInfo();
-        }
-    };
-    private View.OnClickListener hell_battle_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Spinner spinner = (Spinner) findViewById(R.id.attacter);
-            if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-            } else {
-                String target = spinner.getSelectedItem().toString();
-                Spinner support = (Spinner) findViewById(R.id.supporter);
-                if (support.getSelectedItemPosition() != 0) {
-                    target += " " + support.getSelectedItem().toString();
-                }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
-                startActivityForResult(intent, 0);
-                writeTeamInfo();
-            }
-
-        }
-    };
-    private View.OnClickListener box_command = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
-            intent.putExtra("monster", monsters.toString());
-            intent.putExtra("player", player.toString());
-            startActivity(intent);
-        }
-    };
+    private MonsterDataManager monsterDataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,21 +156,81 @@ public class MainActivity extends AppCompatActivity {
 
     private void screenPrepare() {
         Button bot_draw = (Button) findViewById(R.id.bot_draw);
-        bot_draw.setOnClickListener(bot_draw_command);
+        bot_draw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
+                startActivityForResult(intent, 0);
+            }
+        });
         Button exp_draw = (Button) findViewById(R.id.bot_exp);
-        exp_draw.setOnClickListener(exprience_command);
+        exp_draw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
+                    startActivityForResult(intent, 0);
+                }
+                writeTeamInfo();
+            }
+
+        });
         Button bot_battle = (Button) findViewById(R.id.bot_battle);
-        bot_battle.setOnClickListener(battle_command);
+        bot_battle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+                } else {
+                    String target = spinner.getSelectedItem().toString();
+                    Spinner support = (Spinner) findViewById(R.id.supporter);
+                    if (support.getSelectedItemPosition() != 0) {
+                        target += " " + support.getSelectedItem().toString();
+                    }
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
+                    startActivityForResult(intent, 0);
+                }
+                writeTeamInfo();
+            }
+        });
         Button bot_hell_battle = (Button) findViewById(R.id.bot_hell_battle);
-        bot_hell_battle.setOnClickListener(hell_battle_command);
+        bot_hell_battle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
+                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+                } else {
+                    String target = spinner.getSelectedItem().toString();
+                    Spinner support = (Spinner) findViewById(R.id.supporter);
+                    if (support.getSelectedItemPosition() != 0) {
+                        target += " " + support.getSelectedItem().toString();
+                    }
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
+                    startActivityForResult(intent, 0);
+                    writeTeamInfo();
+                }
+
+            }
+        });
         Button bot_mons_box = (Button) findViewById(R.id.bot_mons_box);
-        bot_mons_box.setOnClickListener(box_command);
+        bot_mons_box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
+                startActivity(intent);
+            }
+        });
         CardView team_card = (CardView) findViewById(R.id.team_card);
-        CardView attacter_card = (CardView) findViewById(R.id.attacter_card);
+        CardView attacker_card = (CardView) findViewById(R.id.attacter_card);
         CardView supporter_card = (CardView) findViewById(R.id.supporter_card);
 
         team = (Spinner) findViewById(R.id.team);
-        attacter = (Spinner) findViewById(R.id.attacter);
+        attacker = (Spinner) findViewById(R.id.attacter);
         supporter = (Spinner) findViewById(R.id.supporter);
 
         team_card.setOnClickListener(new View.OnClickListener() {
@@ -247,10 +239,10 @@ public class MainActivity extends AppCompatActivity {
                 team.performClick();
             }
         });
-        attacter_card.setOnClickListener(new View.OnClickListener() {
+        attacker_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attacter.performClick();
+                attacker.performClick();
             }
         });
         supporter_card.setOnClickListener(new View.OnClickListener() {
@@ -320,38 +312,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeTeamInfo(){
-        String defaultAttacter = "attacter";
+        String defaultAttacker = "attacker";
         String defaultSupporter = "supporter";
         switch (oldTeam){
             case 0:
-                defaultAttacter = "attacter";
+                defaultAttacker = "attacker";
                 defaultSupporter = "supporter";
                 break;
             case 1:
-                defaultAttacter = "attacter1";
+                defaultAttacker = "attacter1";
                 defaultSupporter = "supporter1";
                 break;
             case 2:
-                defaultAttacter = "attacter2";
+                defaultAttacker = "attacter2";
                 defaultSupporter = "supporter2";
                 break;
             case 3:
-                defaultAttacter = "attacter3";
+                defaultAttacker = "attacter3";
                 defaultSupporter = "supporter3";
                 break;
             case 4:
-                defaultAttacter = "attacter4";
+                defaultAttacker = "attacter4";
                 defaultSupporter = "supporter4";
                 break;
             case 5:
-                defaultAttacter = "attacter5";
+                defaultAttacker = "attacter5";
                 defaultSupporter = "supporter5";
                 break;
         }
         PreferenceManager
                 .getDefaultSharedPreferences(MainActivity.this)
                 .edit()
-                .putString(defaultAttacter, ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
+                .putString(defaultAttacker, ((Spinner) findViewById(R.id.attacter)).getSelectedItem().toString())
                 .putString(defaultSupporter, ((Spinner) findViewById(R.id.supporter)).getSelectedItem().toString())
                 .putInt("team", ((Spinner) findViewById(R.id.team)).getSelectedItemPosition())
                 .commit();
@@ -365,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
         oldTeam = defaultTeam;
         switch (defaultTeam){
             case 0:
-                defaultAttacter = sharedPref.getString("attacter", getString(R.string.select_one));
+                defaultAttacter = sharedPref.getString("attacker", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter", getString(R.string.select_one));
                 break;
             case 1:
@@ -392,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         int len = monstersArray.length;
         for (int i = 0; i < len; i++){
             if(defaultAttacter.equals(monstersArray[i])){
-                attacter.setSelection(i);
+                attacker.setSelection(i);
             }
             if(defaultSupporter.equals(monstersArray[i])){
                 supporter.setSelection(i);
@@ -404,8 +396,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void readBotData(String data){
         try {
-            player = (new JSONObject(data)).getJSONObject("玩家");
-            monsters = (new JSONObject(data)).getJSONArray("寵物");
+            monsterDataManager = MonsterDataManager.getInstance();
+            monsterDataManager.parse(data);
+            JSONArray monsters = monsterDataManager.getMonsters();
             int len = monsters.length();
             monstersArray = new String[len+1];
             monstersArray[0] = getString(R.string.select_one);
@@ -415,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             supporter.setAdapter(adapter);
-            attacter.setAdapter(adapter);
+            attacker.setAdapter(adapter);
             String[] teamArray = new String[6];
             teamArray[0] = "1";
             teamArray[1] = "2";

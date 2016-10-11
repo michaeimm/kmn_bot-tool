@@ -1,6 +1,5 @@
 package tw.shounenwind.kmnbottool.app;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
@@ -54,22 +53,16 @@ public class MonsDataActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Glide.get(this)
                 .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(new OkHttpClient()));
-        Intent intent = getIntent();
-        try {
-            JSONArray monsters = new JSONArray(intent.getStringExtra("monster"));
-            player = new JSONObject(intent.getStringExtra("player"));
+        MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
+        JSONArray monsters = monsterDataManager.getMonsters();
+        player = monsterDataManager.getPlayer();
 
-            ArrayAdapter listAdapter;
+        ArrayAdapter listAdapter;
 
-            listView = (RecyclerView)findViewById(R.id.list);
-            listView.setLayoutManager(new LinearLayoutManager(this));
-            listAdapter = new ArrayAdapter(monsters);
-            listView.setAdapter(listAdapter);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
+        listView = (RecyclerView)findViewById(R.id.list);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        listAdapter = new ArrayAdapter(monsters);
+        listView.setAdapter(listAdapter);
 
     }
 
