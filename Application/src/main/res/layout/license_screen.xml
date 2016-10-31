@@ -10,13 +10,12 @@
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/app_style"
-        android:background="?attr/colorPrimary">
+        android:background="?attr/colorPrimary" />
 
-    </android.support.v7.widget.Toolbar>
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-    </WebView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"/>
 
 </LinearLayout>

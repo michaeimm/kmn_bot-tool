@@ -28,20 +28,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
-import com.squareup.okhttp.Protocol;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.net.URL;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -130,8 +128,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-                            sharedPreferences.edit().putInt("user_id_ver", 2).commit();
-                            sharedPreferences.edit().putString("user_id", input.getText().toString()).commit();
+                            sharedPreferences.edit()
+                                    .putInt("user_id_ver", 2)
+                                    .putString("user_id", input.getText().toString())
+                                    .commit();
                             getBotData(input.getText().toString());
                         }catch (Exception e){
                             e.printStackTrace();
@@ -264,35 +264,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    URL url = new URL("http://www.kmnbot.ga/pets/" + plurk_id + ".json");
-                    OkHttpClient okHttpClient = new OkHttpClient();
-                    okHttpClient.setProxy(Proxy.NO_PROXY);
-                    okHttpClient.setProtocols(Arrays.asList(Protocol.HTTP_2, Protocol.SPDY_3, Protocol.HTTP_1_1));
-                    OkUrlFactory factory = new OkUrlFactory(okHttpClient);
-                    HttpURLConnection httpURLConnection = factory.open(url);
-                    httpURLConnection.setUseCaches(false);
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.connect();
-                    BufferedReader bufferedReader;
-                    if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
-                    } else {
-                        bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream(), "UTF-8"));
-                    }
-
-                    String line;
-                    final StringBuilder stringBuilder = new StringBuilder();
-
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line);
-                        stringBuilder.append("\n");
-                    }
-                    bufferedReader.close();
-                    httpURLConnection.disconnect();
+                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.SPDY_3, Protocol.HTTP_1_1))
+                            .proxy(Proxy.NO_PROXY)
+                            .connectTimeout(15, TimeUnit.SECONDS)
+                            .readTimeout(20, TimeUnit.SECONDS)
+                            .writeTimeout(20, TimeUnit.SECONDS)
+                            .build();
+                    Request request = new Request.Builder()
+                            .cacheControl(
+                                    new CacheControl.Builder()
+                                            .noCache()
+                                            .build()
+                            ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
+                            .build();
+                    Response response = okHttpClient.newCall(request).execute();
+                    final String result = response.body().string();
+                    response.close();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            readBotData(stringBuilder.toString());
+                            readBotData(result);
                             dismissProgressDialog();
                         }
                     });

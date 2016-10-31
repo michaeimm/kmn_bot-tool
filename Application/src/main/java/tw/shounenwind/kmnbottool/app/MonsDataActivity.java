@@ -23,12 +23,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +35,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 
+import okhttp3.OkHttpClient;
 import tw.shounenwind.kmnbottool.R;
 
 public class MonsDataActivity extends AppCompatActivity {
@@ -105,7 +105,7 @@ public class MonsDataActivity extends AppCompatActivity {
     class ArrayAdapter extends RecyclerView.Adapter{
         private JSONArray monsters;
 
-        public ArrayAdapter(JSONArray monsters) {
+        ArrayAdapter(JSONArray monsters) {
             this.monsters = monsters;
         }
 
@@ -195,13 +195,13 @@ public class MonsDataActivity extends AppCompatActivity {
             return monsters.length();
         }
 
-        public class ListViewHolder extends RecyclerView.ViewHolder{
-            public RelativeLayout monster_unit;
-            public ImageView monsterImg;
-            public TextView monsterName;
-            public TextView monsterType;
+        class ListViewHolder extends RecyclerView.ViewHolder{
+            RelativeLayout monster_unit;
+            ImageView monsterImg;
+            TextView monsterName;
+            TextView monsterType;
 
-            public ListViewHolder(View itemView) {
+            ListViewHolder(View itemView) {
                 super(itemView);
                 monster_unit = (RelativeLayout)itemView.findViewById(R.id.monster_unit);
                 monsterImg = (ImageView)itemView.findViewById(R.id.monster_img);
