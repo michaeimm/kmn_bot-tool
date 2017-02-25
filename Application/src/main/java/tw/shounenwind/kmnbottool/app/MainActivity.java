@@ -4,11 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -23,9 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -52,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private String[] monstersArray;
     private int oldTeam;
     private MonsterDataManager monsterDataManager;
+    private String[] chipValues;
+    private Spinner chipsSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,28 +90,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode != 0){
-            return;
-        }
-        if(resultCode == RESULT_OK && data != null && data.getStringExtra("response") != null){
-            try {
-                final String id = Long.toString(new JSONObject(data.getStringExtra("response")).getLong("plurk_id"), 36);
-                LinearLayout wv = (LinearLayout) findViewById(R.id.main_layout);
-                Snackbar snackbar = Snackbar.make(wv, R.string.submit_success, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.open, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.plurk.com/m/p/"+id));
-                                startActivity(intent);
-                            }
-                        });
-                TextView sbtv = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
-                sbtv.setTextColor(Color.WHITE);
-                snackbar.show();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
     }
 
     private void showPlurkIdInput() {
@@ -160,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
-                startActivityForResult(intent, 0);
+                startActivity(intent);
             }
         });
         Button exp_draw = (Button) findViewById(R.id.bot_exp);
@@ -172,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
                 }
                 writeTeamInfo();
             }
@@ -191,8 +167,11 @@ public class MainActivity extends AppCompatActivity {
                     if (support.getSelectedItemPosition() != 0) {
                         target += " " + support.getSelectedItem().toString();
                     }
+                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
+                        target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
+                    }
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
                 }
                 writeTeamInfo();
             }
@@ -209,6 +188,9 @@ public class MainActivity extends AppCompatActivity {
                     Spinner support = (Spinner) findViewById(R.id.supporter);
                     if (support.getSelectedItemPosition() != 0) {
                         target += " " + support.getSelectedItem().toString();
+                    }
+                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
+                        target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
                     }
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
                     startActivityForResult(intent, 0);
@@ -265,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.SPDY_3, Protocol.HTTP_1_1))
+                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
                             .proxy(Proxy.NO_PROXY)
                             .connectTimeout(15, TimeUnit.SECONDS)
                             .readTimeout(20, TimeUnit.SECONDS)
@@ -286,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             readBotData(result);
                             dismissProgressDialog();
+                            getChips(plurk_id);
                         }
                     });
 
@@ -301,6 +284,81 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private void getChips(final String plurk_id) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+                            .proxy(Proxy.NO_PROXY)
+                            .connectTimeout(15, TimeUnit.SECONDS)
+                            .readTimeout(20, TimeUnit.SECONDS)
+                            .writeTimeout(20, TimeUnit.SECONDS)
+                            .build();
+                    Request request = new Request.Builder()
+                            .cacheControl(
+                                    new CacheControl.Builder()
+                                            .noCache()
+                                            .build()
+                            ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
+                            .build();
+                    Response response = okHttpClient.newCall(request).execute();
+                    final String result = response.body().string();
+                    response.close();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            readChips(result);
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismissProgressDialog();
+                            Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    private void readChips(String data){
+        try {
+            JSONArray jsonArray = new JSONArray(new JSONObject(data).getString("晶片"));
+            int len = jsonArray.length();
+            if(len == 0){
+                throw new Exception("No chips exist.");
+            }
+            String[] chipNames = new String[len + 1];
+            chipValues = new String[len + 1];
+            chipNames[0] = "請選擇";
+            chipValues[0] = "";
+            for(int i = 0; i < len ; i++){
+                chipNames[i+1] = jsonArray.getJSONObject(i).getString("名稱") + "(" + jsonArray.getJSONObject(i).getString("組件") + ")";
+                chipValues[i+1] = jsonArray.getJSONObject(i).getString("名稱");
+            }
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            chipsSpinner = (Spinner) findViewById(R.id.chips);
+            chipsSpinner.setAdapter(adapter);
+            findViewById(R.id.chips_card).setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            e.printStackTrace();
+            String[] chipNames = new String[]{"請選擇"};
+            chipValues = new String[]{""};
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            chipsSpinner = (Spinner) findViewById(R.id.chips);
+            chipsSpinner.setAdapter(adapter);
+        }
+
     }
 
     private void writeTeamInfo(){
@@ -343,39 +401,39 @@ public class MainActivity extends AppCompatActivity {
 
     private void readTeamInfo(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String defaultAttacter = getString(R.string.select_one);
+        String defaultAttacker = getString(R.string.select_one);
         String defaultSupporter = getString(R.string.select_one);
         int defaultTeam = sharedPref.getInt("team", 0);
         oldTeam = defaultTeam;
         switch (defaultTeam){
             case 0:
-                defaultAttacter = sharedPref.getString("attacker", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacker", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter", getString(R.string.select_one));
                 break;
             case 1:
-                defaultAttacter = sharedPref.getString("attacter1", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter1", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter1", getString(R.string.select_one));
                 break;
             case 2:
-                defaultAttacter = sharedPref.getString("attacter2", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter2", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter2", getString(R.string.select_one));
                 break;
             case 3:
-                defaultAttacter = sharedPref.getString("attacter3", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter3", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter3", getString(R.string.select_one));
                 break;
             case 4:
-                defaultAttacter = sharedPref.getString("attacter4", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter4", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter4", getString(R.string.select_one));
                 break;
             case 5:
-                defaultAttacter = sharedPref.getString("attacter5", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter5", getString(R.string.select_one));
                 defaultSupporter = sharedPref.getString("supporter5", getString(R.string.select_one));
                 break;
         }
         int len = monstersArray.length;
         for (int i = 0; i < len; i++){
-            if(defaultAttacter.equals(monstersArray[i])){
+            if(defaultAttacker.equals(monstersArray[i])){
                 attacker.setSelection(i);
             }
             if(defaultSupporter.equals(monstersArray[i])){
