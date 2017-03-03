@@ -5,4 +5,8 @@
         android:title="@string/license"
         />
 
+    <item
+        android:id="@+id/bot_link"
+        android:title="@string/bot_link" />
+
 </menu>

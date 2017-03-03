@@ -191,6 +191,12 @@ public class MonsDataActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            super.onViewRecycled(holder);
+            Glide.clear(((ListViewHolder)holder).monsterImg);
+        }
+
+        @Override
         public int getItemCount() {
             return monsters.length();
         }

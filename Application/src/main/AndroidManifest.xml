@@ -15,8 +15,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tw.shounenwind.kmnbottool"
-    android:versionCode="11"
-    android:versionName="1.2.0">
+    android:versionCode="12"
+    android:versionName="1.2.1">
 
     <!-- ActionBarCompat provides an Action Bar from API v7 onwards -->
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
