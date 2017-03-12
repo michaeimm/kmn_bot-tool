@@ -567,6 +567,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (android.content.ActivityNotFoundException ex) {
                 Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show();
             }
+        }else{
+            Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show();
         }
     }
 }
