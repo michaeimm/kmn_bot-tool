@@ -4,8 +4,12 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.CacheControl;
@@ -135,8 +141,7 @@ public class MainActivity extends AppCompatActivity {
         bot_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_draw)));
-                startActivity(intent);
+                sendCommand(getString(R.string.command_draw));
             }
         });
         Button exp_draw = (Button) findViewById(R.id.bot_exp);
@@ -147,8 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_exp, spinner.getSelectedItem().toString())));
-                    startActivity(intent);
+                    sendCommand(getString(R.string.command_exp, spinner.getSelectedItem().toString()));
                 }
                 writeTeamInfo();
             }
@@ -170,8 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
                         target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
                     }
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_battle, target)));
-                    startActivity(intent);
+                    sendCommand(getString(R.string.command_battle, target));
                 }
                 writeTeamInfo();
             }
@@ -192,8 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
                         target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
                     }
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.command_hell_battle, target)));
-                    startActivityForResult(intent, 0);
+                    sendCommand(getString(R.string.command_hell_battle, target));
                     writeTeamInfo();
                 }
 
@@ -507,5 +509,65 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         super.onDestroy();
+    }
+
+    private void sendCommand(String command){
+
+        Uri targetUri = Uri.parse(getString(R.string.command_prefix) + command + getString(R.string.command_append));
+        Intent intent = new Intent(Intent.ACTION_VIEW, targetUri);
+        List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(intent, 0);
+        List<Intent> targetedShareIntents = new ArrayList<>();
+        if (!resInfo.isEmpty()) {
+
+            for (ResolveInfo info : resInfo) {
+                ActivityInfo activityInfo = info.activityInfo;
+                Log.d("packageName", activityInfo.packageName);
+                if (!activityInfo.packageName.equalsIgnoreCase("com.plurk.android")) {
+                    Intent targeted = new Intent(Intent.ACTION_VIEW, targetUri);
+                    targeted.setPackage(activityInfo.packageName);
+                    targetedShareIntents.add(targeted);
+                }
+
+            }
+
+        }
+
+        String[] textSharedTarget = new String[]{
+                "com.plurk.android",
+                "tw.anddev.aplurk",
+                "com.skystar.plurk",
+                "com.roguso.plurk",
+                "com.nauj27.android.pifeb",
+                "idv.brianhsu.maidroid.plurk"
+        };
+
+        for (String aTarget : textSharedTarget) {
+
+            PackageManager manager = getPackageManager();
+            Intent searchIntent = new Intent().setPackage(aTarget);
+            List<ResolveInfo> infos = manager.queryIntentActivities(searchIntent, 0);
+
+            if (infos != null && infos.size() > 0)
+            {
+                Intent targeted = new Intent(Intent.ACTION_SEND);
+                targeted.setType("text/plain");
+                targeted.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+                targeted.putExtra(Intent.EXTRA_TEXT, command);
+                targeted.setPackage(aTarget);
+                targetedShareIntents.add(targeted);
+            }
+
+        }
+
+        if(targetedShareIntents.size() > 0){
+            Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Open...");
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, "Open...");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+            try {
+                startActivity(chooserIntent);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
