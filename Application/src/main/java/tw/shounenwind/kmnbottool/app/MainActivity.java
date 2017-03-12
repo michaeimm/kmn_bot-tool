@@ -56,13 +56,20 @@ public class MainActivity extends AppCompatActivity {
     private MonsterDataManager monsterDataManager;
     private String[] chipValues;
     private Spinner chipsSpinner;
+    private OkHttpClient okHttpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
-
         screenPrepare();
+        okHttpClient = new OkHttpClient.Builder()
+                .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+                .proxy(Proxy.NO_PROXY)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .build();
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
         int user_id_ver = sharedPreferences.getInt("user_id_ver", 1);
@@ -87,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
                 intent.setClass(this, LicenseActivity.class);
                 startActivity(intent);
                 return true;
+            }
+            case R.id.bot_link:{
+                Intent intent = new Intent();
+                intent.setData(Uri.parse("https://www.plurk.com/KMN_BOT"));
+                intent.setAction(Intent.ACTION_VIEW);
+                startActivity(intent);
             }
             default:
                 return super.onOptionsItemSelected(item);
@@ -248,13 +261,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-                            .proxy(Proxy.NO_PROXY)
-                            .connectTimeout(15, TimeUnit.SECONDS)
-                            .readTimeout(20, TimeUnit.SECONDS)
-                            .writeTimeout(20, TimeUnit.SECONDS)
-                            .build();
                     Request request = new Request.Builder()
                             .cacheControl(
                                     new CacheControl.Builder()
@@ -293,13 +299,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-                            .proxy(Proxy.NO_PROXY)
-                            .connectTimeout(15, TimeUnit.SECONDS)
-                            .readTimeout(20, TimeUnit.SECONDS)
-                            .writeTimeout(20, TimeUnit.SECONDS)
-                            .build();
                     Request request = new Request.Builder()
                             .cacheControl(
                                     new CacheControl.Builder()
