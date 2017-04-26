@@ -37,4 +37,10 @@ public class MonsterDataManager {
     public JSONArray getMonsters() {
         return monsters;
     }
+
+    public static void clear(){
+        synchronized (MonsterDataManager.class) {
+            instance = null;
+        }
+    }
 }

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +35,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import tw.shounenwind.kmnbottool.R;
@@ -42,6 +48,8 @@ public class MonsDataActivity extends AppCompatActivity {
 
     private JSONObject player;
     private RecyclerView listView;
+    private MonsterDataManager monsterDataManager;
+    private ArrayAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +61,14 @@ public class MonsDataActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Glide.get(this)
                 .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(new OkHttpClient()));
-        MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
+        monsterDataManager = MonsterDataManager.getInstance();
         JSONArray monsters = monsterDataManager.getMonsters();
         player = monsterDataManager.getPlayer();
 
-        ArrayAdapter listAdapter;
+        listAdapter = new ArrayAdapter(monsters);
 
         listView = (RecyclerView)findViewById(R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(this));
-        listAdapter = new ArrayAdapter(monsters);
         listView.setAdapter(listAdapter);
 
     }
@@ -97,15 +104,91 @@ public class MonsDataActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.confirm, null)
                         .create();
                 alertDialog.show();
-                break;
+                return true;
+            case R.id.sort_series:
+                item.setChecked(true);
+                sort("系列");
+                return true;
+            case R.id.sort_name:
+                item.setChecked(true);
+                sort("寵物名稱");
+                return true;
+            case R.id.sort_rare:
+                item.setChecked(true);
+                sort("稀有度");
+                return true;
+            case R.id.sort_level:
+                item.setChecked(true);
+                sort("等級");
+                return true;
+            case R.id.sort_class:
+                item.setChecked(true);
+                sort("階級");
+                return true;
+            case R.id.sort_type:
+                item.setChecked(true);
+                sort("原TYPE");
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    class ArrayAdapter extends RecyclerView.Adapter{
+    private void sort(final String key){
+        JSONArray monsters = monsterDataManager.getMonsters();
+        List<JSONObject> jsonValues = new ArrayList<>();
+        JSONArray sortedJsonArray = new JSONArray();
+        int len = monsters.length();
+        for (int i = 0; i < len; i++) {
+            try {
+                jsonValues.add(monsters.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Collections.sort( jsonValues, new Comparator<JSONObject>() {
+
+            @Override
+            public int compare(JSONObject a, JSONObject b) {
+                String valA = new String();
+                String valB = new String();
+
+                try {
+                    if(key.equals("等級") || key.equals("階級") || key.equals("稀有度")){
+                        String aString = a.getString(key);
+                        if(aString.contains("Max"))
+                            aString = aString.substring(0, aString.indexOf("（"));
+                        valA = String.format(Locale.ENGLISH, "%3d", Integer.valueOf(aString));
+                        String bString = b.getString(key);
+                        if(bString.contains("Max"))
+                            bString = aString.substring(0, bString.indexOf("（"));
+                        valB = String.format(Locale.ENGLISH, "%3d", Integer.valueOf(bString));
+                    }else {
+                        valA = a.getString(key) + a.getString("寵物名稱");
+                        valB = b.getString(key) + b.getString("寵物名稱");
+                    }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                return valA.compareTo(valB);
+            }
+        });
+        for (int i = 0; i < len; i++) {
+            sortedJsonArray.put(jsonValues.get(i));
+        }
+        listAdapter.setMonsters(sortedJsonArray);
+        listAdapter.notifyDataSetChanged();
+    }
+
+    private class ArrayAdapter extends RecyclerView.Adapter{
         private JSONArray monsters;
 
         ArrayAdapter(JSONArray monsters) {
+            this.monsters = monsters;
+        }
+
+        void setMonsters(JSONArray monsters) {
             this.monsters = monsters;
         }
 
@@ -173,8 +256,9 @@ public class MonsDataActivity extends AppCompatActivity {
                                 .into(m_imageView);
                         m_textView.setText(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
                                 getString(R.string.battle_type) + "：" + finalMonster.getString("下場TYPE") + "\n" +
-                                getString(R.string.monster_level) + finalMonster.getString("等級") + "\n" +
-                                getString(R.string.monster_class) + finalMonster.getString("階級") + "\n" +
+                                getString(R.string.monster_series) + "：" + finalMonster.getString("系列") + "\n" +
+                                getString(R.string.monster_level) + " " + finalMonster.getString("等級") + "\n" +
+                                getString(R.string.monster_class) + " " + finalMonster.getString("階級") + "\n" +
                                 "\n" + finalMonster.getString("技能"));
                         new AlertDialog.Builder(MonsDataActivity.this)
                                 .setView(m_dialogView)

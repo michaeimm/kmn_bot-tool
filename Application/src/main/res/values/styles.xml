@@ -5,7 +5,6 @@
         <item name="colorPrimary">#0277bd</item>
         <item name="colorPrimaryDark">#014065</item>
         <item name="colorAccent">#c758da</item>
-        <item name="android:colorBackground">#212121</item>
         <item name="android:textColorHint">#EEEEEE</item>
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>

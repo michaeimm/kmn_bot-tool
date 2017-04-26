@@ -8,5 +8,8 @@
     <item
         android:id="@+id/bot_link"
         android:title="@string/bot_link" />
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout" />
 
 </menu>

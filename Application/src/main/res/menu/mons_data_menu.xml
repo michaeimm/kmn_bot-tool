@@ -26,9 +26,40 @@
     xmlns:support="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:title="@string/sort"
+        android:icon="@drawable/ic_action_sort"
+        support:showAsAction="ifRoom" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_series"
+                    android:checked="true"
+                    android:title="@string/sort_series" />
+                <item
+                    android:id="@+id/sort_name"
+                    android:title="@string/sort_name" />
+                <item
+                    android:id="@+id/sort_rare"
+                    android:title="@string/sort_rare" />
+                <item
+                    android:id="@+id/sort_level"
+                    android:title="@string/sort_level" />
+                <item
+                    android:id="@+id/sort_class"
+                    android:title="@string/sort_class" />
+                <item
+                    android:id="@+id/sort_type"
+                    android:title="@string/sort_type" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/menu_profile"
         android:icon="@drawable/ic_person_white_24dp"
         android:title="@string/menu_profile"
         support:showAsAction="ifRoom"/>
+
+
 
 </menu>

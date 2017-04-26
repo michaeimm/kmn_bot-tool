@@ -16,16 +16,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -101,6 +104,13 @@ public class MainActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_VIEW);
                 startActivity(intent);
             }
+            case R.id.logout:{
+                SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+                sharedPreferences.edit()
+                        .putInt("user_id_ver", 1)
+                        .commit();
+                showPlurkIdInput();
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -115,25 +125,44 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.plurk_name_dialog, (ViewGroup) findViewById(R.id.dialog));
         final EditText input = (EditText)layout.findViewById(R.id.name);
-        new AlertDialog.Builder(this)
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.input_plurk_username)
                 .setView(layout)
                 .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-                            sharedPreferences.edit()
-                                    .putInt("user_id_ver", 2)
-                                    .putString("user_id", input.getText().toString())
-                                    .commit();
-                            getBotData(input.getText().toString());
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                        receivePlurkId(input.getText().toString());
                     }
                 })
                 .show();
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH
+                        || actionId == EditorInfo.IME_ACTION_DONE
+                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
+                        && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    receivePlurkId(input.getText().toString());
+                    alertDialog.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void receivePlurkId(String id){
+        try {
+            SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+            sharedPreferences.edit()
+                    .putInt("user_id_ver", 2)
+                    .putString("user_id", id)
+                    .commit();
+            getBotData(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showProgressDialog(String text){
@@ -507,6 +536,7 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+        MonsterDataManager.clear();
         super.onDestroy();
     }
 
@@ -544,9 +574,9 @@ public class MainActivity extends AppCompatActivity {
 
             PackageManager manager = getPackageManager();
             Intent searchIntent = new Intent().setPackage(aTarget);
-            List<ResolveInfo> infos = manager.queryIntentActivities(searchIntent, 0);
+            List<ResolveInfo> infoList = manager.queryIntentActivities(searchIntent, 0);
 
-            if (infos != null && infos.size() > 0)
+            if (infoList != null && infoList.size() > 0)
             {
                 Intent targeted = new Intent(Intent.ACTION_SEND);
                 targeted.setType("text/plain");
