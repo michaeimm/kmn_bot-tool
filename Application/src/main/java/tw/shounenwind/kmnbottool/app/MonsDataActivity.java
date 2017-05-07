@@ -1,6 +1,7 @@
 package tw.shounenwind.kmnbottool.app;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,6 +50,11 @@ public class MonsDataActivity extends AppCompatActivity {
     private RecyclerView listView;
     private MonsterDataManager monsterDataManager;
     private ArrayAdapter listAdapter;
+    private static final int RED_TYPE = Color.parseColor("#ff4081");
+    private static final int GREEN_TYPE = Color.parseColor("#8bc34a");
+    private static final int BLUE_TYPE = Color.parseColor("#00b0ff");
+    private static final int YELLOW_TYPE = Color.parseColor("#ffea00");
+    private static final int BLACK_TYPE = Color.parseColor("#bdbdbd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,7 +207,10 @@ public class MonsDataActivity extends AppCompatActivity {
             JSONObject monster = null;
             try {
                 monster = monsters.getJSONObject(position);
-                ((ListViewHolder)holder).monsterName.setText(monster.getString("寵物名稱"));
+                if(monster.getString("等級").contains("Lv.Max"))
+                    ((ListViewHolder)holder).monsterName.setText(monster.getString("寵物名稱") + " (Lv.Max)");
+                else
+                    ((ListViewHolder)holder).monsterName.setText(monster.getString("寵物名稱") + " (Lv." + monster.getString("等級") + ")");
                 final ImageView imageView = ((ListViewHolder) holder).monsterImg;
                 Glide.with(MonsDataActivity.this)
                         .load(monster.getString("圖片"))
@@ -224,6 +232,7 @@ public class MonsDataActivity extends AppCompatActivity {
                 int len = monster.getInt("稀有度");
                 for(int i = 0; i < len; i++) star.append("☆");
                 ((ListViewHolder)holder).monsterType.setText(star.toString());
+                ((ListViewHolder)holder).monsterType.setTextColor(getMonsterColor(monster.getString("原TYPE")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -272,6 +281,21 @@ public class MonsDataActivity extends AppCompatActivity {
                 }
             });
 
+        }
+
+        private int getMonsterColor(String type){
+            if(type.equals("[紅]"))
+                return RED_TYPE;
+            else if(type.equals("[綠]"))
+                return GREEN_TYPE;
+            else if(type.equals("[藍]"))
+                return BLUE_TYPE;
+            else if(type.equals("[黃]"))
+                return YELLOW_TYPE;
+            else if(type.equals("[黑]"))
+                return BLACK_TYPE;
+            else
+                return Color.WHITE;
         }
 
         @Override
