@@ -27,7 +27,7 @@
     <string name="bot_battle">遊玩地城</string>
     <string name="command_battle">%s (bz)(bz)(bz)(bz)(bz)(bz)</string>
     <string name="bot_hell_battle">遊玩地獄級地城</string>
-    <string name="command_hell_battle">%s (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_hell_battle">地獄級 %s (bz)(bz)(bz)(bz)(bz)(bz)</string>
     <string name="submit_success">已成功送出</string>
     <string name="open">開啟</string>
     <string name="input_plurk_username">請輸入噗浪帳號</string>
