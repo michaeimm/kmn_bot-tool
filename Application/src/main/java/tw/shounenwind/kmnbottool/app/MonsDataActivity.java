@@ -1,5 +1,7 @@
 package tw.shounenwind.kmnbottool.app;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -29,12 +31,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,6 +55,7 @@ public class MonsDataActivity extends AppCompatActivity {
     private RecyclerView listView;
     private MonsterDataManager monsterDataManager;
     private ArrayAdapter listAdapter;
+    private ProgressDialog progressDialog;
     private static final int RED_TYPE = Color.parseColor("#ff4081");
     private static final int GREEN_TYPE = Color.parseColor("#8bc34a");
     private static final int BLUE_TYPE = Color.parseColor("#00b0ff");
@@ -81,7 +87,6 @@ public class MonsDataActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mons_data_menu, menu);
-
         return true;
     }
 
@@ -139,54 +144,84 @@ public class MonsDataActivity extends AppCompatActivity {
     }
 
     private void sort(final String key){
-        JSONArray monsters = monsterDataManager.getMonsters();
-        List<JSONObject> jsonValues = new ArrayList<>();
-        JSONArray sortedJsonArray = new JSONArray();
-        int len = monsters.length();
-        for (int i = 0; i < len; i++) {
-            try {
-                jsonValues.add(monsters.getJSONObject(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        Collections.sort( jsonValues, new Comparator<JSONObject>() {
-
+        showProgressDialog(getString(R.string.monster_loading));
+        new Thread(new Runnable() {
             @Override
-            public int compare(JSONObject a, JSONObject b) {
-                String valA = new String();
-                String valB = new String();
-
-                try {
-                    if(key.equals("等級") || key.equals("階級") || key.equals("稀有度")){
-                        String aString = a.getString(key);
-                        if(aString.contains("Max"))
-                            aString = aString.substring(0, aString.indexOf("（"));
-                        valA = String.format(Locale.ENGLISH, "%3d", Integer.valueOf(aString));
-                        String bString = b.getString(key);
-                        if(bString.contains("Max"))
-                            bString = aString.substring(0, bString.indexOf("（"));
-                        valB = String.format(Locale.ENGLISH, "%3d", Integer.valueOf(bString));
-                    }else {
-                        valA = a.getString(key) + a.getString("寵物名稱");
-                        valB = b.getString(key) + b.getString("寵物名稱");
+            public void run() {
+                JSONArray monsters = monsterDataManager.getMonsters();
+                List<JSONObject> jsonValues = new ArrayList<>();
+                int len = monsters.length();
+                for (int i = 0; i < len; i++) {
+                    try {
+                        jsonValues.add(monsters.getJSONObject(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }if (key.equals("等級") || key.equals("階級") || key.equals("稀有度")) {
+                    Collections.sort(jsonValues, Ordering.natural().nullsFirst()
+                            .onResultOf(new Function<JSONObject, Integer>() {
+                                @Override
+                                public Integer apply(JSONObject p) {
+                                    try {
 
-                return valA.compareTo(valB);
+
+                                        String aString = p.getString(key);
+
+                                        if (aString.contains("Max"))
+                                            aString = aString.substring(0, aString.indexOf("（"));
+                                        return Integer.valueOf(aString);
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    return 101;
+                                }
+                            }));
+                } else {
+                    final Collator collator = Collator.getInstance(Locale.CHINESE);
+                    Collections.sort(jsonValues, new Comparator<JSONObject>() {
+                        @Override
+                        public int compare(JSONObject o1, JSONObject o2) {
+
+                            try {
+                                return collator.compare(o1.getString(key)+o1.getString("寵物名稱"), o2.getString(key)+o2.getString("寵物名稱"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                return 0;
+                            }
+                        }
+                    });
+                }
+                final JSONArray sortedJsonArray = new JSONArray(jsonValues);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listAdapter.setMonsters(sortedJsonArray);
+                        listAdapter.notifyDataSetChanged();
+                        dismissProgressDialog();
+                    }
+                });
+
             }
-        });
-        for (int i = 0; i < len; i++) {
-            sortedJsonArray.put(jsonValues.get(i));
-        }
-        listAdapter.setMonsters(sortedJsonArray);
-        listAdapter.notifyDataSetChanged();
+        }).start();
+
     }
 
-    private class ArrayAdapter extends RecyclerView.Adapter{
+    private void showProgressDialog(String text){
+        progressDialog = ProgressDialog.show(this,
+                getString(R.string.loading), text, true);
+    }
+
+    private void dismissProgressDialog(){
+        try{
+            progressDialog.dismiss();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.ListViewHolder>{
         private JSONArray monsters;
 
         ArrayAdapter(JSONArray monsters) {
@@ -198,20 +233,21 @@ public class MonsDataActivity extends AppCompatActivity {
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ArrayAdapter.ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.monster_unit, null));
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(final ArrayAdapter.ListViewHolder holder, int position) {
             JSONObject monster = null;
             try {
                 monster = monsters.getJSONObject(position);
                 if(monster.getString("等級").contains("Lv.Max"))
-                    ((ListViewHolder)holder).monsterName.setText(monster.getString("寵物名稱") + " (Lv.Max)");
+                    holder.monsterName.setText(monster.getString("寵物名稱") + " (Lv.Max)");
                 else
-                    ((ListViewHolder)holder).monsterName.setText(monster.getString("寵物名稱") + " (Lv." + monster.getString("等級") + ")");
-                final ImageView imageView = ((ListViewHolder) holder).monsterImg;
+                    holder.monsterName.setText(monster.getString("寵物名稱") + " (Lv." + monster.getString("等級") + ")");
+                final ImageView imageView = holder.monsterImg;
                 Glide.with(MonsDataActivity.this)
                         .load(monster.getString("圖片"))
                         .asBitmap()
@@ -231,13 +267,13 @@ public class MonsDataActivity extends AppCompatActivity {
                 StringBuilder star = new StringBuilder();
                 int len = monster.getInt("稀有度");
                 for(int i = 0; i < len; i++) star.append("☆");
-                ((ListViewHolder)holder).monsterType.setText(star.toString());
-                ((ListViewHolder)holder).monsterType.setTextColor(getMonsterColor(monster.getString("原TYPE")));
+                holder.monsterType.setText(star.toString());
+                holder.monsterType.setTextColor(getMonsterColor(monster.getString("原TYPE")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             final JSONObject finalMonster = monster;
-            ((ListViewHolder)holder).monster_unit.setOnClickListener(new View.OnClickListener() {
+            holder.monster_unit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
@@ -284,24 +320,26 @@ public class MonsDataActivity extends AppCompatActivity {
         }
 
         private int getMonsterColor(String type){
-            if(type.equals("[紅]"))
-                return RED_TYPE;
-            else if(type.equals("[綠]"))
-                return GREEN_TYPE;
-            else if(type.equals("[藍]"))
-                return BLUE_TYPE;
-            else if(type.equals("[黃]"))
-                return YELLOW_TYPE;
-            else if(type.equals("[黑]"))
-                return BLACK_TYPE;
-            else
-                return Color.WHITE;
+            switch (type) {
+                case "[紅]":
+                    return RED_TYPE;
+                case "[綠]":
+                    return GREEN_TYPE;
+                case "[藍]":
+                    return BLUE_TYPE;
+                case "[黃]":
+                    return YELLOW_TYPE;
+                case "[黑]":
+                    return BLACK_TYPE;
+                default:
+                    return Color.WHITE;
+            }
         }
 
         @Override
-        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        public void onViewRecycled(ArrayAdapter.ListViewHolder holder) {
             super.onViewRecycled(holder);
-            Glide.clear(((ListViewHolder)holder).monsterImg);
+            Glide.clear(holder.monsterImg);
         }
 
         @Override
