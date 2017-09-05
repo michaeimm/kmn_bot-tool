@@ -58,7 +58,7 @@
 -dontwarn rx.**
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp3.**
--dontwarn com.google.gson.**
+-dontwarn com.google.**
 -dontwarn oauth.signpost.**
 -dontwarn org.apache.commons.**
 
@@ -70,7 +70,7 @@
 -keep class com.rey.material.** {*;}
 -keep class com.lvillani.android.camera.** {*;}
 -keep class rx.** { *; }
--keep class com.google.gson.** {*;}
+-keep class com.google.** {*;}
 
 -keep interface android.support.** {*;}
 -keep interface com.squareup.** {*;}
@@ -82,7 +82,7 @@
 -keep interface com.squareup.okhttp3.** { *; }
 -keep interface se.akerfeldt.** { *; }
 -keep interface rx.**
--keep interface com.google.gson.** {*;}
+-keep interface com.google.** {*;}
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
