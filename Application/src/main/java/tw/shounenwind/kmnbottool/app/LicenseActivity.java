@@ -24,7 +24,7 @@ public class LicenseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setLicenses();
         screenPrepare();
-        RecyclerView listView = (RecyclerView)findViewById(R.id.list);
+        RecyclerView listView = findViewById(R.id.list);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -36,13 +36,10 @@ public class LicenseActivity extends AppCompatActivity {
     private void screenPrepare() {
         setContentView(R.layout.license_screen);
 
-
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
     }
 
     @Override
@@ -126,7 +123,7 @@ public class LicenseActivity extends AppCompatActivity {
                 "  END OF TERMS AND CONDITIONS"));
     }
 
-    class License {
+    private class License {
         String title;
         String content;
 
@@ -136,17 +133,19 @@ public class LicenseActivity extends AppCompatActivity {
         }
     }
 
-    class ArrayAdapter extends RecyclerView.Adapter{
+    private class ArrayAdapter extends RecyclerView.Adapter {
 
         List<License> data;
 
-        public ArrayAdapter(List<License> data) {
+        ArrayAdapter(List<License> data) {
             this.data = data;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.license_unit, null));
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.license_unit, parent, false);
+            view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            return new ListViewHolder(view);
         }
 
         @Override
@@ -167,8 +166,8 @@ public class LicenseActivity extends AppCompatActivity {
 
             ListViewHolder(View itemView) {
                 super(itemView);
-                title = (TextView)itemView.findViewById(R.id.title);
-                content = (TextView)itemView.findViewById(R.id.content);
+                title = itemView.findViewById(R.id.title);
+                content = itemView.findViewById(R.id.content);
             }
         }
     }

@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -51,22 +50,22 @@ import tw.shounenwind.kmnbottool.R;
 
 public class MonsDataActivity extends AppCompatActivity {
 
-    private JSONObject player;
-    private RecyclerView listView;
-    private MonsterDataManager monsterDataManager;
-    private ArrayAdapter listAdapter;
-    private ProgressDialog progressDialog;
     private static final int RED_TYPE = Color.parseColor("#ff4081");
     private static final int GREEN_TYPE = Color.parseColor("#8bc34a");
     private static final int BLUE_TYPE = Color.parseColor("#00b0ff");
     private static final int YELLOW_TYPE = Color.parseColor("#ffea00");
     private static final int BLACK_TYPE = Color.parseColor("#bdbdbd");
+    private JSONObject player;
+    private RecyclerView listView;
+    private MonsterDataManager monsterDataManager;
+    private ArrayAdapter listAdapter;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mons_data);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -78,7 +77,7 @@ public class MonsDataActivity extends AppCompatActivity {
 
         listAdapter = new ArrayAdapter(monsters);
 
-        listView = (RecyclerView)findViewById(R.id.list);
+        listView = findViewById(R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(listAdapter);
 
@@ -163,14 +162,11 @@ public class MonsDataActivity extends AppCompatActivity {
                                 @Override
                                 public Integer apply(JSONObject p) {
                                     try {
-
-
                                         String aString = p.getString(key);
 
                                         if (aString.contains("Max"))
                                             aString = aString.substring(0, aString.indexOf("（"));
                                         return Integer.valueOf(aString);
-
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -234,7 +230,9 @@ public class MonsDataActivity extends AppCompatActivity {
 
         @Override
         public ArrayAdapter.ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.monster_unit, null));
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.monster_unit, parent, false);
+            view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            return new ListViewHolder(view);
         }
 
         @SuppressLint("SetTextI18n")
@@ -278,17 +276,13 @@ public class MonsDataActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     try {
                         ScrollView m_dialogView = (ScrollView)getLayoutInflater().inflate(R.layout.monster_dialog, null);
-                        ImageView m_imageView = (ImageView) m_dialogView.findViewById(R.id.monster_img);
-                        TextView m_textView = ((TextView) m_dialogView.findViewById(R.id.monster_type));
+                        ImageView m_imageView = m_dialogView.findViewById(R.id.monster_img);
+                        TextView m_textView = m_dialogView.findViewById(R.id.monster_type);
                         Display display = getWindowManager().getDefaultDisplay();
                         Point size = new Point();
                         int imageWidth;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                            display.getSize(size);
-                            imageWidth = size.x;
-                        }else{
-                            imageWidth = display.getWidth();
-                        }
+                        display.getSize(size);
+                        imageWidth = size.x;
                         imageWidth -= 150;
                         Glide.with(MonsDataActivity.this)
                                 .load(finalMonster.getString("圖片"))
@@ -355,10 +349,10 @@ public class MonsDataActivity extends AppCompatActivity {
 
             ListViewHolder(View itemView) {
                 super(itemView);
-                monster_unit = (RelativeLayout)itemView.findViewById(R.id.monster_unit);
-                monsterImg = (ImageView)itemView.findViewById(R.id.monster_img);
-                monsterName = (TextView)itemView.findViewById(R.id.monster_name);
-                monsterType = (TextView)itemView.findViewById(R.id.monster_type);
+                monster_unit = itemView.findViewById(R.id.monster_unit);
+                monsterImg = itemView.findViewById(R.id.monster_img);
+                monsterName = itemView.findViewById(R.id.monster_name);
+                monsterType = itemView.findViewById(R.id.monster_type);
             }
         }
     }

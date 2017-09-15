@@ -1,5 +1,6 @@
 package tw.shounenwind.kmnbottool.app;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private Spinner team;
     private String[] monstersArray;
     private int oldTeam;
-    private MonsterDataManager monsterDataManager;
     private String[] chipValues;
     private Spinner chipsSpinner;
     private OkHttpClient okHttpClient;
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("ApplySharedPref")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     private void showPlurkIdInput() {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.plurk_name_dialog, (ViewGroup) findViewById(R.id.dialog));
-        final EditText input = (EditText)layout.findViewById(R.id.name);
+        final EditText input = layout.findViewById(R.id.name);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.input_plurk_username)
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ApplySharedPref")
     private void receivePlurkId(String id){
         try {
             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
@@ -179,18 +181,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void screenPrepare() {
-        Button bot_draw = (Button) findViewById(R.id.bot_draw);
+        Button bot_draw = findViewById(R.id.bot_draw);
         bot_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendCommand(getString(R.string.command_draw));
             }
         });
-        Button exp_draw = (Button) findViewById(R.id.bot_exp);
+        Button exp_draw = findViewById(R.id.bot_exp);
         exp_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                Spinner spinner = findViewById(R.id.attacter);
                 if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
@@ -200,16 +202,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-        Button bot_battle = (Button) findViewById(R.id.bot_battle);
+        Button bot_battle = findViewById(R.id.bot_battle);
         bot_battle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                Spinner spinner = findViewById(R.id.attacter);
                 if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
                     String target = spinner.getSelectedItem().toString();
-                    Spinner support = (Spinner) findViewById(R.id.supporter);
+                    Spinner support = findViewById(R.id.supporter);
                     if (support.getSelectedItemPosition() != 0) {
                         target += " " + support.getSelectedItem().toString();
                     }
@@ -221,16 +223,16 @@ public class MainActivity extends AppCompatActivity {
                 writeTeamInfo();
             }
         });
-        Button bot_hell_battle = (Button) findViewById(R.id.bot_hell_battle);
+        Button bot_hell_battle = findViewById(R.id.bot_hell_battle);
         bot_hell_battle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner spinner = (Spinner) findViewById(R.id.attacter);
+                Spinner spinner = findViewById(R.id.attacter);
                 if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
                     String target = spinner.getSelectedItem().toString();
-                    Spinner support = (Spinner) findViewById(R.id.supporter);
+                    Spinner support = findViewById(R.id.supporter);
                     if (support.getSelectedItemPosition() != 0) {
                         target += " " + support.getSelectedItem().toString();
                     }
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        Button bot_mons_box = (Button) findViewById(R.id.bot_mons_box);
+        Button bot_mons_box = findViewById(R.id.bot_mons_box);
         bot_mons_box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -251,13 +253,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        CardView team_card = (CardView) findViewById(R.id.team_card);
-        CardView attacker_card = (CardView) findViewById(R.id.attacter_card);
-        CardView supporter_card = (CardView) findViewById(R.id.supporter_card);
+        CardView team_card = findViewById(R.id.team_card);
+        CardView attacker_card = findViewById(R.id.attacter_card);
+        CardView supporter_card = findViewById(R.id.supporter_card);
 
-        team = (Spinner) findViewById(R.id.team);
-        attacker = (Spinner) findViewById(R.id.attacter);
-        supporter = (Spinner) findViewById(R.id.supporter);
+        team = findViewById(R.id.team);
+        attacker = findViewById(R.id.attacter);
+        supporter = findViewById(R.id.supporter);
 
         team_card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -376,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
             }
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            chipsSpinner = (Spinner) findViewById(R.id.chips);
+            chipsSpinner = findViewById(R.id.chips);
             chipsSpinner.setAdapter(adapter);
             findViewById(R.id.chips_card).setVisibility(View.VISIBLE);
         }catch (Exception e){
@@ -385,12 +387,13 @@ public class MainActivity extends AppCompatActivity {
             chipValues = new String[]{""};
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            chipsSpinner = (Spinner) findViewById(R.id.chips);
+            chipsSpinner = findViewById(R.id.chips);
             chipsSpinner.setAdapter(adapter);
         }
 
     }
 
+    @SuppressLint("ApplySharedPref")
     private void writeTeamInfo(){
         String defaultAttacker = "attacker";
         String defaultSupporter = "supporter";
@@ -476,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void readBotData(String data){
         try {
-            monsterDataManager = MonsterDataManager.getInstance();
+            MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
             monsterDataManager.parse(data);
             JSONArray monsters = monsterDataManager.getMonsters();
             int len = monsters.length();

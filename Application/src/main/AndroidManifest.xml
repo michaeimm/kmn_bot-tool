@@ -15,8 +15,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tw.shounenwind.kmnbottool"
-    android:versionCode="17"
-    android:versionName="1.4.3">
+    android:versionCode="18"
+    android:versionName="1.4.4">
 
     <!-- ActionBarCompat provides an Action Bar from API v7 onwards -->
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
@@ -41,13 +41,13 @@
         </activity>
         <activity
             android:name=".app.MonsDataActivity"
-            android:theme="@style/app_style"
-            android:label="機器狼BOX"/>
+            android:label="機器狼BOX"
+            android:theme="@style/app_style" />
 
         <activity
             android:name=".app.LicenseActivity"
-            android:theme="@style/app_style"
-            android:label="License"/>
+            android:label="License"
+            android:theme="@style/app_style" />
     </application>
 
 </manifest>
