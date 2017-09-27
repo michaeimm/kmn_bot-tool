@@ -1,4 +1,4 @@
-##安裝
+## 安裝
 [Click here to install](https://play.google.com/store/apps/details?id=tw.shounenwind.kmnbottool)
 
 ## Licensed
