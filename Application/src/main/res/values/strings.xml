@@ -18,16 +18,17 @@
     <string name="menu_location">Location</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_profile">蒐集完成度</string>
-    <string name="command_prefix">http://www.plurk.com/m?content=</string>
-    <string name="command_append">&amp;qualifier=shares</string>
+    <string name="command_prefix">https://www.plurk.com/m?content=</string>
+    <string name="command_append">&amp;qualifier=plays</string>
     <string name="bot_draw">機器狼 轉蛋</string>
-    <string name="command_draw">機器狼 轉蛋 (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_draw">機器狼 轉蛋</string>
     <string name="bot_exp">經驗值轉蛋</string>
-    <string name="command_exp">%s 經驗值轉蛋 (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_exp">機器狼 經驗值轉蛋 %s </string>
     <string name="bot_battle">遊玩地城</string>
-    <string name="command_battle">%s (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_battle">機器狼 %s</string>
     <string name="bot_hell_battle">遊玩地獄級地城</string>
-    <string name="command_hell_battle">地獄級 %s (bz)(bz)(bz)(bz)(bz)(bz)</string>
+    <string name="command_hell_battle">機器狼 地獄級 %s</string>
+    <string name="bz"> (bz)(bz)(bz)(bz)(bz)(bz)</string>
     <string name="submit_success">已成功送出</string>
     <string name="open">開啟</string>
     <string name="input_plurk_username">請輸入噗浪帳號</string>

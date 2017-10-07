@@ -584,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent targeted = new Intent(Intent.ACTION_SEND);
                 targeted.setType("text/plain");
                 targeted.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
-                targeted.putExtra(Intent.EXTRA_TEXT, command);
+                targeted.putExtra(Intent.EXTRA_TEXT, command + " " + getString(R.string.bz));
                 targeted.setPackage(aTarget);
                 targetedShareIntents.add(targeted);
             }
