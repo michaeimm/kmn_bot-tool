@@ -46,6 +46,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import tw.shounenwind.kmnbottool.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -291,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                ResponseBody body = null;
                 try {
                     Request request = new Request.Builder()
                             .cacheControl(
@@ -300,8 +302,8 @@ public class MainActivity extends AppCompatActivity {
                             ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
                             .build();
                     Response response = okHttpClient.newCall(request).execute();
-                    final String result = response.body().string();
-                    response.close();
+                    body = response.body();
+                    final String result = body.string();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -320,6 +322,9 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
                         }
                     });
+                } finally {
+                    if (body != null)
+                        body.close();
                 }
             }
         }).start();
@@ -329,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                ResponseBody body = null;
                 try {
                     Request request = new Request.Builder()
                             .cacheControl(
@@ -338,8 +344,8 @@ public class MainActivity extends AppCompatActivity {
                             ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
                             .build();
                     Response response = okHttpClient.newCall(request).execute();
-                    final String result = response.body().string();
-                    response.close();
+                    body = response.body();
+                    final String result = body.string();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -356,6 +362,9 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
                         }
                     });
+                } finally {
+                    if (body != null)
+                        body.close();
                 }
             }
         }).start();
