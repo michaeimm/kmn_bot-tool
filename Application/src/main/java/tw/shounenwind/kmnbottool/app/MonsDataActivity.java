@@ -56,7 +56,6 @@ public class MonsDataActivity extends AppCompatActivity {
     private static final int YELLOW_TYPE = Color.parseColor("#ffea00");
     private static final int BLACK_TYPE = Color.parseColor("#bdbdbd");
     private JSONObject player;
-    private RecyclerView listView;
     private MonsterDataManager monsterDataManager;
     private ArrayAdapter listAdapter;
     private ProgressDialog progressDialog;
@@ -67,6 +66,7 @@ public class MonsDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mons_data);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //noinspection ConstantConditions
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Glide.get(this)
@@ -77,7 +77,7 @@ public class MonsDataActivity extends AppCompatActivity {
 
         listAdapter = new ArrayAdapter(monsters);
 
-        listView = findViewById(R.id.list);
+        RecyclerView listView = findViewById(R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(listAdapter);
 
@@ -97,8 +97,6 @@ public class MonsDataActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_profile:
                 String s;
-
-
                 try {
                     if(player == null){
                         throw new Exception();
@@ -108,7 +106,7 @@ public class MonsDataActivity extends AppCompatActivity {
                     s = getString(R.string.no_data);
                 }
 
-                android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(this)
+                AlertDialog alertDialog = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.completion) + ": " + s)
                         .setPositiveButton(R.string.confirm, null)
                         .create();
@@ -230,8 +228,13 @@ public class MonsDataActivity extends AppCompatActivity {
 
         @Override
         public ArrayAdapter.ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.monster_unit, parent, false);
-            view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.monster_unit, parent, false);
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+            );
             return new ListViewHolder(view);
         }
 
@@ -244,7 +247,12 @@ public class MonsDataActivity extends AppCompatActivity {
                 if(monster.getString("等級").contains("Lv.Max"))
                     holder.monsterName.setText(monster.getString("寵物名稱") + " (Lv.Max)");
                 else
-                    holder.monsterName.setText(monster.getString("寵物名稱") + " (Lv." + monster.getString("等級") + ")");
+                    holder.monsterName.setText(
+                            monster.getString(
+                                    "寵物名稱") +
+                                    " (Lv." +
+                                    monster.getString("等級") + ")"
+                    );
                 final ImageView imageView = holder.monsterImg;
                 Glide.with(MonsDataActivity.this)
                         .load(monster.getString("圖片"))
