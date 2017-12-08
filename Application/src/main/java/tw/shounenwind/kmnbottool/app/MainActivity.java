@@ -35,15 +35,11 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -67,13 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
         screenPrepare();
-        okHttpClient = new OkHttpClient.Builder()
-                .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-                .proxy(Proxy.NO_PROXY)
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
-                .build();
+        okHttpClient = LinkUtil.getLink();
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
         int user_id_ver = sharedPreferences.getInt("user_id_ver", 1);

@@ -45,7 +45,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.OkHttpClient;
 import tw.shounenwind.kmnbottool.R;
 
 public class MonsDataActivity extends AppCompatActivity {
@@ -70,7 +69,7 @@ public class MonsDataActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Glide.get(this)
-                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(new OkHttpClient()));
+                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(LinkUtil.getLink()));
         monsterDataManager = MonsterDataManager.getInstance();
         JSONArray monsters = monsterDataManager.getMonsters();
         player = monsterDataManager.getPlayer();
