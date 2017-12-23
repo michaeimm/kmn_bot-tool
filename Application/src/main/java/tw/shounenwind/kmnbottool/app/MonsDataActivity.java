@@ -24,10 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.google.common.base.Function;
@@ -37,7 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,8 +65,6 @@ public class MonsDataActivity extends AppCompatActivity {
         //noinspection ConstantConditions
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Glide.get(this)
-                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(LinkUtil.getLink()));
         monsterDataManager = MonsterDataManager.getInstance();
         JSONArray monsters = monsterDataManager.getMonsters();
         player = monsterDataManager.getPlayer();
@@ -253,13 +248,15 @@ public class MonsDataActivity extends AppCompatActivity {
                                     monster.getString("等級") + ")"
                     );
                 final ImageView imageView = holder.monsterImg;
-                Glide.with(MonsDataActivity.this)
-                        .load(monster.getString("圖片"))
+                GlideApp.with(MonsDataActivity.this)
                         .asBitmap()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .load(monster.getString("圖片"))
+                        .apply(new RequestOptions().centerCrop()
+                                .error(R.drawable.ic_launcher)
+                                .placeholder(R.drawable.ic_launcher)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                        )
                         .centerCrop()
-                        .error(R.drawable.ic_launcher)
-                        .placeholder(R.drawable.ic_launcher)
                         .into(new BitmapImageViewTarget(imageView) {
                             @Override
                             protected void setResource(Bitmap resource) {
@@ -291,13 +288,15 @@ public class MonsDataActivity extends AppCompatActivity {
                         display.getSize(size);
                         imageWidth = size.x;
                         imageWidth -= 150;
-                        Glide.with(MonsDataActivity.this)
-                                .load(finalMonster.getString("圖片"))
+                        GlideApp.with(MonsDataActivity.this)
                                 .asBitmap()
-                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                .load(finalMonster.getString("圖片"))
+                                .apply(new RequestOptions().centerCrop()
+                                        .error(R.drawable.ic_launcher)
+                                        .placeholder(R.drawable.ic_launcher)
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA)
+                                )
                                 .fitCenter()
-                                .error(R.drawable.ic_launcher)
-                                .placeholder(R.drawable.ic_launcher)
                                 .override(Target.SIZE_ORIGINAL, imageWidth)
                                 .into(m_imageView);
                         m_textView.setText(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
@@ -340,7 +339,7 @@ public class MonsDataActivity extends AppCompatActivity {
         @Override
         public void onViewRecycled(ArrayAdapter.ListViewHolder holder) {
             super.onViewRecycled(holder);
-            Glide.clear(holder.monsterImg);
+            GlideApp.with(MonsDataActivity.this).clear(holder.monsterImg);
         }
 
         @Override
