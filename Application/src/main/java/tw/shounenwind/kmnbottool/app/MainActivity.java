@@ -2,7 +2,6 @@ package tw.shounenwind.kmnbottool.app;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -22,14 +21,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -115,32 +112,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void showPlurkIdInput() {
         LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.plurk_name_dialog, (ViewGroup) findViewById(R.id.dialog));
+        View layout = inflater.inflate(R.layout.plurk_name_dialog, findViewById(R.id.dialog));
         final EditText input = layout.findViewById(R.id.name);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.input_plurk_username)
                 .setView(layout)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        receivePlurkId(input.getText().toString());
-                    }
-                })
+                .setPositiveButton(R.string.confirm, (dialog, which) -> receivePlurkId(input.getText().toString()))
                 .show();
-        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    receivePlurkId(input.getText().toString());
-                    alertDialog.dismiss();
-                    return true;
-                }
-                return false;
+        input.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || keyEvent.getAction() == KeyEvent.ACTION_DOWN
+                    && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                receivePlurkId(input.getText().toString());
+                alertDialog.dismiss();
+                return true;
             }
+            return false;
         });
     }
 
@@ -173,114 +162,90 @@ public class MainActivity extends AppCompatActivity {
 
     private void screenPrepare() {
         Button bot_draw = findViewById(R.id.bot_draw);
-        bot_draw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        bot_draw.setOnClickListener(v -> {
+            String options[] = new String[]{
+                    getString(R.string.bot_draw_normal),
+                    getString(R.string.bot_draw_ultra)
+            };
+            new AlertDialog.Builder(MainActivity.this)
+                    .setItems(options, (dialogInterface, i) -> {
+                        switch (i) {
+                            case 0:
+                                sendCommand(getString(R.string.command_draw));
+                                break;
+                            case 1:
+                                sendCommand(getString(R.string.command_draw_ultra));
+                                break;
+                        }
+                    })
+                    .show();
+        });
+        Button exp_draw = findViewById(R.id.bot_exp);
+        exp_draw.setOnClickListener(v -> {
+            if (attacker.getSelectedItemPosition() == 0 || attacker.getSelectedItem() == null) {
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+            } else {
                 String options[] = new String[]{
-                        getString(R.string.bot_draw_normal),
-                        getString(R.string.bot_draw_ultra)
+                        getString(R.string.bot_exp_normal),
+                        getString(R.string.bot_exp_ultra)
                 };
                 new AlertDialog.Builder(MainActivity.this)
-                        .setItems(options, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                switch (i) {
-                                    case 0:
-                                        sendCommand(getString(R.string.command_draw));
-                                        break;
-                                    case 1:
-                                        sendCommand(getString(R.string.command_draw_ultra));
-                                        break;
-                                }
+                        .setItems(options, (dialogInterface, i) -> {
+                            switch (i) {
+                                case 0:
+                                    sendCommand(getString(R.string.command_exp, attacker.getSelectedItem().toString()));
+                                    break;
+                                case 1:
+                                    sendCommand(getString(R.string.command_exp_ultra, attacker.getSelectedItem().toString()));
+                                    break;
                             }
                         })
                         .show();
             }
-        });
-        Button exp_draw = findViewById(R.id.bot_exp);
-        exp_draw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Spinner spinner = findViewById(R.id.attacter);
-                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-                } else {
-                    String options[] = new String[]{
-                            getString(R.string.bot_exp_normal),
-                            getString(R.string.bot_exp_ultra)
-                    };
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setItems(options, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (i) {
-                                        case 0:
-                                            sendCommand(getString(R.string.command_exp, spinner.getSelectedItem().toString()));
-                                            break;
-                                        case 1:
-                                            sendCommand(getString(R.string.command_exp_ultra, spinner.getSelectedItem().toString()));
-                                            break;
-                                    }
-                                }
-                            })
-                            .show();
-                }
-                writeTeamInfo();
-            }
-
+            writeTeamInfo();
         });
         Button bot_battle = findViewById(R.id.bot_battle);
-        bot_battle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Spinner spinner = findViewById(R.id.attacter);
-                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-                } else {
-                    String target = spinner.getSelectedItem().toString();
-                    Spinner support = findViewById(R.id.supporter);
-                    if (support.getSelectedItemPosition() != 0) {
-                        target += " " + support.getSelectedItem().toString();
-                    }
-                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0) {
-                        target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
-                    }
-                    String options[] = new String[]{
-                            getString(R.string.bot_battle_normal),
-                            getString(R.string.bot_battle_hell),
-                            getString(R.string.bot_battle_ultra_hell)
-                    };
-                    final String finalTarget = target;
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setItems(options, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (i) {
-                                        case 0:
-                                            sendCommand(getString(R.string.command_battle, finalTarget));
-                                            break;
-                                        case 1:
-                                            sendCommand(getString(R.string.command_hell_battle, finalTarget));
-                                            break;
-                                        case 2:
-                                            sendCommand(getString(R.string.command_ultra_hell_battle, finalTarget));
-                                            break;
-                                    }
-                                }
-                            })
-                            .show();
+        bot_battle.setOnClickListener(v -> {
+            if (attacker.getSelectedItemPosition() == 0 || attacker.getSelectedItem() == null) {
+                Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
+            } else {
+                String target = attacker.getSelectedItem().toString();
 
+                if (supporter.getSelectedItemPosition() != 0) {
+                    target += " " + supporter.getSelectedItem().toString();
                 }
-                writeTeamInfo();
+                if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0) {
+                    target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
+                }
+                String options[] = new String[]{
+                        getString(R.string.bot_battle_normal),
+                        getString(R.string.bot_battle_hell),
+                        getString(R.string.bot_battle_ultra_hell)
+                };
+                final String finalTarget = target;
+                new AlertDialog.Builder(MainActivity.this)
+                        .setItems(options, (dialogInterface, i) -> {
+                            switch (i) {
+                                case 0:
+                                    sendCommand(getString(R.string.command_battle, finalTarget));
+                                    break;
+                                case 1:
+                                    sendCommand(getString(R.string.command_hell_battle, finalTarget));
+                                    break;
+                                case 2:
+                                    sendCommand(getString(R.string.command_ultra_hell_battle, finalTarget));
+                                    break;
+                            }
+                        })
+                        .show();
+
             }
+            writeTeamInfo();
         });
         Button bot_mons_box = findViewById(R.id.bot_mons_box);
-        bot_mons_box.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
-                startActivity(intent);
-            }
+        bot_mons_box.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MonsDataActivity.class);
+            startActivity(intent);
         });
         CardView team_card = findViewById(R.id.team_card);
         CardView attacker_card = findViewById(R.id.attacter_card);
@@ -290,24 +255,9 @@ public class MainActivity extends AppCompatActivity {
         attacker = findViewById(R.id.attacter);
         supporter = findViewById(R.id.supporter);
 
-        team_card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                team.performClick();
-            }
-        });
-        attacker_card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attacker.performClick();
-            }
-        });
-        supporter_card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                supporter.performClick();
-            }
-        });
+        team_card.setOnClickListener(view -> team.performClick());
+        attacker_card.setOnClickListener(view -> attacker.performClick());
+        supporter_card.setOnClickListener(view -> supporter.performClick());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -317,83 +267,63 @@ public class MainActivity extends AppCompatActivity {
         showProgressDialog(getString(R.string.monster_loading));
         Log.d(TAG, "id: "+plurk_id);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ResponseBody body = null;
-                try {
-                    Request request = new Request.Builder()
-                            .cacheControl(
-                                    new CacheControl.Builder()
-                                            .noCache()
-                                            .build()
-                            ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
-                            .build();
-                    Response response = okHttpClient.newCall(request).execute();
-                    body = response.body();
-                    final String result = body.string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            readBotData(result);
-                            dismissProgressDialog();
-                            getChips(plurk_id);
-                        }
-                    });
+        new Thread(() -> {
+            ResponseBody body = null;
+            try {
+                Request request = new Request.Builder()
+                        .cacheControl(
+                                new CacheControl.Builder()
+                                        .noCache()
+                                        .build()
+                        ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
+                        .build();
+                Response response = okHttpClient.newCall(request).execute();
+                body = response.body();
+                final String result = body.string();
+                runOnUiThread(() -> {
+                    readBotData(result);
+                    dismissProgressDialog();
+                    getChips(plurk_id);
+                });
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dismissProgressDialog();
-                            Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } finally {
-                    if (body != null)
-                        body.close();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    dismissProgressDialog();
+                    Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+                });
+            } finally {
+                if (body != null)
+                    body.close();
             }
         }).start();
     }
 
     private void getChips(final String plurk_id) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ResponseBody body = null;
-                try {
-                    Request request = new Request.Builder()
-                            .cacheControl(
-                                    new CacheControl.Builder()
-                                            .noCache()
-                                            .build()
-                            ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
-                            .build();
-                    Response response = okHttpClient.newCall(request).execute();
-                    body = response.body();
-                    final String result = body.string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            readChips(result);
-                        }
-                    });
+        new Thread(() -> {
+            ResponseBody body = null;
+            try {
+                Request request = new Request.Builder()
+                        .cacheControl(
+                                new CacheControl.Builder()
+                                        .noCache()
+                                        .build()
+                        ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
+                        .build();
+                Response response = okHttpClient.newCall(request).execute();
+                body = response.body();
+                final String result = body.string();
+                runOnUiThread(() -> readChips(result));
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dismissProgressDialog();
-                            Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } finally {
-                    if (body != null)
-                        body.close();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    dismissProgressDialog();
+                    Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+                });
+            } finally {
+                if (body != null)
+                    body.close();
             }
         }).start();
     }
@@ -413,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                 chipNames[i+1] = jsonArray.getJSONObject(i).getString("名稱") + "(" + jsonArray.getJSONObject(i).getString("組件") + ")";
                 chipValues[i+1] = jsonArray.getJSONObject(i).getString("名稱");
             }
-            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             chipsSpinner = findViewById(R.id.chips);
             chipsSpinner.setAdapter(adapter);
@@ -422,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             String[] chipNames = new String[]{"請選擇"};
             chipValues = new String[]{""};
-            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             chipsSpinner = findViewById(R.id.chips);
             chipsSpinner.setAdapter(adapter);
@@ -525,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < len; i++){
                 monstersArray[i+1] = monsters.getJSONObject(i).getString("寵物名稱");
             }
-            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, monstersArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             supporter.setAdapter(adapter);
             attacker.setAdapter(adapter);
@@ -536,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
             teamArray[3] = "4";
             teamArray[4] = "5";
             teamArray[5] = "6";
-            ArrayAdapter<CharSequence> teamAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, teamArray);
+            ArrayAdapter<CharSequence> teamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, teamArray);
             teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             team.setAdapter(teamAdapter);
 

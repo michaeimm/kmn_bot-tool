@@ -28,7 +28,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
-import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 import org.json.JSONArray;
@@ -38,7 +37,6 @@ import org.json.JSONObject;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -136,62 +134,51 @@ public class MonsDataActivity extends AppCompatActivity {
 
     private void sort(final String key){
         showProgressDialog(getString(R.string.monster_loading));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                JSONArray monsters = monsterDataManager.getMonsters();
-                List<JSONObject> jsonValues = new ArrayList<>();
-                int len = monsters.length();
-                for (int i = 0; i < len; i++) {
+        new Thread(() -> {
+            JSONArray monsters = monsterDataManager.getMonsters();
+            List<JSONObject> jsonValues = new ArrayList<>();
+            int len = monsters.length();
+            for (int i = 0; i < len; i++) {
+                try {
+                    jsonValues.add(monsters.getJSONObject(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (key.equals("等級") || key.equals("階級") || key.equals("稀有度")) {
+                Collections.sort(jsonValues, Ordering.natural().nullsFirst()
+                        .onResultOf(p -> {
+                            try {
+                                String aString = p.getString(key);
+
+                                if (aString.contains("Max"))
+                                    aString = aString.substring(0, aString.indexOf("（"));
+                                return Integer.valueOf(aString);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return 101;
+                        }));
+            } else {
+                final Collator collator = Collator.getInstance(Locale.CHINESE);
+                Collections.sort(jsonValues, (o1, o2) -> {
+
                     try {
-                        jsonValues.add(monsters.getJSONObject(i));
+                        return collator.compare(o1.getString(key) + o1.getString("寵物名稱"), o2.getString(key) + o2.getString("寵物名稱"));
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
-                }if (key.equals("等級") || key.equals("階級") || key.equals("稀有度")) {
-                    Collections.sort(jsonValues, Ordering.natural().nullsFirst()
-                            .onResultOf(new Function<JSONObject, Integer>() {
-                                @Override
-                                public Integer apply(JSONObject p) {
-                                    try {
-                                        String aString = p.getString(key);
-
-                                        if (aString.contains("Max"))
-                                            aString = aString.substring(0, aString.indexOf("（"));
-                                        return Integer.valueOf(aString);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    return 101;
-                                }
-                            }));
-                } else {
-                    final Collator collator = Collator.getInstance(Locale.CHINESE);
-                    Collections.sort(jsonValues, new Comparator<JSONObject>() {
-                        @Override
-                        public int compare(JSONObject o1, JSONObject o2) {
-
-                            try {
-                                return collator.compare(o1.getString(key)+o1.getString("寵物名稱"), o2.getString(key)+o2.getString("寵物名稱"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                return 0;
-                            }
-                        }
-                    });
-                }
-                final JSONArray sortedJsonArray = new JSONArray(jsonValues);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        listAdapter.setMonsters(sortedJsonArray);
-                        listAdapter.notifyDataSetChanged();
-                        dismissProgressDialog();
+                        return 0;
                     }
                 });
-
             }
+            final JSONArray sortedJsonArray = new JSONArray(jsonValues);
+
+            runOnUiThread(() -> {
+                listAdapter.setMonsters(sortedJsonArray);
+                listAdapter.notifyDataSetChanged();
+                dismissProgressDialog();
+            });
+
         }).start();
 
     }
@@ -275,46 +262,43 @@ public class MonsDataActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             final JSONObject finalMonster = monster;
-            holder.monster_unit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        ScrollView m_dialogView = (ScrollView)getLayoutInflater().inflate(R.layout.monster_dialog, null);
-                        ImageView m_imageView = m_dialogView.findViewById(R.id.monster_img);
-                        TextView m_textView = m_dialogView.findViewById(R.id.monster_type);
-                        Display display = getWindowManager().getDefaultDisplay();
-                        Point size = new Point();
-                        int imageWidth;
-                        display.getSize(size);
-                        imageWidth = size.x;
-                        imageWidth -= 150;
-                        GlideApp.with(MonsDataActivity.this)
-                                .asBitmap()
-                                .load(finalMonster.getString("圖片"))
-                                .apply(new RequestOptions().centerCrop()
-                                        .error(R.drawable.ic_launcher)
-                                        .placeholder(R.drawable.ic_launcher)
-                                        .diskCacheStrategy(DiskCacheStrategy.DATA)
-                                )
-                                .fitCenter()
-                                .override(Target.SIZE_ORIGINAL, imageWidth)
-                                .into(m_imageView);
-                        m_textView.setText(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
-                                getString(R.string.battle_type) + "：" + finalMonster.getString("下場TYPE") + "\n" +
-                                getString(R.string.monster_series) + "：" + finalMonster.getString("系列") + "\n" +
-                                getString(R.string.monster_level) + " " + finalMonster.getString("等級") + "\n" +
-                                getString(R.string.monster_class) + " " + finalMonster.getString("階級") + "\n" +
-                                "\n" + finalMonster.getString("技能"));
-                        new AlertDialog.Builder(MonsDataActivity.this)
-                                .setView(m_dialogView)
-                                .setTitle(finalMonster.getString("寵物名稱"))
-                                .setPositiveButton(R.string.close, null)
-                                .show();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+            holder.monster_unit.setOnClickListener(v -> {
+                try {
+                    ScrollView m_dialogView = (ScrollView) getLayoutInflater().inflate(R.layout.monster_dialog, null);
+                    ImageView m_imageView = m_dialogView.findViewById(R.id.monster_img);
+                    TextView m_textView = m_dialogView.findViewById(R.id.monster_type);
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    int imageWidth;
+                    display.getSize(size);
+                    imageWidth = size.x;
+                    imageWidth -= 150;
+                    GlideApp.with(MonsDataActivity.this)
+                            .asBitmap()
+                            .load(finalMonster.getString("圖片"))
+                            .apply(new RequestOptions().centerCrop()
+                                    .error(R.drawable.ic_launcher)
+                                    .placeholder(R.drawable.ic_launcher)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                            )
+                            .fitCenter()
+                            .override(Target.SIZE_ORIGINAL, imageWidth)
+                            .into(m_imageView);
+                    m_textView.setText(getString(R.string.monster_type) + "：" + finalMonster.getString("原TYPE") + "\n" +
+                            getString(R.string.battle_type) + "：" + finalMonster.getString("下場TYPE") + "\n" +
+                            getString(R.string.monster_series) + "：" + finalMonster.getString("系列") + "\n" +
+                            getString(R.string.monster_level) + " " + finalMonster.getString("等級") + "\n" +
+                            getString(R.string.monster_class) + " " + finalMonster.getString("階級") + "\n" +
+                            "\n" + finalMonster.getString("技能"));
+                    new AlertDialog.Builder(MonsDataActivity.this)
+                            .setView(m_dialogView)
+                            .setTitle(finalMonster.getString("寵物名稱"))
+                            .setPositiveButton(R.string.close, null)
+                            .show();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
             });
 
         }
