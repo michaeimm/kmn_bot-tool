@@ -176,18 +176,54 @@ public class MainActivity extends AppCompatActivity {
         bot_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendCommand(getString(R.string.command_draw));
+                String options[] = new String[]{
+                        getString(R.string.bot_draw_normal),
+                        getString(R.string.bot_draw_ultra)
+                };
+                new AlertDialog.Builder(MainActivity.this)
+                        .setItems(options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                switch (i) {
+                                    case 0:
+                                        sendCommand(getString(R.string.command_draw));
+                                        break;
+                                    case 1:
+                                        sendCommand(getString(R.string.command_draw_ultra));
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
             }
         });
         Button exp_draw = findViewById(R.id.bot_exp);
         exp_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner spinner = findViewById(R.id.attacter);
+                final Spinner spinner = findViewById(R.id.attacter);
                 if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
                     Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
                 } else {
-                    sendCommand(getString(R.string.command_exp, spinner.getSelectedItem().toString()));
+                    String options[] = new String[]{
+                            getString(R.string.bot_exp_normal),
+                            getString(R.string.bot_exp_ultra)
+                    };
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setItems(options, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case 0:
+                                            sendCommand(getString(R.string.command_exp, spinner.getSelectedItem().toString()));
+                                            break;
+                                        case 1:
+                                            sendCommand(getString(R.string.command_exp_ultra, spinner.getSelectedItem().toString()));
+                                            break;
+                                    }
+                                }
+                            })
+                            .show();
                 }
                 writeTeamInfo();
             }
@@ -206,34 +242,36 @@ public class MainActivity extends AppCompatActivity {
                     if (support.getSelectedItemPosition() != 0) {
                         target += " " + support.getSelectedItem().toString();
                     }
-                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
+                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0) {
                         target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
                     }
-                    sendCommand(getString(R.string.command_battle, target));
+                    String options[] = new String[]{
+                            getString(R.string.bot_battle_normal),
+                            getString(R.string.bot_battle_hell),
+                            getString(R.string.bot_battle_ultra_hell)
+                    };
+                    final String finalTarget = target;
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setItems(options, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case 0:
+                                            sendCommand(getString(R.string.command_battle, finalTarget));
+                                            break;
+                                        case 1:
+                                            sendCommand(getString(R.string.command_hell_battle, finalTarget));
+                                            break;
+                                        case 2:
+                                            sendCommand(getString(R.string.command_ultra_hell_battle, finalTarget));
+                                            break;
+                                    }
+                                }
+                            })
+                            .show();
+
                 }
                 writeTeamInfo();
-            }
-        });
-        Button bot_hell_battle = findViewById(R.id.bot_hell_battle);
-        bot_hell_battle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Spinner spinner = findViewById(R.id.attacter);
-                if (spinner.getSelectedItemPosition() == 0 || spinner.getSelectedItem() == null) {
-                    Toast.makeText(MainActivity.this, R.string.no_selection, Toast.LENGTH_SHORT).show();
-                } else {
-                    String target = spinner.getSelectedItem().toString();
-                    Spinner support = findViewById(R.id.supporter);
-                    if (support.getSelectedItemPosition() != 0) {
-                        target += " " + support.getSelectedItem().toString();
-                    }
-                    if (chipsSpinner != null && chipsSpinner.getSelectedItemPosition() != 0){
-                        target += "\n" + chipValues[chipsSpinner.getSelectedItemPosition()];
-                    }
-                    sendCommand(getString(R.string.command_hell_battle, target));
-                    writeTeamInfo();
-                }
-
             }
         });
         Button bot_mons_box = findViewById(R.id.bot_mons_box);
@@ -522,7 +560,6 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.supporter).setEnabled(true);
             findViewById(R.id.bot_exp).setEnabled(true);
             findViewById(R.id.bot_battle).setEnabled(true);
-            findViewById(R.id.bot_hell_battle).setEnabled(true);
             findViewById(R.id.bot_mons_box).setEnabled(true);
 
         } catch (Exception e) {

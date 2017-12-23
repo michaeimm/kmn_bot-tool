@@ -21,13 +21,23 @@
     <string name="command_prefix">https://www.plurk.com/m?content=</string>
     <string name="command_append">&amp;qualifier=plays</string>
     <string name="bot_draw">機器狼 轉蛋</string>
+    <string name="bot_draw_normal">一般轉蛋</string>
+    <string name="bot_draw_ultra">超轉蛋</string>
     <string name="command_draw">機器狼 轉蛋</string>
+    <string name="command_draw_ultra">機器狼 超轉蛋</string>
     <string name="bot_exp">經驗值轉蛋</string>
+    <string name="bot_exp_normal">經驗值轉蛋</string>
+    <string name="bot_exp_ultra">經驗值超轉蛋</string>
     <string name="command_exp">機器狼 經驗值轉蛋 %s </string>
+    <string name="command_exp_ultra">機器狼 經驗值轉蛋 %s </string>
     <string name="bot_battle">遊玩地城</string>
+    <string name="bot_battle_normal">一般地城</string>
+    <string name="bot_battle_hell">地獄級地城</string>
+    <string name="bot_battle_ultra_hell">超地獄級地城</string>
     <string name="command_battle">機器狼 %s</string>
     <string name="bot_hell_battle">遊玩地獄級地城</string>
     <string name="command_hell_battle">機器狼 地獄級 %s</string>
+    <string name="command_ultra_hell_battle">機器狼 超地獄級 %s</string>
     <string name="bz"> (bz)(bz)(bz)(bz)(bz)(bz)</string>
     <string name="submit_success">已成功送出</string>
     <string name="open">開啟</string>

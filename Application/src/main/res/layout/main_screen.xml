@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        app:theme="@style/app_style"
-        android:background="?attr/colorPrimary">
+        app:theme="@style/app_style">
 
     </android.support.v7.widget.Toolbar>
     <ScrollView
@@ -18,18 +18,18 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/main_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/main_layout">
+            android:orientation="vertical">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/team_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="0dp"
                 android:layout_marginTop="8dp"
                 android:clickable="true">
                 <LinearLayout
@@ -39,20 +39,20 @@
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/team"
+                        android:layout_marginBottom="0dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="0dp"
                         android:layout_marginTop="16dp"
+                        android:text="@string/team"
                         />
 
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/team"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:enabled="false"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -60,9 +60,9 @@
                 android:id="@+id/attacter_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="0dp"
                 android:layout_marginTop="8dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -71,19 +71,19 @@
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/monster_front"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        android:text="@string/monster_front" />
 
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/attacter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:enabled="false"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -91,9 +91,9 @@
                 android:id="@+id/supporter_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="0dp"
                 android:layout_marginTop="8dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -102,19 +102,19 @@
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/monster_support"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        android:text="@string/monster_support" />
 
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/supporter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:enabled="false"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -123,9 +123,9 @@
                 android:id="@+id/chips_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="0dp"
                 android:layout_marginTop="8dp"
                 android:visibility="gone">
                 <LinearLayout
@@ -135,19 +135,19 @@
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/chips"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        android:text="@string/chips" />
 
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/chips"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:enabled="false"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -155,73 +155,61 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <android.support.v7.widget.AppCompatButton
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/bot_draw"
                         android:id="@+id/bot_draw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginTop="16dp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:text="@string/bot_draw" />
 
                     <android.support.v7.widget.AppCompatButton
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/bot_exp"
                         android:id="@+id/bot_exp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:enabled="false"/>
-
-                    <android.support.v7.widget.AppCompatButton
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/bot_battle"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="8dp"
+                        android:enabled="false"
+                        android:text="@string/bot_exp" />
+
+                    <android.support.v7.widget.AppCompatButton
                         android:id="@+id/bot_battle"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:enabled="false"/>
-
-                    <android.support.v7.widget.AppCompatButton
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/bot_hell_battle"
-                        android:id="@+id/bot_hell_battle"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginTop="8dp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:text="@string/bot_battle" />
 
                     <android.support.v7.widget.AppCompatButton
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/monster_box"
                         android:id="@+id/bot_mons_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginTop="8dp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:text="@string/monster_box" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
