@@ -29,7 +29,7 @@
     <string name="bot_exp_normal">經驗值轉蛋</string>
     <string name="bot_exp_ultra">經驗值超轉蛋</string>
     <string name="command_exp">機器狼 經驗值轉蛋 %s </string>
-    <string name="command_exp_ultra">機器狼 經驗值轉蛋 %s </string>
+    <string name="command_exp_ultra">機器狼 經驗值超轉蛋 %s </string>
     <string name="bot_battle">遊玩地城</string>
     <string name="bot_battle_normal">一般地城</string>
     <string name="bot_battle_hell">地獄級地城</string>
