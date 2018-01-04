@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] chipValues;
     private Spinner chipsSpinner;
     private OkHttpClient okHttpClient;
+    private FlowJob flowJob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +66,16 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", null);
         int user_id_ver = sharedPreferences.getInt("user_id_ver", 1);
-        if(user_id != null && user_id_ver == 2)
-            getBotData(user_id);
-        else{
+        if (user_id == null || user_id_ver != 2) {
             showPlurkIdInput();
+        } else {
+            flowJob = new FlowJob(this)
+                    .addUIJob(() -> showProgressDialog(getString(R.string.monster_loading)))
+                    .addIOJob(() -> getBotData(user_id))
+                    .addUIJob(this::readBotData)
+                    .addUIJob(this::dismissProgressDialog)
+                    .addIOJob(() -> getChips(user_id));
+            flowJob.start();
         }
     }
 
@@ -141,7 +149,13 @@ public class MainActivity extends AppCompatActivity {
                     .putInt("user_id_ver", 2)
                     .putString("user_id", id)
                     .commit();
-            getBotData(id);
+            flowJob = new FlowJob(this)
+                    .addUIJob(() -> showProgressDialog(getString(R.string.monster_loading)))
+                    .addIOJob(() -> getBotData(id))
+                    .addUIJob(this::readBotData)
+                    .addUIJob(this::dismissProgressDialog)
+                    .addIOJob(() -> getChips(id));
+            flowJob.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         try{
             progressDialog.dismiss();
         }catch (Exception e){
+            flowJob.stop();
             e.printStackTrace();
         }
     }
@@ -263,69 +278,63 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
+    @UiThread
     private void getBotData(final String plurk_id){
-        showProgressDialog(getString(R.string.monster_loading));
-        Log.d(TAG, "id: "+plurk_id);
+        ResponseBody body = null;
+        try {
+            Request request = new Request.Builder()
+                    .cacheControl(
+                            new CacheControl.Builder()
+                                    .noCache()
+                                    .build()
+                    ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
+                    .build();
+            Response response = okHttpClient.newCall(request).execute();
+            body = response.body();
+            final String result = body.string();
+            MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
+            monsterDataManager.parse(result);
 
-        new Thread(() -> {
-            ResponseBody body = null;
-            try {
-                Request request = new Request.Builder()
-                        .cacheControl(
-                                new CacheControl.Builder()
-                                        .noCache()
-                                        .build()
-                        ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
-                        .build();
-                Response response = okHttpClient.newCall(request).execute();
-                body = response.body();
-                final String result = body.string();
-                runOnUiThread(() -> {
-                    readBotData(result);
-                    dismissProgressDialog();
-                    getChips(plurk_id);
-                });
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                runOnUiThread(() -> {
-                    dismissProgressDialog();
-                    Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
-                });
-            } finally {
-                if (body != null)
-                    body.close();
-            }
-        }).start();
+        } catch (Exception e) {
+            flowJob.stop();
+            e.printStackTrace();
+            runOnUiThread(() -> {
+                dismissProgressDialog();
+                Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+            });
+        } finally {
+            if (body != null)
+                body.close();
+        }
     }
 
+    @UiThread
     private void getChips(final String plurk_id) {
-        new Thread(() -> {
-            ResponseBody body = null;
-            try {
-                Request request = new Request.Builder()
-                        .cacheControl(
-                                new CacheControl.Builder()
-                                        .noCache()
-                                        .build()
-                        ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
-                        .build();
-                Response response = okHttpClient.newCall(request).execute();
-                body = response.body();
-                final String result = body.string();
-                runOnUiThread(() -> readChips(result));
+        ResponseBody body = null;
+        try {
+            Request request = new Request.Builder()
+                    .cacheControl(
+                            new CacheControl.Builder()
+                                    .noCache()
+                                    .build()
+                    ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
+                    .build();
+            Response response = okHttpClient.newCall(request).execute();
+            body = response.body();
+            final String result = body.string();
+            runOnUiThread(() -> readChips(result));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                runOnUiThread(() -> {
-                    dismissProgressDialog();
-                    Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
-                });
-            } finally {
-                if (body != null)
-                    body.close();
-            }
-        }).start();
+        } catch (Exception e) {
+            flowJob.stop();
+            e.printStackTrace();
+            runOnUiThread(() -> {
+                dismissProgressDialog();
+                Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
+            });
+        } finally {
+            if (body != null)
+                body.close();
+        }
     }
 
     private void readChips(String data){
@@ -444,11 +453,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void readBotData(String data){
+    @UiThread
+    private void readBotData() {
         try {
-            MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
-            monsterDataManager.parse(data);
-            JSONArray monsters = monsterDataManager.getMonsters();
+            JSONArray monsters = MonsterDataManager.getInstance().getMonsters();
             int len = monsters.length();
             monstersArray = new String[len+1];
             monstersArray[0] = getString(R.string.select_one);
@@ -493,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.bot_mons_box).setEnabled(true);
 
         } catch (Exception e) {
+            flowJob.stop();
             e.printStackTrace();
             Toast.makeText(this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
         }
