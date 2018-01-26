@@ -6,14 +6,19 @@ import android.os.Handler;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FlowJob extends ContextWrapper {
 
     private List<Runnable> funcLinkedList = new LinkedList<>();
+    private final ExecutorService threadPool = Executors.newSingleThreadExecutor();
     private volatile boolean running = false;
+    private final Handler mHandler;
 
     public FlowJob(Context base) {
         super(base);
+        mHandler = new Handler(getMainLooper());
     }
 
 
@@ -50,9 +55,9 @@ public class FlowJob extends ContextWrapper {
         running = true;
         Runnable action = funcLinkedList.get(0);
         if (action instanceof IOJob) {
-            new Thread(action).start();
+            threadPool.execute(action);
         } else if (action instanceof UIJob) {
-            new Handler(getMainLooper()).post(action);
+            mHandler.post(action);
         }
     }
 
