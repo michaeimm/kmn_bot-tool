@@ -30,6 +30,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.common.base.Preconditions;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -290,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                     ).url("http://www.kmnbot.ga/pets/" + plurk_id + ".json")
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            body = response.body();
+            body = Preconditions.checkNotNull(response.body());
             final String result = body.string();
             MonsterDataManager monsterDataManager = MonsterDataManager.getInstance();
             monsterDataManager.parse(result);
@@ -320,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                     ).url("http://www.kmnbot.ga/chips/" + plurk_id + ".json")
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            body = response.body();
+            body = Preconditions.checkNotNull(response.body());
             final String result = body.string();
             runOnUiThread(() -> readChips(result));
 
