@@ -16,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                     .addIOJob(() -> getChips(id));
             flowJob.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
         }
     }
 
@@ -174,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }catch (Exception e){
             flowJob.stop();
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
         }
     }
 
@@ -300,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             flowJob.stop();
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
             runOnUiThread(() -> {
                 dismissProgressDialog();
                 Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
@@ -329,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             flowJob.stop();
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
             runOnUiThread(() -> {
                 dismissProgressDialog();
                 Toast.makeText(MainActivity.this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
@@ -361,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
             chipsSpinner.setAdapter(adapter);
             findViewById(R.id.chips_card).setVisibility(View.VISIBLE);
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
             String[] chipNames = new String[]{"請選擇"};
             chipValues = new String[]{""};
             ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, chipNames);
@@ -479,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             flowJob.stop();
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
             Toast.makeText(this, R.string.load_monster_failed, Toast.LENGTH_LONG).show();
         }
     }
@@ -489,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             writeTeamInfo();
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtil.printStackTrace(e);
         }
         MonsterDataManager.clear();
         super.onDestroy();
@@ -505,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (ResolveInfo info : resInfo) {
                 ActivityInfo activityInfo = info.activityInfo;
-                Log.d("packageName", activityInfo.packageName);
+                LogUtil.d("packageName", activityInfo.packageName);
                 if (!activityInfo.packageName.equalsIgnoreCase("com.plurk.android")) {
                     Intent targeted = new Intent(Intent.ACTION_VIEW, targetUri);
                     targeted.setPackage(activityInfo.packageName);
