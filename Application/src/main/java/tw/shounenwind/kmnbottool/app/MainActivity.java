@@ -48,6 +48,7 @@ import tw.shounenwind.kmnbottool.R;
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = "kmnBot";
+    private static final int LASTEST_ID_VER = 2;
     private ProgressDialog progressDialog;
     private Spinner attacker;
     private Spinner supporter;
@@ -66,17 +67,17 @@ public class MainActivity extends AppCompatActivity {
         screenPrepare();
         okHttpClient = LinkUtil.getLink();
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        String user_id = sharedPreferences.getString("user_id", null);
-        int user_id_ver = sharedPreferences.getInt("user_id_ver", 1);
-        if (user_id == null || user_id_ver != 2) {
+        String userId = sharedPreferences.getString("user_id", null);
+        int userIdVer = sharedPreferences.getInt("user_id_ver", 1);
+        if (userId == null || userIdVer != LASTEST_ID_VER) {
             showPlurkIdInput();
         } else {
             flowJob = new FlowJob(this)
                     .addUIJob(() -> showProgressDialog(getString(R.string.monster_loading)))
-                    .addIOJob(() -> getBotData(user_id))
+                    .addIOJob(() -> getBotData(userId))
                     .addUIJob(this::readBotData)
                     .addUIJob(this::dismissProgressDialog)
-                    .addIOJob(() -> getChips(user_id));
+                    .addIOJob(() -> getChips(userId));
             flowJob.start();
         }
     }
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
             sharedPreferences.edit()
-                    .putInt("user_id_ver", 2)
+                    .putInt("user_id_ver", LASTEST_ID_VER)
                     .putString("user_id", id)
                     .commit();
             flowJob = new FlowJob(this)
