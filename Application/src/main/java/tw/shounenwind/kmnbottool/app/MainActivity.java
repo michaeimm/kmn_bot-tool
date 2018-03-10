@@ -378,28 +378,14 @@ public class MainActivity extends AppCompatActivity {
         String defaultSupporter = "supporter";
         switch (oldTeam){
             case 0:
-                defaultAttacker = "attacker";
-                defaultSupporter = "supporter";
                 break;
             case 1:
-                defaultAttacker = "attacter1";
-                defaultSupporter = "supporter1";
-                break;
             case 2:
-                defaultAttacker = "attacter2";
-                defaultSupporter = "supporter2";
-                break;
             case 3:
-                defaultAttacker = "attacter3";
-                defaultSupporter = "supporter3";
-                break;
             case 4:
-                defaultAttacker = "attacter4";
-                defaultSupporter = "supporter4";
-                break;
             case 5:
-                defaultAttacker = "attacter5";
-                defaultSupporter = "supporter5";
+                defaultAttacker = "attacter"+oldTeam;
+                defaultSupporter = "supporter"+oldTeam;
                 break;
         }
         PreferenceManager
@@ -423,24 +409,12 @@ public class MainActivity extends AppCompatActivity {
                 defaultSupporter = sharedPref.getString("supporter", getString(R.string.select_one));
                 break;
             case 1:
-                defaultAttacker = sharedPref.getString("attacter1", getString(R.string.select_one));
-                defaultSupporter = sharedPref.getString("supporter1", getString(R.string.select_one));
-                break;
             case 2:
-                defaultAttacker = sharedPref.getString("attacter2", getString(R.string.select_one));
-                defaultSupporter = sharedPref.getString("supporter2", getString(R.string.select_one));
-                break;
             case 3:
-                defaultAttacker = sharedPref.getString("attacter3", getString(R.string.select_one));
-                defaultSupporter = sharedPref.getString("supporter3", getString(R.string.select_one));
-                break;
             case 4:
-                defaultAttacker = sharedPref.getString("attacter4", getString(R.string.select_one));
-                defaultSupporter = sharedPref.getString("supporter4", getString(R.string.select_one));
-                break;
             case 5:
-                defaultAttacker = sharedPref.getString("attacter5", getString(R.string.select_one));
-                defaultSupporter = sharedPref.getString("supporter5", getString(R.string.select_one));
+                defaultAttacker = sharedPref.getString("attacter"+defaultTeam, getString(R.string.select_one));
+                defaultSupporter = sharedPref.getString("supporter"+defaultTeam, getString(R.string.select_one));
                 break;
         }
         int len = monstersArray.length;
