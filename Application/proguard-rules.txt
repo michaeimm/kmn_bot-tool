@@ -88,3 +88,4 @@
   **[] $VALUES;
   public *;
 }
+-dontwarn org.conscrypt.**
