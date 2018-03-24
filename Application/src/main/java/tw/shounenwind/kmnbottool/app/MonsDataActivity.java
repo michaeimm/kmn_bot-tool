@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
@@ -28,6 +29,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Ordering;
 
 import org.json.JSONArray;
@@ -207,8 +209,9 @@ public class MonsDataActivity extends AppCompatActivity {
             this.monsters = monsters;
         }
 
+        @NonNull
         @Override
-        public ArrayAdapter.ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ArrayAdapter.ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.monster_unit, parent, false);
             view.setLayoutParams(
@@ -221,7 +224,7 @@ public class MonsDataActivity extends AppCompatActivity {
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void onBindViewHolder(final ArrayAdapter.ListViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ArrayAdapter.ListViewHolder holder, int position) {
             JSONObject monster = null;
             try {
                 monster = monsters.getJSONObject(position);
@@ -261,7 +264,7 @@ public class MonsDataActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            final JSONObject finalMonster = monster;
+            final JSONObject finalMonster = Preconditions.checkNotNull(monster);
             holder.monster_unit.setOnClickListener(v -> {
                 try {
                     ScrollView m_dialogView = (ScrollView) getLayoutInflater().inflate(R.layout.monster_dialog, null);
@@ -272,7 +275,7 @@ public class MonsDataActivity extends AppCompatActivity {
                     int imageWidth;
                     display.getSize(size);
                     imageWidth = size.x;
-                    imageWidth -= 150;
+                    imageWidth = (int)((float)(imageWidth) / 3 * 2);
                     GlideApp.with(MonsDataActivity.this)
                             .asBitmap()
                             .load(finalMonster.getString("圖片"))
@@ -321,7 +324,7 @@ public class MonsDataActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onViewRecycled(ArrayAdapter.ListViewHolder holder) {
+        public void onViewRecycled(@NonNull ArrayAdapter.ListViewHolder holder) {
             super.onViewRecycled(holder);
             GlideApp.with(MonsDataActivity.this).clear(holder.monsterImg);
         }
