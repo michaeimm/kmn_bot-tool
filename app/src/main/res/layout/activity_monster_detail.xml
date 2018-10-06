@@ -42,7 +42,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAlignment="gravity"
-                android:textSize="18sp" />
+                android:layout_margin="4dp"
+                android:textColor="#FFF"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
