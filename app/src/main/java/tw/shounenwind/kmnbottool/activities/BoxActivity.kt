@@ -353,6 +353,12 @@ class BoxActivity : AppCompatActivity() {
                     mContext.setResult(Activity.RESULT_OK, intent)
                     mContext.finish()
                 }
+                holder.item.setOnLongClickListener {
+                    val intent = intentFor<DetailActivity>()
+                    intent.putExtra("pet", monster)
+                    startActivity(intent)
+                    true
+                }
             } else {
                 holder.item.setOnClickListener {
                     val intent = intentFor<DetailActivity>()
