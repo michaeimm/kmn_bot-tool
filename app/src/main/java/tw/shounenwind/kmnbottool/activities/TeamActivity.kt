@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.support.v7.widget.Toolbar
@@ -88,6 +89,7 @@ class TeamActivity : AppCompatActivity() {
             if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
+            target += " " + findViewById<TextView>(R.id.chips).text
             CommandExecutor.battleNormal(this, target)
         }
         findViewById<Button>(R.id.bot_battle_hell).setOnClickListener {
@@ -99,6 +101,7 @@ class TeamActivity : AppCompatActivity() {
             if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
+            target += " " + findViewById<TextView>(R.id.chips).text
             CommandExecutor.battleHell(this, target)
         }
         findViewById<Button>(R.id.bot_battle_ultra_hell).setOnClickListener {
@@ -110,7 +113,11 @@ class TeamActivity : AppCompatActivity() {
             if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
+            target += " " + findViewById<TextView>(R.id.chips).text
             CommandExecutor.battleUltraHell(this, target)
+        }
+        findViewById<CardView>(R.id.chips_card).setOnClickListener {
+            openChipDialog()
         }
     }
 
@@ -235,6 +242,22 @@ class TeamActivity : AppCompatActivity() {
         }
         team!!.setSelection(defaultTeam)
 
+    }
+
+    private fun openChipDialog() {
+        val options = ArrayList<String>()
+        val iterator = KmnBotDataLoader.chipData!!.chips!!.iterator()
+        while (iterator.hasNext()) {
+            val chip = iterator.next()
+            options.add(chip.name!! + "\n" + chip.component)
+        }
+        AlertDialog.Builder(this)
+                .setTitle(R.string.chips)
+                .setItems(options.toTypedArray()) { _, which ->
+                    findViewById<TextView>(R.id.chips).text =
+                            KmnBotDataLoader.chipData!!.chips!![which].name
+                }
+                .show()
     }
 
     companion object {
