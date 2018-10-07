@@ -10,7 +10,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
-import tw.shounenwind.kmnbottool.util.GlideApp
+import tw.shounenwind.kmnbottool.util.glide.GlideApp
 
 class DetailActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")

@@ -21,10 +21,10 @@ import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.util.CommandExecutor
-import tw.shounenwind.kmnbottool.util.GlideApp
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.flowjob.FlowJob
+import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 class MainActivity : AppCompatActivity() {

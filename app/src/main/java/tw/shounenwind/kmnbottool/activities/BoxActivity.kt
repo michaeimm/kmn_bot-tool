@@ -3,10 +3,8 @@ package tw.shounenwind.kmnbottool.activities
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.util.DiffUtil
@@ -19,14 +17,14 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.BitmapImageViewTarget
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
-import tw.shounenwind.kmnbottool.util.GlideApp
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.flowjob.FlowJob
+import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
+import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
 import java.lang.ref.WeakReference
 import java.text.Collator
@@ -334,13 +332,7 @@ class BoxActivity : AppCompatActivity() {
                             .diskCacheStrategy(DiskCacheStrategy.DATA)
                     )
                     .centerCrop()
-                    .into(object : BitmapImageViewTarget(imageView) {
-                        override fun setResource(resource: Bitmap?) {
-                            val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(mContext.resources, resource)
-                            circularBitmapDrawable.isCircular = true
-                            imageView.setImageDrawable(circularBitmapDrawable)
-                        }
-                    })
+                    .into(CircularViewTarget(mContext, imageView))
             val star = StringBuilder()
             val len = monster.rare!!
             for (i in 0 until len) star.append("☆")

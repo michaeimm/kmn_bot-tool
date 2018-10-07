@@ -2,10 +2,8 @@ package tw.shounenwind.kmnbottool.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
@@ -15,12 +13,15 @@ import android.view.View
 import android.widget.*
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.BitmapImageViewTarget
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.util.CommandExecutor
-import tw.shounenwind.kmnbottool.util.GlideApp
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
+import tw.shounenwind.kmnbottool.util.StaticCachedThreadPool
+import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
+import tw.shounenwind.kmnbottool.util.glide.GlideApp
+import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 
 class TeamActivity : AppCompatActivity() {
@@ -175,73 +176,91 @@ class TeamActivity : AppCompatActivity() {
     private fun readTeamInfo() {
         if (isFinishing)
             return
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val defaultAttacker: String?
-        val defaultSupporter: String?
-        val defaultTeam = sharedPref.getInt("team", 0)
-        oldTeam = defaultTeam
-        when (defaultTeam) {
-            0 -> {
-                defaultAttacker = sharedPref.getString("attacker", getString(R.string.no_select))
-                defaultSupporter = sharedPref.getString("supporter", getString(R.string.no_select))
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setContent(getString(R.string.loading))
+        progressDialog.progressDialog
+                .cancelable(false)
+                .show()
+        StaticCachedThreadPool.instance.execute {
+            val sharedPref =
+                    PreferenceManager.getDefaultSharedPreferences(this)
+            val defaultAttacker: String?
+            val defaultSupporter: String?
+            val defaultTeam = sharedPref.getInt("team", 0)
+            oldTeam = defaultTeam
+            when (defaultTeam) {
+                0 -> {
+                    defaultAttacker =
+                            sharedPref.getString("attacker", getString(R.string.no_select))
+                    defaultSupporter =
+                            sharedPref.getString("supporter", getString(R.string.no_select))
+                }
+                else -> {
+                    defaultAttacker =
+                            sharedPref.getString("attacter$defaultTeam", getString(R.string.no_select))
+                    defaultSupporter =
+                            sharedPref.getString("supporter$defaultTeam", getString(R.string.no_select))
+                }
             }
-            else -> {
-                defaultAttacker = sharedPref.getString("attacter$defaultTeam", getString(R.string.no_select))
-                defaultSupporter = sharedPref.getString("supporter$defaultTeam", getString(R.string.no_select))
-            }
-        }
-        val len = KmnBotDataLoader.boxData!!.pets!!.size
-        for (i in 0 until len) {
-            val monster = KmnBotDataLoader.boxData!!.pets!![i]
-            if (defaultAttacker == monster.name) {
-                findViewById<TextView>(R.id.attacter_name).text = monster.name
-                val imageView = findViewById<ImageView>(R.id.attacter_img)
-                GlideApp.with(this)
-                        .asBitmap()
-                        .load(monster.image)
-                        .apply(RequestOptions().centerCrop()
-                                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        )
-                        .centerCrop()
-                        .into(object : BitmapImageViewTarget(imageView) {
-                            override fun setResource(resource: Bitmap?) {
-                                val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, resource)
-                                circularBitmapDrawable.isCircular = true
-                                imageView.setImageDrawable(circularBitmapDrawable)
-                            }
-                        })
-            }
-            if (defaultSupporter == monster.name) {
-                findViewById<TextView>(R.id.supporter_name).text = monster.name
-                val imageView = findViewById<ImageView>(R.id.supporter_img)
-                GlideApp.with(this)
-                        .asBitmap()
-                        .load(monster.image)
-                        .apply(RequestOptions().centerCrop()
-                                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        )
-                        .centerCrop()
-                        .into(object : BitmapImageViewTarget(imageView) {
-                            override fun setResource(resource: Bitmap?) {
-                                val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, resource)
-                                circularBitmapDrawable.isCircular = true
-                                imageView.setImageDrawable(circularBitmapDrawable)
-                            }
-                        })
-            }
-        }
-        if (defaultAttacker == getString(R.string.no_select)) {
-            findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
-            GlideApp.with(this)
-                    .clear(findViewById<View>(R.id.attacter_img))
-        }
-        if (defaultSupporter == getString(R.string.no_select)) {
-            findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
-            GlideApp.with(this)
-                    .clear(findViewById<View>(R.id.supporter_img))
-        }
-        team!!.setSelection(defaultTeam)
+            val fakeAttacker = Pet()
+            fakeAttacker.name = defaultAttacker
+            val attackerIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeAttacker)
+            if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
+                runOnUiThread {
+                    findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
+                    GlideApp.with(this)
+                            .clear(findViewById<View>(R.id.attacter_img))
+                }
 
+            }else{
+                val monster = KmnBotDataLoader.boxData!!.pets!![attackerIndex]
+                runOnUiThread {
+                    findViewById<TextView>(R.id.attacter_name).text = monster.name
+                    val imageView = findViewById<ImageView>(R.id.attacter_img)
+                    GlideApp.with(this)
+                            .asBitmap()
+                            .load(monster.image)
+                            .apply(RequestOptions().centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                            )
+                            .centerCrop()
+                            .into(CircularViewTarget(this, imageView))
+                }
+
+            }
+            val fakeSupporter = Pet()
+            fakeSupporter.name = defaultSupporter
+            val supporterIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeSupporter)
+            if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
+                runOnUiThread {
+                    findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
+                    GlideApp.with(this)
+                            .clear(findViewById<View>(R.id.supporter_img))
+                }
+            }else{
+                val monster = KmnBotDataLoader.boxData!!.pets!![supporterIndex]
+                runOnUiThread {
+                    findViewById<TextView>(R.id.supporter_name).text = monster.name
+                    val imageView = findViewById<ImageView>(R.id.supporter_img)
+                    GlideApp.with(this)
+                            .asBitmap()
+                            .load(monster.image)
+                            .apply(RequestOptions().centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                            )
+                            .centerCrop()
+                            .into(CircularViewTarget(this, imageView))
+                }
+            }
+            runOnUiThread {
+                team!!.setSelection(defaultTeam)
+                try {
+                    progressDialog.dismiss()
+                }catch (e: Exception){
+                    //Ignore
+                }
+            }
+        }
     }
 
     private fun openChipDialog() {

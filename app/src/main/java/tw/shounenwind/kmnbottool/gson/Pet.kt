@@ -5,6 +5,7 @@ import android.os.Parcelable
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 open class Pet : Parcelable {
 
@@ -74,6 +75,18 @@ open class Pet : Parcelable {
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    override fun hashCode(): Int {
+        return Arrays.hashCode(name!!.toCharArray())
+    }
+
+    override fun toString(): String {
+        return name!!
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Pet && other.name == this.name
     }
 
     companion object {
