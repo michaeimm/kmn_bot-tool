@@ -1,13 +1,11 @@
 package tw.shounenwind.kmnbottool.util
 
-import com.google.common.base.Preconditions
 import com.google.gson.Gson
 import okhttp3.CacheControl
 import okhttp3.Request
 import okhttp3.ResponseBody
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
-import java.io.Reader
 
 class KmnBotDataLoader {
     private var boxUrl: String? = null
@@ -35,7 +33,7 @@ class KmnBotDataLoader {
                 }
 
                 body = response.body()!!
-                boxData = Gson().fromJson<BoxData>(Preconditions.checkNotNull<Reader>(body.charStream()), BoxData::class.java)
+                boxData = Gson().fromJson<BoxData>(body.charStream()!!, BoxData::class.java)
                 LogUtil.boxData(TAG, boxData)
             } finally {
                 body?.close()
@@ -85,9 +83,9 @@ class KmnBotDataLoader {
     }
 
     fun start() {
-        Preconditions.checkNotNull(boxUrl!!)
-        Preconditions.checkNotNull(onSuccessListener!!)
-        Preconditions.checkNotNull(onFailedListener!!)
+        boxUrl!!
+        onSuccessListener!!
+        onFailedListener!!
 
         StaticCachedThreadPool.instance.execute {
 

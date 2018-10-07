@@ -14,7 +14,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
-import com.google.common.base.Preconditions
 import com.rey.material.app.Dialog
 import com.rey.material.app.SimpleDialog
 import org.jetbrains.anko.intentFor
@@ -206,9 +205,8 @@ class MainActivity : AppCompatActivity() {
                     || keyEvent.action == KeyEvent.ACTION_DOWN
                     && keyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
                 dialog.dismiss()
-                val imm = Preconditions.checkNotNull(
-                        getSystemService(Context.INPUT_METHOD_SERVICE)
-                ) as InputMethodManager
+                val imm =
+                        getSystemService(Context.INPUT_METHOD_SERVICE)!! as InputMethodManager
                 if (imm.isActive) {
                     imm.toggleSoftInput(
                             InputMethodManager.SHOW_IMPLICIT,
@@ -226,9 +224,8 @@ class MainActivity : AppCompatActivity() {
                 .positiveAction(android.R.string.ok)
                 .positiveActionClickListener {
                     dialog.dismiss()
-                    val imm = Preconditions.checkNotNull(
-                            getSystemService(Context.INPUT_METHOD_SERVICE)
-                    ) as InputMethodManager
+                    val imm =
+                            getSystemService(Context.INPUT_METHOD_SERVICE)!! as InputMethodManager
                     if (imm.isActive) {
                         imm.toggleSoftInput(
                                 InputMethodManager.SHOW_IMPLICIT,
