@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prepareScreen()
+        if (savedInstanceState != null && KmnBotDataLoader.boxData != null) {
+            return
+        }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         checkPlurkId(object : InputHandler {
             override fun onEnter(input: String) {
