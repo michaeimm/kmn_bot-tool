@@ -46,16 +46,12 @@ class MainActivity : AppCompatActivity() {
         checkPlurkId(object : InputHandler {
             override fun onEnter(input: String) {
                 FlowJob(this@MainActivity)
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                showProgressDialog(getString(R.string.monster_loading))
-                            }
-                        })
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                getData(input)
-                            }
-                        })
+                        .addUIJob {
+                            showProgressDialog(getString(R.string.monster_loading))
+                        }
+                        .addIOJob {
+                            getData(input)
+                        }
                         .start()
             }
 
@@ -141,16 +137,12 @@ class MainActivity : AppCompatActivity() {
                     checkPlurkId(object : InputHandler {
                         override fun onEnter(input: String) {
                             FlowJob(this@MainActivity)
-                                    .addUIJob(object : FlowJob.Func {
-                                        override fun run(f: FlowJob) {
-                                            showProgressDialog(getString(R.string.monster_loading))
-                                        }
-                                    })
-                                    .addIOJob(object : FlowJob.Func {
-                                        override fun run(f: FlowJob) {
-                                            getData(input)
-                                        }
-                                    })
+                                    .addUIJob{
+                                        showProgressDialog(getString(R.string.monster_loading))
+                                    }
+                                    .addIOJob{
+                                        getData(input)
+                                    }
                                     .start()
                         }
 
@@ -187,19 +179,15 @@ class MainActivity : AppCompatActivity() {
 
         @SuppressLint("ApplySharedPref")
         val flowJob = FlowJob(this)
-                .addIOJob(object : FlowJob.Func {
-                    override fun run(f: FlowJob) {
-                        sharedPreferences!!.edit()
-                                .putInt("user_id_ver", LATEST_ID_VERSION)
-                                .putString("user_id", input.text.toString())
-                                .commit()
-                    }
-                })
-                .addUIJob(object : FlowJob.Func {
-                    override fun run(f: FlowJob) {
-                        inputHandler.onEnter(input.text.toString())
-                    }
-                })
+                .addIOJob{
+                    sharedPreferences!!.edit()
+                            .putInt("user_id_ver", LATEST_ID_VERSION)
+                            .putString("user_id", input.text.toString())
+                            .commit()
+                }
+                .addUIJob{
+                    inputHandler.onEnter(input.text.toString())
+                }
 
         input.setSingleLine()
         input.setOnEditorActionListener { _, actionId, keyEvent ->
@@ -303,21 +291,17 @@ class MainActivity : AppCompatActivity() {
             mDialog.dismiss()
             CommandExecutor.botDraw(this)
         }
-        mDialog.negativeActionClickListener {
+        mDialog.negativeActionClickListener { _ ->
             mDialog.dismiss()
             checkPlurkId(object : InputHandler {
                 override fun onEnter(input: String) {
                     FlowJob(this@MainActivity)
-                            .addUIJob(object : FlowJob.Func {
-                                override fun run(f: FlowJob) {
-                                    showProgressDialog(getString(R.string.monster_loading))
-                                }
-                            })
-                            .addIOJob(object : FlowJob.Func {
-                                override fun run(f: FlowJob) {
-                                    getData(input)
-                                }
-                            })
+                            .addUIJob{
+                                showProgressDialog(getString(R.string.monster_loading))
+                            }
+                            .addIOJob{
+                                getData(input)
+                            }
                             .start()
                 }
             })

@@ -86,20 +86,15 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob {
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob {
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true
@@ -110,23 +105,18 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                data.sortWith(Comparator { o1, o2 ->
-                                    collator.compare(o1.name, o2.name)
-                                })
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob{
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.sortWith(Comparator { o1, o2 ->
+                                collator.compare(o1.name, o2.name)
+                            })
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob{
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true
@@ -136,21 +126,16 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                data.sortWith(Comparator { o1, o2 -> o1!!.rare!!.compareTo(o2!!.rare!!) * -1 })
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob{
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.sortWith(Comparator { o1, o2 -> o1!!.rare!!.compareTo(o2!!.rare!!) * -1 })
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob{
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true
@@ -160,33 +145,28 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                data.sortWith(Comparator { o1, o2 ->
-                                    val r1 = if (o1!!.level == o1.maxLevel) {
-                                        Int.MAX_VALUE
-                                    } else {
-                                        o1.level
-                                    }
-                                    val r2 = if (o2!!.level == o2.maxLevel) {
-                                        Int.MAX_VALUE
-                                    } else {
-                                        o2.level
-                                    }
-                                    r1!!.compareTo(r2!!) * -1
-                                })
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob{
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.sortWith(Comparator { o1, o2 ->
+                                val r1 = if (o1!!.level == o1.maxLevel) {
+                                    Int.MAX_VALUE
+                                } else {
+                                    o1.level
+                                }
+                                val r2 = if (o2!!.level == o2.maxLevel) {
+                                    Int.MAX_VALUE
+                                } else {
+                                    o2.level
+                                }
+                                r1!!.compareTo(r2!!) * -1
+                            })
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob{
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true
@@ -196,21 +176,16 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                data.sortWith(Comparator { o1, o2 -> o1!!.petClass!!.compareTo(o2!!.petClass!!) * -1 })
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob{
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.sortWith(Comparator { o1, o2 -> o1!!.petClass!!.compareTo(o2!!.petClass!!) * -1 })
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob{
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true
@@ -221,23 +196,18 @@ class BoxActivity : AppCompatActivity() {
                 val data = ArrayList<Pet>()
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
-                        .addIOJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                data.addAll(KmnBotDataLoader.boxData!!.pets!!)
-                                data.sortWith(Comparator { o1, o2 ->
-                                    collator.compare(o1.type + o1.name, o2.type + o2.name)
-                                })
-                                diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                            }
-                        })
-                        .addUIJob(object : FlowJob.Func {
-                            override fun run(f: FlowJob) {
-                                dismissProgressDialog()
-                                adapter.monsters = data
-                                diffResult!!.dispatchUpdatesTo(adapter)
-                            }
-
-                        })
+                        .addIOJob{
+                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.sortWith(Comparator { o1, o2 ->
+                                collator.compare(o1.type + o1.name, o2.type + o2.name)
+                            })
+                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                        }
+                        .addUIJob{
+                            dismissProgressDialog()
+                            adapter.monsters = data
+                            diffResult!!.dispatchUpdatesTo(adapter)
+                        }
                         .start()
                 item.isChecked = true
                 return true

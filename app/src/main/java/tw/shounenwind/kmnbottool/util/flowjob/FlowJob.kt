@@ -26,6 +26,15 @@ class FlowJob(base: Context) : ContextWrapper(base) {
         return this
     }
 
+
+    inline fun addIOJob(crossinline body: (self: FlowJob) -> Unit) : FlowJob{
+        return addIOJob(object : Func {
+            override fun run(f: FlowJob) {
+                body(this@FlowJob)
+            }
+        })
+    }
+
     fun addUIJob(func: Func): FlowJob {
         if (running)
             throw RuntimeException("Running")
@@ -36,6 +45,14 @@ class FlowJob(base: Context) : ContextWrapper(base) {
             }
         })
         return this
+    }
+
+    inline fun addUIJob(crossinline body: (self: FlowJob) -> Unit) : FlowJob{
+        return addUIJob(object : Func {
+            override fun run(f: FlowJob) {
+                body(this@FlowJob)
+            }
+        })
     }
 
     fun start() {
