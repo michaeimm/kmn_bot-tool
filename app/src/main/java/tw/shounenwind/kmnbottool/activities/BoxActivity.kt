@@ -234,8 +234,30 @@ class BoxActivity : AppCompatActivity() {
 
     }
 
+    private fun getPets() : List<Pet>{
+        val monsters = ArrayList<Pet>()
 
-    private class BoxDiffCallback(private val oldData: ArrayList<Pet>, private val newData: ArrayList<Pet>) : DiffUtil.Callback() {
+        if (selectFor != null && selectFor != "exp"){
+            val pet = Pet()
+            pet.name = getString(R.string.no_select)
+            pet.image = "https://i.imgur.com/6sPlPEzb.jpg"
+            pet.battleType = ""
+            pet.maxLevel = Integer.MAX_VALUE
+            pet.level = 0
+            pet.maxClass = Integer.MAX_VALUE
+            pet.petClass = 0
+            pet.rare = 0
+            pet.series = ""
+            pet.skill = ""
+            pet.type = ""
+            monsters.add(pet)
+        }
+        monsters.addAll(KmnBotDataLoader.boxData!!.pets!!)
+        return monsters
+    }
+
+
+    private class BoxDiffCallback(private val oldData: List<Pet>, private val newData: List<Pet>) : DiffUtil.Callback() {
         override fun areItemsTheSame(p0: Int, p1: Int): Boolean {
             return oldData[p0].name == newData[p1].name
         }
@@ -257,13 +279,7 @@ class BoxActivity : AppCompatActivity() {
     private inner class BoxAdapter(mContext: BoxActivity) : RecyclerView.Adapter<BoxAdapter.MonsterDataHolder>() {
 
         private val wrContext: WeakReference<BoxActivity> = WeakReference(mContext)
-        var monsters: ArrayList<Pet>
-
-        init {
-            val data = KmnBotDataLoader.boxData!!.pets!!
-            monsters = ArrayList()
-            monsters.addAll(data)
-        }
+        var monsters: List<Pet> = getPets()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonsterDataHolder {
             val view = LayoutInflater.from(parent.context)
@@ -275,7 +291,7 @@ class BoxActivity : AppCompatActivity() {
         }
 
         override fun getItemCount(): Int {
-            return KmnBotDataLoader.boxData!!.pets!!.size
+            return monsters.size
         }
 
         @SuppressLint("SetTextI18n")
@@ -284,15 +300,13 @@ class BoxActivity : AppCompatActivity() {
             if (mContext == null || mContext.isFinishing)
                 return
             val monster = monsters[position]
-            if (monster.level == monster.maxLevel) {
-                holder.name.text = "${monster.name} (Lv.Max)"
-            } else {
-                holder.name.text = "${monster.name} (Lv.${monster.level})"
-            }
-            if (monster.petClass == monster.maxClass) {
-                holder.monsterClass.text = "階級：${monster.petClass}(最大)"
-            } else {
-                holder.monsterClass.text = "階級：${monster.petClass}"
+            when {
+                monster.name == getString(R.string.no_select) ->
+                    holder.name.text = monster.name
+                monster.level == monster.maxLevel ->
+                    holder.name.text = "${monster.name} (Lv.Max)"
+                else ->
+                    holder.name.text = "${monster.name} (Lv.${monster.level})"
             }
             val imageView = holder.image
             GlideApp.with(mContext)
@@ -303,11 +317,18 @@ class BoxActivity : AppCompatActivity() {
                     )
                     .centerCrop()
                     .into(CircularViewTarget(mContext, imageView))
-            val star = StringBuilder()
-            val len = monster.rare!!
-            for (i in 0 until len) star.append("☆")
-            holder.type.text = star.toString()
             holder.type.setTextColor(getMonsterColor(monster.type!!))
+            if (monster.name != getString(R.string.no_select)) {
+                if (monster.petClass == monster.maxClass) {
+                    holder.monsterClass.text = "階級：${monster.petClass}(最大)"
+                } else {
+                    holder.monsterClass.text = "階級：${monster.petClass}"
+                }
+                val star = StringBuilder()
+                val len = monster.rare!!
+                for (i in 0 until len) star.append("☆")
+                holder.type.text = star.toString()
+            }
             if (mContext.selectFor != null) {
                 holder.item.setOnClickListener {
                     val intent = Intent()
@@ -315,11 +336,13 @@ class BoxActivity : AppCompatActivity() {
                     mContext.setResult(Activity.RESULT_OK, intent)
                     mContext.finish()
                 }
-                holder.item.setOnLongClickListener {
-                    val intent = intentFor<DetailActivity>()
-                    intent.putExtra("pet", monster)
-                    startActivity(intent)
-                    true
+                if (monster.name != getString(R.string.no_select)) {
+                    holder.item.setOnLongClickListener {
+                        val intent = intentFor<DetailActivity>()
+                        intent.putExtra("pet", monster)
+                        startActivity(intent)
+                        true
+                    }
                 }
             } else {
                 holder.item.setOnClickListener {
