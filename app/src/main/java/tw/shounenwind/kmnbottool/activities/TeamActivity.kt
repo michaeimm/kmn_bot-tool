@@ -72,10 +72,44 @@ class TeamActivity : AppCompatActivity() {
         findViewById<CardView>(R.id.team_card).setOnClickListener { team!!.performClick() }
 
         findViewById<CardView>(R.id.attacter_card).setOnClickListener {
-            startActivityForResult(intentFor<BoxActivity>("selectFor" to "attacker"), FOR_RESULT_ATTACKER)
+            startActivityForResult(
+                    intentFor<BoxActivity>("selectFor" to "attacker"),
+                    FOR_RESULT_ATTACKER
+            )
+        }
+        findViewById<CardView>(R.id.attacter_card).setOnLongClickListener {
+            val target = findViewById<TextView>(R.id.attacter_name).text.toString()
+            val fakeAttacker = Pet()
+            fakeAttacker.name = target
+            val petIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeAttacker)
+            if (petIndex != -1) {
+                val intent = intentFor<DetailActivity>()
+                intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
+                startActivity(intent)
+                true
+            }else {
+                false
+            }
         }
         findViewById<CardView>(R.id.supporter_card).setOnClickListener {
-            startActivityForResult(intentFor<BoxActivity>("selectFor" to "supporter"), FOR_RESULT_SUPPORTER)
+            startActivityForResult(
+                    intentFor<BoxActivity>("selectFor" to "supporter"),
+                    FOR_RESULT_SUPPORTER
+            )
+        }
+        findViewById<CardView>(R.id.supporter_card).setOnLongClickListener {
+            val target = findViewById<TextView>(R.id.supporter_name).text.toString()
+            val fakeSupporter = Pet()
+            fakeSupporter.name = target
+            val petIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeSupporter)
+            if (petIndex != -1) {
+                val intent = intentFor<DetailActivity>()
+                intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
+                startActivity(intent)
+                true
+            }else {
+                false
+            }
         }
         if (KmnBotDataLoader.chipData?.chips != null && KmnBotDataLoader.chipData?.chips!!.isNotEmpty()) {
             findViewById<CardView>(R.id.chips_card).visibility = View.VISIBLE
