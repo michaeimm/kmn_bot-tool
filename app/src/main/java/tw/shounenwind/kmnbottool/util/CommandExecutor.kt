@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
-import android.support.v7.app.AlertDialog
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import tw.shounenwind.kmnbottool.R
 import java.util.*
 

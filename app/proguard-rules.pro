@@ -20,7 +20,7 @@
 -keep public class com.google.vending.licensing.ILicensingService
 -keep public class com.android.vending.licensing.ILicensingService
 
--keep class android.support.v4.content.FileProvider
+-keep class androidx.core.content.FileProvider
 
 # For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
 -keepclasseswithmembernames class * {
@@ -92,18 +92,6 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn afu.org.checkerframework.**
 -dontwarn org.checkerframework.**
-
--keep public class android.support.v7.widget.** { *; }
--keep public class android.support.v7.internal.widget.** { *; }
--keep public class android.support.v7.internal.view.menu.** { *; }
--keep public class * extends android.support.v4.view.ActionProvider {
-    public <init>(android.content.Context);
-}
--dontwarn android.support.design.**
--keep class android.support.design.** { *; }
--keep interface android.support.design.** { *; }
--keep public class android.support.design.R$* { *; }
--keep class android.support.v7.widget.RoundRectDrawable { *; }
 
 -keepattributes *Annotation*
 -dontwarn okio.**

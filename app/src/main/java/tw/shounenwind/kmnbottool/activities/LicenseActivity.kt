@@ -1,15 +1,15 @@
 package tw.shounenwind.kmnbottool.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import tw.shounenwind.kmnbottool.R
 import java.util.*
 
@@ -23,7 +23,7 @@ class LicenseActivity : AppCompatActivity() {
         val listView = findViewById<RecyclerView>(R.id.list)
 
         val layoutManager = LinearLayoutManager(this)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        layoutManager.orientation = RecyclerView.VERTICAL
         listView.layoutManager = layoutManager
         val listAdapter = ArrayAdapter(licenses)
         listView.adapter = listAdapter

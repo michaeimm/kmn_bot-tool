@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:theme="@style/AppTheme">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,14 +16,14 @@
         android:paddingRight="36dp"
         android:paddingBottom="12dp">
 
-        <android.support.v7.widget.AppCompatEditText
+        <EditText
             android:id="@+id/name_input"
             style="@style/Material.Widget.EditText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:maxLines="1" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </LinearLayout>

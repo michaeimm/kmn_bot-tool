@@ -22,7 +22,7 @@
         app:pv_progressMode="indeterminate"
         app:pv_progressStyle="@style/Material.Drawable.CircularProgress" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
