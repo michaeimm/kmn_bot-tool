@@ -1,9 +1,8 @@
-package tw.shounenwind.kmnbottool.util.flowjob
+package tw.shounenwind.kmnbottool.util
 
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Handler
-import tw.shounenwind.kmnbottool.util.StaticCachedThreadPool
 import java.util.*
 
 class FlowJob(base: Context) : ContextWrapper(base) {
@@ -17,17 +16,17 @@ class FlowJob(base: Context) : ContextWrapper(base) {
     fun addIOJob(func: Func): FlowJob {
         if (running)
             throw RuntimeException("Running")
-        funcLinkedList.add(object : IOJob(this) {
+        funcLinkedList.add(object : IOJob {
             override fun run() {
                 func.run(this@FlowJob)
-                done()
+                doNextJob()
             }
+
         })
         return this
     }
 
-
-    inline fun addIOJob(crossinline body: (self: FlowJob) -> Unit) : FlowJob{
+    inline fun addIOJob(crossinline body: (self: FlowJob) -> Unit): FlowJob {
         return addIOJob(object : Func {
             override fun run(f: FlowJob) {
                 body(this@FlowJob)
@@ -38,16 +37,16 @@ class FlowJob(base: Context) : ContextWrapper(base) {
     fun addUIJob(func: Func): FlowJob {
         if (running)
             throw RuntimeException("Running")
-        funcLinkedList.add(object : UIJob(this) {
+        funcLinkedList.add(object : UIJob {
             override fun run() {
                 func.run(this@FlowJob)
-                done()
+                doNextJob()
             }
         })
         return this
     }
 
-    inline fun addUIJob(crossinline body: (self: FlowJob) -> Unit) : FlowJob{
+    inline fun addUIJob(crossinline body: (self: FlowJob) -> Unit): FlowJob {
         return addUIJob(object : Func {
             override fun run(f: FlowJob) {
                 body(this@FlowJob)
@@ -72,7 +71,7 @@ class FlowJob(base: Context) : ContextWrapper(base) {
         running = false
     }
 
-    internal fun doNextJob() {
+    private fun doNextJob() {
         if (running && funcLinkedList.size > 0) {
             funcLinkedList.removeAt(0)
             start()
@@ -82,5 +81,9 @@ class FlowJob(base: Context) : ContextWrapper(base) {
     interface Func {
         fun run(f: FlowJob)
     }
+
+    private interface IOJob : Runnable
+
+    private interface UIJob : Runnable
 
 }
