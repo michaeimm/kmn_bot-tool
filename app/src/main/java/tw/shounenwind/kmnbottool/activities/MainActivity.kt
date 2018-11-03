@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity() {
             mDialog.dismiss()
             CommandExecutor.botDraw(this)
         }
-        mDialog.negativeActionClickListener { _ ->
+        mDialog.negativeActionClickListener {
             mDialog.dismiss()
             checkPlurkId(object : InputHandler {
                 override fun onEnter(input: String) {
