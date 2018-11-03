@@ -27,7 +27,7 @@ import tw.shounenwind.kmnbottool.widget.ProgressDialog
 class TeamActivity : AppCompatActivity() {
 
     private var oldTeam: Int = 0
-    private var team: Spinner? = null
+    private lateinit var team: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +57,8 @@ class TeamActivity : AppCompatActivity() {
         teamArray[9] = "10"
         val teamAdapter = ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, teamArray)
         teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        team!!.adapter = teamAdapter
-        team!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        team.adapter = teamAdapter
+        team.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 writeTeamInfo()
                 readTeamInfo()
@@ -69,7 +69,7 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<CardView>(R.id.team_card).setOnClickListener { team!!.performClick() }
+        findViewById<CardView>(R.id.team_card).setOnClickListener { team.performClick() }
 
         findViewById<CardView>(R.id.attacter_card).setOnClickListener {
             startActivityForResult(
@@ -203,7 +203,7 @@ class TeamActivity : AppCompatActivity() {
                 .edit()
                 .putString(defaultAttacker, findViewById<TextView>(R.id.attacter_name).text.toString())
                 .putString(defaultSupporter, findViewById<TextView>(R.id.supporter_name).text.toString())
-                .putInt("team", team!!.selectedItemPosition)
+                .putInt("team", team.selectedItemPosition)
                 .commit()
     }
 
@@ -287,7 +287,7 @@ class TeamActivity : AppCompatActivity() {
                 }
             }
             runOnUiThread {
-                team!!.setSelection(defaultTeam)
+                team.setSelection(defaultTeam)
                 try {
                     progressDialog.dismiss()
                 }catch (e: Exception){

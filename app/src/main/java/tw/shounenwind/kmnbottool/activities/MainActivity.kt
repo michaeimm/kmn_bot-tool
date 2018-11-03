@@ -21,9 +21,9 @@ import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.util.CommandExecutor
+import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
-import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     private var sharedPreferences: SharedPreferences? = null
     private var progressDialog: ProgressDialog? = null
 
-    internal var toolbar: Toolbar? = null
     private var boxData: BoxData? = null
     private var chipData: ChipData? = null
 
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun prepareScreen() {
-        toolbar = findViewById(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         findViewById<CardView>(R.id.bot_draw).setOnClickListener {
             CommandExecutor.botDraw(this)
