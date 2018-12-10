@@ -299,7 +299,7 @@ class TeamActivity : AppCompatActivity() {
     }
 
     private fun openChipDialog() {
-        val options = ArrayList<String>()
+        val options = ArrayList<String>(KmnBotDataLoader.chipData!!.chips!!.size)
         val iterator = KmnBotDataLoader.chipData!!.chips!!.iterator()
         while (iterator.hasNext()) {
             val chip = iterator.next()
