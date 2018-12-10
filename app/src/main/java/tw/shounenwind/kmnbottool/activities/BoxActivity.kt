@@ -7,11 +7,11 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,9 +20,9 @@ import com.bumptech.glide.request.RequestOptions
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
+import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
-import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
@@ -366,7 +366,7 @@ class BoxActivity : AppCompatActivity() {
 
         inner class MonsterDataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-            val item: RelativeLayout = itemView.findViewById(R.id.monster_unit)
+            val item: ConstraintLayout = itemView.findViewById(R.id.monster_unit)
             val image: ImageView = itemView.findViewById(R.id.monster_img)
             val name: TextView = itemView.findViewById(R.id.monster_name)
             val type: TextView = itemView.findViewById(R.id.monster_type)

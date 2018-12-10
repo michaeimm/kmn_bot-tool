@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/monster_unit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,43 +11,45 @@
 
     <ImageView
         android:id="@+id/monster_img"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:contentDescription="@string/monster_image"
         android:paddingStart="8dp"
         android:paddingLeft="8dp"
         android:paddingEnd="0dp"
-        android:paddingRight="0dp" />
+        android:paddingRight="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/monster_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_toEndOf="@id/monster_img"
-        android:layout_toRightOf="@id/monster_img"
-        android:orientation="vertical">
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@id/monster_class"
+        app:layout_constraintStart_toEndOf="@id/monster_img"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/monster_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF" />
+    <TextView
+        android:id="@+id/monster_class"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:textColor="#F5F5F5"
+        app:layout_constraintBottom_toTopOf="@id/monster_type"
+        app:layout_constraintStart_toEndOf="@id/monster_img"
+        app:layout_constraintTop_toBottomOf="@id/monster_name" />
 
-        <TextView
-            android:id="@+id/monster_class"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#F5F5F5" />
-
-        <TextView
-            android:id="@+id/monster_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#F5F5F5" />
-    </LinearLayout>
-</RelativeLayout>
+    <TextView
+        android:id="@+id/monster_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:textColor="#F5F5F5"
+        app:layout_constraintStart_toEndOf="@id/monster_img"
+        app:layout_constraintTop_toBottomOf="@id/monster_class" />
+</androidx.constraintlayout.widget.ConstraintLayout>
