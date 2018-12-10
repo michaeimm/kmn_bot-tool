@@ -70,11 +70,12 @@ object CommandExecutor {
             val infoList = manager.queryIntentActivities(searchIntent, 0)
 
             if (infoList != null && infoList.size > 0) {
-                val targeted = Intent(Intent.ACTION_SEND)
-                targeted.type = "text/plain"
-                targeted.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.app_name))
-                targeted.putExtra(Intent.EXTRA_TEXT, command + " " + mContext.getString(R.string.bz))
-                targeted.setPackage(aTarget)
+                val targeted = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.app_name))
+                    putExtra(Intent.EXTRA_TEXT, command + " " + mContext.getString(R.string.bz))
+                    setPackage(aTarget)
+                }
                 targetedShareIntents.add(targeted)
             }
 
@@ -94,18 +95,20 @@ object CommandExecutor {
             }
         }
 
-        if (targetedShareIntents.size > 0) {
-            val chooserIntent = Intent.createChooser(targetedShareIntents.removeAt(0), "Open...")
-            chooserIntent.putExtra(Intent.EXTRA_TITLE, "Open...")
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toTypedArray<Parcelable>())
-            try {
-                mContext.startActivity(chooserIntent)
-            } catch (ex: android.content.ActivityNotFoundException) {
-                Toast.makeText(mContext, R.string.no_available_app, Toast.LENGTH_SHORT).show()
+        try {
+            if (targetedShareIntents.size == 0) {
+                throw Exception()
             }
-        } else {
+            val chooserIntent = Intent.createChooser(targetedShareIntents.removeAt(0), "Open...")
+                    .apply {
+                        putExtra(Intent.EXTRA_TITLE, "Open...")
+                        putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toTypedArray<Parcelable>())
+                    }
+            mContext.startActivity(chooserIntent)
+        } catch (ex: android.content.ActivityNotFoundException) {
             Toast.makeText(mContext, R.string.no_available_app, Toast.LENGTH_SHORT).show()
         }
+
     }
 
 }

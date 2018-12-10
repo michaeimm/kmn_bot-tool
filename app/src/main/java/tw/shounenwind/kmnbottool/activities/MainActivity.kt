@@ -238,43 +238,37 @@ class MainActivity : AppCompatActivity() {
     private fun getData(user: String) {
         val kmnBotDataLoader = KmnBotDataLoader()
         kmnBotDataLoader.setUser(user)
-                .setOnSuccessListener(object : KmnBotDataLoader.Func {
-                    override fun run(boxData: BoxData?, chipData: ChipData?) {
-                        try {
-                            this@MainActivity.boxData = boxData
-                            this@MainActivity.chipData = chipData
-                            runOnUiThread {
-                                Toast.makeText(
-                                        this@MainActivity,
-                                        R.string.data_loaded,
-                                        Toast.LENGTH_SHORT
-                                ).show()
-                                findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
-                                findViewById<View>(R.id.bot_mons_box).visibility = View.VISIBLE
-                                findViewById<View>(R.id.bot_battle).visibility = View.VISIBLE
-                                findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
-                                dismissProgressDialog()
-                            }
-                        } catch (e: Exception) {
-                            LogUtil.printStackTrace(e)
+                .setOnSuccessListener { boxData, chipData ->
+                    try {
+                        this@MainActivity.boxData = boxData
+                        this@MainActivity.chipData = chipData
+                        runOnUiThread {
+                            Toast.makeText(
+                                    this@MainActivity,
+                                    R.string.data_loaded,
+                                    Toast.LENGTH_SHORT
+                            ).show()
+                            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
+                            findViewById<View>(R.id.bot_mons_box).visibility = View.VISIBLE
+                            findViewById<View>(R.id.bot_battle).visibility = View.VISIBLE
+                            findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
+                            dismissProgressDialog()
                         }
+                    } catch (e: Exception) {
+                        LogUtil.printStackTrace(e)
                     }
-
-                })
-                .setOnFailedListener(object : KmnBotDataLoader.Func {
-                    override fun run(boxData: BoxData?, chipData: ChipData?) {
-                        try {
-                            runOnUiThread {
-                                findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
-                                dismissProgressDialog()
-                                noDataHint()
-                            }
-                        } catch (e: Exception) {
-                            LogUtil.printStackTrace(e)
+                }
+                .setOnFailedListener { _, _ ->
+                    try {
+                        runOnUiThread {
+                            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
+                            dismissProgressDialog()
+                            noDataHint()
                         }
+                    } catch (e: Exception) {
+                        LogUtil.printStackTrace(e)
                     }
-
-                })
+                }
                 .start()
     }
 

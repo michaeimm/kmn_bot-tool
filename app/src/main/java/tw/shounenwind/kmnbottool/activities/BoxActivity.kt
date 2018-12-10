@@ -36,7 +36,9 @@ class BoxActivity : AppCompatActivity() {
 
     private var selectFor: String? = null
     private var progressDialog: ProgressDialog? = null
-    private lateinit var adapter: BoxAdapter
+    private val adapter: BoxAdapter by lazy {
+        BoxAdapter(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +50,6 @@ class BoxActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         selectFor = intent.getStringExtra("selectFor")
-
-        adapter = BoxAdapter(this)
 
         val listView = findViewById<RecyclerView>(R.id.list)
         listView.layoutManager = LinearLayoutManager(this)
@@ -238,18 +238,19 @@ class BoxActivity : AppCompatActivity() {
         val monsters = ArrayList<Pet>()
 
         if (selectFor != null && selectFor != "exp"){
-            val pet = Pet()
-            pet.name = getString(R.string.no_select)
-            pet.image = "https://i.imgur.com/6sPlPEzb.jpg"
-            pet.battleType = ""
-            pet.maxLevel = Integer.MAX_VALUE
-            pet.level = 0
-            pet.maxClass = Integer.MAX_VALUE
-            pet.petClass = 0
-            pet.rare = 0
-            pet.series = ""
-            pet.skill = ""
-            pet.type = ""
+            val pet = Pet().apply {
+                name = getString(R.string.no_select)
+                image = "https://i.imgur.com/6sPlPEzb.jpg"
+                battleType = ""
+                maxLevel = Integer.MAX_VALUE
+                level = 0
+                maxClass = Integer.MAX_VALUE
+                petClass = 0
+                rare = 0
+                series = ""
+                skill = ""
+                type = ""
+            }
             monsters.add(pet)
         }
         monsters.addAll(KmnBotDataLoader.boxData!!.pets!!)

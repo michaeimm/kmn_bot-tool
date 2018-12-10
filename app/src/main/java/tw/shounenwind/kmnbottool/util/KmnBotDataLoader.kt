@@ -28,7 +28,7 @@ class KmnBotDataLoader {
                                         .build()
                         ).url(boxUrl!!)
                         .build()
-                val response = LinkUtil.getLink().newCall(request).execute()
+                val response = LinkUtil.instance.newCall(request).execute()
 
                 if (!response.isSuccessful) {
                     throw Exception("box")
@@ -56,7 +56,7 @@ class KmnBotDataLoader {
                                         .build()
                         ).url(chipUrl!!)
                         .build()
-                val response = LinkUtil.getLink().newCall(request).execute()
+                val response = LinkUtil.instance.newCall(request).execute()
 
                 body = response.body()!!
                 val data = body.string()
@@ -84,9 +84,26 @@ class KmnBotDataLoader {
         return this
     }
 
+    inline fun setOnSuccessListener(crossinline body: (boxData: BoxData?, chipData: ChipData?) -> Unit): KmnBotDataLoader {
+        return setOnSuccessListener(object : Func {
+            override fun run(boxData: BoxData?, chipData: ChipData?) {
+                body(boxData, chipData)
+            }
+
+        })
+    }
+
     fun setOnFailedListener(onFailedListener: Func): KmnBotDataLoader {
         this.onFailedListener = onFailedListener
         return this
+    }
+
+    inline fun setOnFailedListener(crossinline body: (boxData: BoxData?, chipData: ChipData?) -> Unit): KmnBotDataLoader {
+        return setOnFailedListener(object : Func {
+            override fun run(boxData: BoxData?, chipData: ChipData?) {
+                body(boxData, chipData)
+            }
+        })
     }
 
     fun start() {

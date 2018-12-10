@@ -21,7 +21,7 @@ class MyAppGlideModule : AppGlideModule() {
         registry.replace(
                 GlideUrl::class.java,
                 InputStream::class.java,
-                OkHttpUrlLoader.Factory(LinkUtil.getLink())
+                OkHttpUrlLoader.Factory(LinkUtil.instance)
         )
     }
 }
