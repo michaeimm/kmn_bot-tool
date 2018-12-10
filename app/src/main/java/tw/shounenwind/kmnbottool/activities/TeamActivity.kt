@@ -27,7 +27,9 @@ import tw.shounenwind.kmnbottool.widget.ProgressDialog
 class TeamActivity : AppCompatActivity() {
 
     private var oldTeam: Int = 0
-    private lateinit var team: Spinner
+    private val team: Spinner by lazy {
+        findViewById<Spinner>(R.id.team)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +45,6 @@ class TeamActivity : AppCompatActivity() {
         supportActionBar!!.setHomeButtonEnabled(true)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        team = findViewById(R.id.team)
         val teamArray = arrayOfNulls<String>(10)
         teamArray[0] = "1"
         teamArray[1] = "2"
