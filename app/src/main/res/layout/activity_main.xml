@@ -17,6 +17,7 @@
             android:id="@+id/main_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             app:columnCount="2"
             app:orientation="horizontal"
             app:rowCount="2">
@@ -33,6 +34,8 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:visibility="invisible"
                 app:layout_columnWeight="1"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp"
                 app:layout_gravity="fill">
 
                 <LinearLayout
@@ -70,6 +73,8 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:visibility="invisible"
                 app:layout_columnWeight="1"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp"
                 app:layout_gravity="fill">
 
                 <LinearLayout
@@ -107,6 +112,8 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:visibility="invisible"
                 app:layout_columnWeight="1"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp"
                 app:layout_gravity="fill">
 
                 <LinearLayout
@@ -144,6 +151,8 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:visibility="invisible"
                 app:layout_columnWeight="1"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp"
                 app:layout_gravity="fill">
 
                 <LinearLayout

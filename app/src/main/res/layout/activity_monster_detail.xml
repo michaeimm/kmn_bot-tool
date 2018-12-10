@@ -59,6 +59,7 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:textAlignment="gravity"
+                    android:textColor="@color/highlightText"
                     android:textSize="16sp" />
 
                 <View
@@ -74,6 +75,7 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:textAlignment="gravity"
+                    android:textColor="@color/highlightText"
                     android:textSize="16sp" />
 
                 <View
@@ -89,6 +91,7 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:textAlignment="gravity"
+                    android:textColor="@color/highlightText"
                     android:textSize="16sp" />
 
             </LinearLayout>
