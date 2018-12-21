@@ -68,7 +68,7 @@ class TeamActivity : BaseActivity() {
         findViewById<CardView>(R.id.team_card).setOnClickListener { team.performClick() }
 
         findViewById<CardView>(R.id.attacter_card).setOnClickListener {
-            startActivityForResult(
+            startActivityForResultWithTransition(
                     intentFor<BoxActivity>("selectFor" to "attacker"),
                     FOR_RESULT_ATTACKER
             )
@@ -81,14 +81,14 @@ class TeamActivity : BaseActivity() {
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
                 intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
-                startActivity(intent)
+                startActivityWithTransition(intent)
                 true
             }else {
                 false
             }
         }
         findViewById<CardView>(R.id.supporter_card).setOnClickListener {
-            startActivityForResult(
+            startActivityForResultWithTransition(
                     intentFor<BoxActivity>("selectFor" to "supporter"),
                     FOR_RESULT_SUPPORTER
             )
@@ -101,7 +101,7 @@ class TeamActivity : BaseActivity() {
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
                 intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
-                startActivity(intent)
+                startActivityWithTransition(intent)
                 true
             }else {
                 false

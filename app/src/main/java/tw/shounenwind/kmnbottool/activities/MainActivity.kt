@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import com.rey.material.app.Dialog
@@ -65,13 +64,13 @@ class MainActivity : BaseActivity() {
             CommandExecutor.botDraw(this)
         }
         findViewById<CardView>(R.id.bot_exp).setOnClickListener {
-            startActivityForResult(intentFor<BoxActivity>("selectFor" to "exp"), FOR_RESULT_EXP)
+            startActivityForResultWithTransition(intentFor<BoxActivity>("selectFor" to "exp"), FOR_RESULT_EXP)
         }
         findViewById<CardView>(R.id.bot_mons_box).setOnClickListener {
-            startActivity(intentFor<BoxActivity>())
+            startActivityWithTransition(intentFor<BoxActivity>())
         }
         findViewById<CardView>(R.id.bot_battle).setOnClickListener {
-            startActivity(intentFor<TeamActivity>())
+            startActivityWithTransition(intentFor<TeamActivity>())
         }
         if (isFinishing)
             return
@@ -155,7 +154,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun checkLicense() {
-        startActivity(intentFor<LicenseActivity>())
+        startActivityWithTransition(intentFor<LicenseActivity>())
     }
 
     private fun checkPlurkId(inputHandler: InputHandler) {

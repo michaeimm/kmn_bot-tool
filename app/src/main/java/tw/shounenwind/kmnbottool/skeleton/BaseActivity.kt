@@ -1,11 +1,15 @@
 package tw.shounenwind.kmnbottool.skeleton
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Build
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.appbar.AppBarLayout
 import tw.shounenwind.kmnbottool.R
 
 @SuppressLint("Registered")
@@ -48,6 +52,36 @@ open class BaseActivity : AppCompatActivity() {
             else -> {
                 super.onOptionsItemSelected(item)
             }
+        }
+    }
+
+    fun startActivityWithTransition(intent: Intent) {
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
+        if (appBarLayout != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                    this,
+                    appBarLayout,
+                    appBarLayout.transitionName
+            )
+            startActivity(intent, options.toBundle())
+        } else {
+            startActivity(intent)
+        }
+    }
+
+    fun startActivityForResultWithTransition(intent: Intent, responseCode: Int) {
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
+        if (appBarLayout != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                    this,
+                    appBarLayout,
+                    appBarLayout.transitionName
+            )
+            startActivityForResult(intent, responseCode, options.toBundle())
+        } else {
+            startActivityForResult(intent, responseCode)
         }
     }
 }

@@ -7,7 +7,14 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorButtonNormal">@color/colorAccent</item>
-        <item name="android:colorButtonNormal" tools:ignore="NewApi">@color/colorAccent</item>
+        <item name="android:colorButtonNormal" tools:targetApi="lollipop">@color/colorAccent</item>
+        <item name="android:windowActivityTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowEnterTransition" tools:targetApi="lollipop">
+            @transition/default_window_fade
+        </item>
+        <item name="android:windowExitTransition" tools:targetApi="lollipop">
+            @transition/default_window_fade
+        </item>
     </style>
 
 </resources>

@@ -333,7 +333,7 @@ class BoxActivity : BaseActivity() {
                     holder.item.setOnLongClickListener {
                         val intent = intentFor<DetailActivity>()
                         intent.putExtra("pet", monster)
-                        startActivity(intent)
+                        startActivityWithTransition(intent)
                         true
                     }
                 }
@@ -341,7 +341,7 @@ class BoxActivity : BaseActivity() {
                 holder.item.setOnClickListener {
                     val intent = intentFor<DetailActivity>()
                     intent.putExtra("pet", monster)
-                    startActivity(intent)
+                    startActivityWithTransition(intent)
                 }
             }
         }
