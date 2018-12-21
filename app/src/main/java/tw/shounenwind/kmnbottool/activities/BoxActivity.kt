@@ -9,8 +9,6 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
+import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
@@ -32,7 +31,7 @@ import java.util.*
 import kotlin.Comparator
 
 
-class BoxActivity : AppCompatActivity() {
+class BoxActivity : BaseActivity() {
 
     private var selectFor: String? = null
     private var progressDialog: ProgressDialog? = null
@@ -44,10 +43,7 @@ class BoxActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mons_data)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setHomeButtonEnabled(true)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        bindToolbarHomeButton()
 
         selectFor = intent.getStringExtra("selectFor")
 
@@ -61,12 +57,8 @@ class BoxActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menu_profile -> {
                 val s: String = try {
                     KmnBotDataLoader.boxData!!.player!!.completedRate!!

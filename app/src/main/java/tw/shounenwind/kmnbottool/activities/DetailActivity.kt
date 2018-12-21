@@ -2,26 +2,21 @@ package tw.shounenwind.kmnbottool.activities
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
+import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : BaseActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_monster_detail)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setHomeButtonEnabled(true)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        bindToolbarHomeButton()
 
         val intent = intent
         val pet = intent.getParcelableExtra<Pet>("pet")
@@ -43,15 +38,5 @@ class DetailActivity : AppCompatActivity() {
                 )
                 .fitCenter()
                 .into(findViewById(R.id.avatar))
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                this.finish()
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 }

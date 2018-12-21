@@ -4,18 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
+import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.StaticCachedThreadPool
@@ -24,7 +22,7 @@ import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 
-class TeamActivity : AppCompatActivity() {
+class TeamActivity : BaseActivity() {
 
     private var oldTeam: Int = 0
     private val team: Spinner by lazy {
@@ -40,10 +38,7 @@ class TeamActivity : AppCompatActivity() {
     }
 
     private fun prepareScreen() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setHomeButtonEnabled(true)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        bindToolbarHomeButton()
 
         val teamArray = arrayOfNulls<String>(10)
         teamArray[0] = "1"
@@ -175,16 +170,6 @@ class TeamActivity : AppCompatActivity() {
                 readTeamInfo()
             }
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     @SuppressLint("ApplySharedPref")

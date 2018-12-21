@@ -2,18 +2,16 @@ package tw.shounenwind.kmnbottool.activities
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import java.util.*
 
-class LicenseActivity : AppCompatActivity() {
+class LicenseActivity : BaseActivity() {
     private val licenses = ArrayList<License>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,21 +30,7 @@ class LicenseActivity : AppCompatActivity() {
     private fun screenPrepare() {
         setContentView(R.layout.activity_license)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val supportActionBar = this.supportActionBar!!
-        supportActionBar.setHomeButtonEnabled(true)
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                this.finish()
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+        bindToolbarHomeButton()
     }
 
     private fun setLicenses() {
