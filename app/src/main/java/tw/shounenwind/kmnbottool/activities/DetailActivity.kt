@@ -1,7 +1,9 @@
 package tw.shounenwind.kmnbottool.activities
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -20,6 +22,7 @@ class DetailActivity : BaseActivity() {
 
         val intent = intent
         val pet = intent.getParcelableExtra<Pet>("pet")
+        val position = intent.getIntExtra("position", -1)
         title = pet.name
         findViewById<TextView>(R.id.name).text = pet.name
         findViewById<TextView>(R.id.rare).text =
@@ -29,7 +32,10 @@ class DetailActivity : BaseActivity() {
         findViewById<TextView>(R.id.monster_class).text =
                 "${getString(R.string.monster_class)}\n${pet.petClass.toString()}"
         findViewById<TextView>(R.id.text_holder).text = pet.skill
-
+        val avatar = findViewById<ImageView>(R.id.avatar)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            avatar.transitionName = "list_p$position"
+        }
         GlideApp.with(this)
                 .asBitmap()
                 .load(pet.image)
@@ -37,6 +43,6 @@ class DetailActivity : BaseActivity() {
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                 )
                 .fitCenter()
-                .into(findViewById(R.id.avatar))
+                .into(avatar)
     }
 }

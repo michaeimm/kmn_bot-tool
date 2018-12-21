@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
+import android.util.Pair
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +64,21 @@ open class BaseActivity : AppCompatActivity() {
                     this,
                     appBarLayout,
                     appBarLayout.transitionName
+            )
+            startActivity(intent, options.toBundle())
+        } else {
+            startActivity(intent)
+        }
+    }
+
+    fun startActivityWithTransition(intent: Intent, vararg pairs: Pair<View, String>) {
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
+        if (appBarLayout != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                    this,
+                    Pair.create(appBarLayout, appBarLayout.transitionName),
+                    *pairs
             )
             startActivity(intent, options.toBundle())
         } else {

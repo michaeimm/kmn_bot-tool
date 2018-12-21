@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.util.Pair
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -338,11 +340,30 @@ class BoxActivity : BaseActivity() {
                     }
                 }
             } else {
-                holder.item.setOnClickListener {
-                    val intent = intentFor<DetailActivity>()
-                    intent.putExtra("pet", monster)
-                    startActivityWithTransition(intent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    imageView.transitionName = "list_p$position"
                 }
+                holder.item.setOnClickListener {
+                    val intent = intentFor<DetailActivity>().apply {
+                        putExtra("pet", monster)
+                        putExtra("position", position)
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startActivityWithTransition(
+                                intent,
+                                Pair.create(imageView, imageView.transitionName)
+                        )
+                    } else {
+                        startActivityWithTransition(intent)
+                    }
+                }
+            }
+        }
+
+        override fun onViewRecycled(holder: MonsterDataHolder) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.image.transitionName = null
             }
         }
 
