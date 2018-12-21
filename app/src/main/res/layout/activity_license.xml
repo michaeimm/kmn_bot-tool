@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context="tw.shounenwind.kmnbottool.activities.LicenseActivity">
 
-    <include layout="@layout/toolbar" />
+    <include layout="@layout/unit_toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"

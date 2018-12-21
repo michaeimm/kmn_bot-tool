@@ -284,7 +284,7 @@ class BoxActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonsterDataHolder {
             val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.monster_unit, parent, false)
+                    .inflate(R.layout.unit_monster, parent, false)
             view.layoutParams = RecyclerView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )

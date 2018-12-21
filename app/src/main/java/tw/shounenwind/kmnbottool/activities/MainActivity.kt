@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
     private fun openPlurkIdInputDialog(inputHandler: InputHandler) {
         val factory = LayoutInflater.from(this)
         @SuppressLint("InflateParams")
-        val pdl = factory.inflate(R.layout.single_field_view, null)
+        val pdl = factory.inflate(R.layout.unit_single_field_input, null)
         val dialog = Dialog(this, R.style.AppTheme)
         dialog.contentView(pdl)
         val input = pdl.findViewById<EditText>(R.id.name_input)

@@ -30,7 +30,7 @@ class LicenseActivity : AppCompatActivity() {
     }
 
     private fun screenPrepare() {
-        setContentView(R.layout.license_screen)
+        setContentView(R.layout.activity_license)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -112,7 +112,7 @@ class LicenseActivity : AppCompatActivity() {
         : RecyclerView.Adapter<ArrayAdapter.ListViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.license_unit, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.unit_license, parent, false)
             view.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             return ListViewHolder(view)
         }

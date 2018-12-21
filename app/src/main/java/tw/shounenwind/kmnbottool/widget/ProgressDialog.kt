@@ -24,7 +24,7 @@ class ProgressDialog {
 
     constructor(context: Context, theme: Int) {
         factory = LayoutInflater.from(context)
-        pdl = factory.inflate(R.layout.progress_dialog_layout, null)
+        pdl = factory.inflate(R.layout.unit_progress_dialog, null)
         content = pdl.findViewById(R.id.content)
         progressDialog = Dialog(context, theme).contentView(pdl)
         pv = pdl.findViewById(R.id.progress_view)
