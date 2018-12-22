@@ -1,5 +1,15 @@
 ## 安裝
-[Click here to install](https://play.google.com/store/apps/details?id=tw.shounenwind.kmnbottool)
+[Play Store](https://play.google.com/store/apps/details?id=tw.shounenwind.kmnbottool)
+
+## 作者與原遊戲機制相關帳號
+
+#### APP 開發
+[少年風](https://www.plurk.com/shounenwind)
+
+#### 機器狼遊戲
+[作者](https://www.plurk.com/ADYex)
+
+[機器狼](https://www.plurk.com/KMN_BOT)
 
 ## Licensed
 
