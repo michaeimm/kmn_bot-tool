@@ -59,7 +59,9 @@ open class BaseActivity : AppCompatActivity() {
     fun startActivityWithTransition(intent: Intent) {
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         if (appBarLayout != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N_MR1) {
             val options = ActivityOptions.makeSceneTransitionAnimation(
                     this,
                     appBarLayout,
@@ -74,7 +76,9 @@ open class BaseActivity : AppCompatActivity() {
     fun startActivityWithTransition(intent: Intent, vararg pairs: Pair<View, String>) {
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         if (appBarLayout != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N_MR1) {
             val options = ActivityOptions.makeSceneTransitionAnimation(
                     this,
                     Pair.create(appBarLayout, appBarLayout.transitionName),
@@ -89,7 +93,9 @@ open class BaseActivity : AppCompatActivity() {
     fun startActivityForResultWithTransition(intent: Intent, responseCode: Int) {
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         if (appBarLayout != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N
+                && Build.VERSION.SDK_INT != Build.VERSION_CODES.N_MR1) {
             val options = ActivityOptions.makeSceneTransitionAnimation(
                     this,
                     appBarLayout,
