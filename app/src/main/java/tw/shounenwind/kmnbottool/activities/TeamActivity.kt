@@ -25,7 +25,7 @@ import tw.shounenwind.kmnbottool.widget.ProgressDialog
 class TeamActivity : BaseActivity() {
 
     private var oldTeam: Int = 0
-    private val team: Spinner by lazy {
+    private val team: Spinner by lazy(LazyThreadSafetyMode.NONE) {
         findViewById<Spinner>(R.id.team)
     }
 

@@ -291,8 +291,8 @@ class BoxActivity : BaseActivity() {
 
         @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: MonsterDataHolder, position: Int) {
-            val mContext: BoxActivity? = wrContext.get()
-            if (mContext == null || mContext.isFinishing)
+            val mContext: BoxActivity = wrContext.get()?:return
+            if (mContext.isFinishing)
                 return
             val monster = monsters[position]
             when {
@@ -380,20 +380,35 @@ class BoxActivity : BaseActivity() {
 
         inner class MonsterDataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-            val item: ConstraintLayout = itemView.findViewById(R.id.monster_unit)
-            val image: ImageView = itemView.findViewById(R.id.monster_img)
-            val name: TextView = itemView.findViewById(R.id.monster_name)
-            val type: TextView = itemView.findViewById(R.id.monster_type)
-            val monsterClass: TextView = itemView.findViewById(R.id.monster_class)
+            val item by lazy(LazyThreadSafetyMode.NONE){
+                itemView.findViewById<ConstraintLayout>(R.id.monster_unit)!!
+            }
+            val image by lazy(LazyThreadSafetyMode.NONE){
+                itemView.findViewById<ImageView>(R.id.monster_img)!!
+            }
+            val name by lazy(LazyThreadSafetyMode.NONE){
+                itemView.findViewById<TextView>(R.id.monster_name)!!
+            }
+            val type by lazy(LazyThreadSafetyMode.NONE){
+                itemView.findViewById<TextView>(R.id.monster_type)!!
+            }
+            val monsterClass by lazy(LazyThreadSafetyMode.NONE){
+                itemView.findViewById<TextView>(R.id.monster_class)!!
+            }
         }
 
     }
 
     companion object {
+        @JvmStatic
         private val RED_TYPE = Color.parseColor("#ff4081")
+        @JvmStatic
         private val GREEN_TYPE = Color.parseColor("#8bc34a")
+        @JvmStatic
         private val BLUE_TYPE = Color.parseColor("#00b0ff")
+        @JvmStatic
         private val YELLOW_TYPE = Color.parseColor("#ffea00")
+        @JvmStatic
         private val BLACK_TYPE = Color.parseColor("#673AB7")
     }
 }
