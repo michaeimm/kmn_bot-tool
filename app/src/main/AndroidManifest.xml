@@ -29,6 +29,10 @@
             android:name=".activities.TeamActivity"
             android:label="@string/bot_battle" />
         <activity android:name=".activities.DetailActivity" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 
 </manifest>
