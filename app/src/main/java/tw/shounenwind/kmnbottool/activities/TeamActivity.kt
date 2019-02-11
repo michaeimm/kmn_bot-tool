@@ -10,12 +10,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor
+import tw.shounenwind.kmnbottool.util.CommandExecutor.battleHell
+import tw.shounenwind.kmnbottool.util.CommandExecutor.battleNormal
+import tw.shounenwind.kmnbottool.util.CommandExecutor.battleUltraHell
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
+import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.StaticCachedThreadPool
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
@@ -40,17 +46,18 @@ class TeamActivity : BaseActivity() {
     private fun prepareScreen() {
         bindToolbarHomeButton()
 
-        val teamArray = arrayOfNulls<String>(10)
-        teamArray[0] = "1"
-        teamArray[1] = "2"
-        teamArray[2] = "3"
-        teamArray[3] = "4"
-        teamArray[4] = "5"
-        teamArray[5] = "6"
-        teamArray[6] = "7"
-        teamArray[7] = "8"
-        teamArray[8] = "9"
-        teamArray[9] = "10"
+        val teamArray = arrayOf(
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+        )
         val teamAdapter = ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item, teamArray)
         teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         team.adapter = teamAdapter
@@ -121,7 +128,7 @@ class TeamActivity : BaseActivity() {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
             target += " " + findViewById<TextView>(R.id.chips).text
-            CommandExecutor.battleNormal(this, target)
+            battleNormal(target)
         }
         findViewById<Button>(R.id.bot_battle_hell).setOnClickListener {
             var target = findViewById<TextView>(R.id.attacter_name).text.toString()
@@ -133,7 +140,7 @@ class TeamActivity : BaseActivity() {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
             target += " " + findViewById<TextView>(R.id.chips).text
-            CommandExecutor.battleHell(this, target)
+            battleHell(target)
         }
         findViewById<Button>(R.id.bot_battle_ultra_hell).setOnClickListener {
             var target = findViewById<TextView>(R.id.attacter_name).text.toString()
@@ -145,7 +152,7 @@ class TeamActivity : BaseActivity() {
                 target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
             }
             target += " " + findViewById<TextView>(R.id.chips).text
-            CommandExecutor.battleUltraHell(this, target)
+            battleUltraHell(target)
         }
         findViewById<CardView>(R.id.chips_card).setOnClickListener {
             openChipDialog()
@@ -201,9 +208,9 @@ class TeamActivity : BaseActivity() {
         progressDialog.progressDialog
                 .cancelable(false)
                 .show()
-        StaticCachedThreadPool.instance.execute {
+        GlobalScope.launch {
             val sharedPref =
-                    PreferenceManager.getDefaultSharedPreferences(this)
+                    PreferenceManager.getDefaultSharedPreferences(this@TeamActivity)
             val defaultAttacker: String?
             val defaultSupporter: String?
             val defaultTeam = sharedPref.getInt("team", 0)
@@ -228,7 +235,7 @@ class TeamActivity : BaseActivity() {
             if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
-                    GlideApp.with(this)
+                    GlideApp.with(this@TeamActivity)
                             .clear(findViewById<View>(R.id.attacter_img))
                 }
 
@@ -237,14 +244,14 @@ class TeamActivity : BaseActivity() {
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.attacter_img)
-                    GlideApp.with(this)
+                    GlideApp.with(this@TeamActivity)
                             .asBitmap()
                             .load(monster.image)
                             .apply(RequestOptions().centerCrop()
                                     .diskCacheStrategy(DiskCacheStrategy.DATA)
                             )
                             .centerCrop()
-                            .into(CircularViewTarget(this, imageView))
+                            .into(CircularViewTarget(this@TeamActivity, imageView))
                 }
 
             }
@@ -254,7 +261,7 @@ class TeamActivity : BaseActivity() {
             if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
-                    GlideApp.with(this)
+                    GlideApp.with(this@TeamActivity)
                             .clear(findViewById<View>(R.id.supporter_img))
                 }
             }else{
@@ -262,22 +269,20 @@ class TeamActivity : BaseActivity() {
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.supporter_img)
-                    GlideApp.with(this)
+                    GlideApp.with(this@TeamActivity)
                             .asBitmap()
                             .load(monster.image)
                             .apply(RequestOptions().centerCrop()
                                     .diskCacheStrategy(DiskCacheStrategy.DATA)
                             )
                             .centerCrop()
-                            .into(CircularViewTarget(this, imageView))
+                            .into(CircularViewTarget(this@TeamActivity, imageView))
                 }
             }
             runOnUiThread {
                 team.setSelection(defaultTeam)
-                try {
+                LogUtil.catchAndIgnore {
                     progressDialog.dismiss()
-                }catch (e: Exception){
-                    //Ignore
                 }
             }
         }

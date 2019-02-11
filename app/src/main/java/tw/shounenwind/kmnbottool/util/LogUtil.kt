@@ -6,6 +6,7 @@ import com.google.gson.Gson
 
 import tw.shounenwind.kmnbottool.BuildConfig
 import tw.shounenwind.kmnbottool.gson.BoxData
+import java.lang.Exception
 
 object LogUtil {
 
@@ -23,6 +24,22 @@ object LogUtil {
         if (BuildConfig.DEBUG) {
             val msg = Gson().toJson(boxData, BoxData::class.java)
             Log.d(tag, msg)
+        }
+    }
+
+    inline fun catchAndPrint(action: () -> Unit){
+        try {
+            action()
+        }catch (e: Exception){
+            printStackTrace(e)
+        }
+    }
+
+    inline fun catchAndIgnore(action: () -> Unit){
+        try {
+            action()
+        }catch (e: Exception){
+            //Ignore
         }
     }
 

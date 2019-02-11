@@ -7,50 +7,51 @@ import android.os.Parcelable
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import java.util.*
 
 object CommandExecutor {
 
-    fun botDraw(mContext: Context) {
-        val options = arrayOf(mContext.getString(R.string.bot_draw_normal), mContext.getString(R.string.bot_draw_ultra))
-        AlertDialog.Builder(mContext)
+    fun BaseActivity.botDraw() {
+        val options = arrayOf(getString(R.string.bot_draw_normal), getString(R.string.bot_draw_ultra))
+        AlertDialog.Builder(this)
                 .setItems(options) { _, i ->
                     when (i) {
-                        0 -> sendCommand(mContext, mContext.getString(R.string.command_draw))
-                        1 -> sendCommand(mContext, mContext.getString(R.string.command_draw_ultra))
+                        0 -> sendCommand(getString(R.string.command_draw))
+                        1 -> sendCommand(getString(R.string.command_draw_ultra))
                     }
                 }
                 .show()
     }
 
-    fun expDraw(mContext: Context, target: String) {
-        val options = arrayOf(mContext.getString(R.string.bot_exp_normal), mContext.getString(R.string.bot_exp_ultra))
-        AlertDialog.Builder(mContext)
+    fun BaseActivity.expDraw(target: String) {
+        val options = arrayOf(getString(R.string.bot_exp_normal), getString(R.string.bot_exp_ultra))
+        AlertDialog.Builder(this)
                 .setTitle(target)
                 .setItems(options) { _, i ->
                     when (i) {
-                        0 -> sendCommand(mContext, mContext.getString(R.string.command_exp, target))
-                        1 -> sendCommand(mContext, mContext.getString(R.string.command_exp_ultra, target))
+                        0 -> sendCommand(getString(R.string.command_exp, target))
+                        1 -> sendCommand(getString(R.string.command_exp_ultra, target))
                     }
                 }
                 .show()
     }
 
-    fun battleNormal(mContext: Context, target: String) {
-        sendCommand(mContext, mContext.getString(R.string.command_battle, target))
+    fun BaseActivity.battleNormal(target: String) {
+        sendCommand(getString(R.string.command_battle, target))
     }
 
-    fun battleHell(mContext: Context, target: String) {
-        sendCommand(mContext, mContext.getString(R.string.command_hell_battle, target))
+    fun BaseActivity.battleHell(target: String) {
+        sendCommand(getString(R.string.command_hell_battle, target))
     }
 
-    fun battleUltraHell(mContext: Context, target: String) {
-        sendCommand(mContext, mContext.getString(R.string.command_ultra_hell_battle, target))
+    fun BaseActivity.battleUltraHell(target: String) {
+        sendCommand(getString(R.string.command_ultra_hell_battle, target))
     }
 
-    private fun sendCommand(mContext: Context, command: String) {
+    private fun BaseActivity.sendCommand(command: String) {
 
-        val targetUri = Uri.parse(mContext.getString(R.string.command_prefix) + command + mContext.getString(R.string.command_append))
+        val targetUri = Uri.parse(getString(R.string.command_prefix) + command + getString(R.string.command_append))
         val intent = Intent(Intent.ACTION_VIEW, targetUri)
         val targetedShareIntents = ArrayList<Intent>()
 
@@ -65,15 +66,15 @@ object CommandExecutor {
 
         for (aTarget in textSharedTarget) {
 
-            val manager = mContext.packageManager
+            val manager = packageManager
             val searchIntent = Intent().setPackage(aTarget)
             val infoList = manager.queryIntentActivities(searchIntent, 0)
 
             if (infoList != null && infoList.size > 0) {
                 val targeted = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.app_name))
-                    putExtra(Intent.EXTRA_TEXT, command + " " + mContext.getString(R.string.bz))
+                    putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+                    putExtra(Intent.EXTRA_TEXT, command + " " + getString(R.string.bz))
                     setPackage(aTarget)
                 }
                 targetedShareIntents.add(targeted)
@@ -81,7 +82,7 @@ object CommandExecutor {
 
         }
 
-        val resInfo = mContext.packageManager.queryIntentActivities(intent, 0)
+        val resInfo = packageManager.queryIntentActivities(intent, 0)
 
         if (!resInfo.isEmpty()) {
             for (info in resInfo) {
@@ -104,9 +105,9 @@ object CommandExecutor {
                         putExtra(Intent.EXTRA_TITLE, "Open...")
                         putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toTypedArray<Parcelable>())
                     }
-            mContext.startActivity(chooserIntent)
+            startActivity(chooserIntent)
         } catch (ex: android.content.ActivityNotFoundException) {
-            Toast.makeText(mContext, R.string.no_available_app, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show()
         }
 
     }

@@ -3,6 +3,8 @@ package tw.shounenwind.kmnbottool.util
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.CacheControl
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -35,7 +37,7 @@ class KmnBotDataLoader {
                 }
 
                 body = response.body()!!
-                boxData = Gson().fromJson<BoxData>(body.charStream()!!, BoxData::class.java)
+                boxData = Gson().fromJson<BoxData>(body.charStream(), BoxData::class.java)
                 LogUtil.boxData(TAG, boxData)
             } finally {
                 body?.close()
@@ -43,7 +45,7 @@ class KmnBotDataLoader {
             return boxData
         }
 
-    private var chipsData: ChipData? = null
+    private val chipsData: ChipData?
         @Throws(Exception::class)
         get() {
             var body: ResponseBody? = null
@@ -111,22 +113,21 @@ class KmnBotDataLoader {
         onSuccessListener!!
         onFailedListener!!
 
-        StaticCachedThreadPool.instance.execute {
-
+        GlobalScope.launch {
             try {
-                KmnBotDataLoader.boxData = this.boxData!!
+                KmnBotDataLoader.boxData = this@KmnBotDataLoader.boxData!!
             } catch (e: Exception) {
                 onFailedListener!!.run(null, null)
                 LogUtil.printStackTrace(e)
-                return@execute
+                return@launch
             }
 
             try {
-                KmnBotDataLoader.chipData = this.chipsData!!
+                KmnBotDataLoader.chipData = this@KmnBotDataLoader.chipsData!!
             } catch (e: Exception) {
                 onSuccessListener!!.run(boxData, null)
                 LogUtil.printStackTrace(e)
-                return@execute
+                return@launch
             }
 
             onSuccessListener!!.run(boxData, chipData)

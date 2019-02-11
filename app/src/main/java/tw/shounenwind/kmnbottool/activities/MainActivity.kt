@@ -21,6 +21,8 @@ import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor
+import tw.shounenwind.kmnbottool.util.CommandExecutor.botDraw
+import tw.shounenwind.kmnbottool.util.CommandExecutor.expDraw
 import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
@@ -42,26 +44,23 @@ class MainActivity : BaseActivity() {
             return
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
-        checkPlurkId(object : InputHandler {
-            override fun onEnter(input: String) {
-                FlowJob(this@MainActivity)
-                        .addUIJob {
-                            showProgressDialog(getString(R.string.monster_loading))
-                        }
-                        .addIOJob {
-                            getData(input)
-                        }
-                        .start()
-            }
-
-        })
+        checkPlurkId{input ->
+            FlowJob(this@MainActivity)
+                    .addUIJob {
+                        showProgressDialog(getString(R.string.monster_loading))
+                    }
+                    .addIOJob {
+                        getData(input)
+                    }
+                    .start()
+        }
     }
 
     private fun prepareScreen() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         findViewById<CardView>(R.id.bot_draw).setOnClickListener {
-            CommandExecutor.botDraw(this)
+            botDraw()
         }
         findViewById<CardView>(R.id.bot_exp).setOnClickListener {
             startActivityForResultWithTransition(intentFor<BoxActivity>("selectFor" to "exp"), FOR_RESULT_EXP)
@@ -94,7 +93,7 @@ class MainActivity : BaseActivity() {
             return
         when (requestCode) {
             FOR_RESULT_EXP -> {
-                CommandExecutor.expDraw(this, data!!.getStringExtra("name"))
+                expDraw(data!!.getStringExtra("name"))
             }
         }
     }
@@ -133,19 +132,16 @@ class MainActivity : BaseActivity() {
                 run {
                     val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
                     sharedPreferences.edit().putInt("user_id_ver", 1).commit()
-                    checkPlurkId(object : InputHandler {
-                        override fun onEnter(input: String) {
-                            FlowJob(this@MainActivity)
-                                    .addUIJob{
-                                        showProgressDialog(getString(R.string.monster_loading))
-                                    }
-                                    .addIOJob{
-                                        getData(input)
-                                    }
-                                    .start()
-                        }
-
-                    })
+                    checkPlurkId{input ->
+                        FlowJob(this@MainActivity)
+                                .addUIJob{
+                                    showProgressDialog(getString(R.string.monster_loading))
+                                }
+                                .addIOJob{
+                                    getData(input)
+                                }
+                                .start()
+                    }
                 }
                 return true
             }
@@ -157,18 +153,20 @@ class MainActivity : BaseActivity() {
         startActivityWithTransition(intentFor<LicenseActivity>())
     }
 
-    private fun checkPlurkId(inputHandler: InputHandler) {
+    private inline fun checkPlurkId(crossinline inputHandler: (userId: String) -> Unit) {
         val userId = sharedPreferences!!.getString("user_id", null)
         val userIdVer = sharedPreferences!!.getInt("user_id_ver", 0)
         if (userId != null && userIdVer == LATEST_ID_VERSION) {
-            inputHandler.onEnter(userId)
+            inputHandler(userId)
             return
         }
 
-        openPlurkIdInputDialog(inputHandler)
+        openPlurkIdInputDialog{
+            inputHandler(it)
+        }
     }
 
-    private fun openPlurkIdInputDialog(inputHandler: InputHandler) {
+    private inline fun openPlurkIdInputDialog(crossinline inputHandler: (input: String) -> Unit) {
         val factory = LayoutInflater.from(this)
         @SuppressLint("InflateParams")
         val pdl = factory.inflate(R.layout.unit_single_field_input, null)
@@ -185,7 +183,7 @@ class MainActivity : BaseActivity() {
                             .commit()
                 }
                 .addUIJob{
-                    inputHandler.onEnter(input.text.toString())
+                    inputHandler(input.text.toString())
                 }
 
         input.setSingleLine()
@@ -239,7 +237,7 @@ class MainActivity : BaseActivity() {
         val kmnBotDataLoader = KmnBotDataLoader()
         kmnBotDataLoader.setUser(user)
                 .setOnSuccessListener { boxData, chipData ->
-                    try {
+                    LogUtil.catchAndPrint {
                         this@MainActivity.boxData = boxData
                         this@MainActivity.chipData = chipData
                         runOnUiThread {
@@ -254,19 +252,15 @@ class MainActivity : BaseActivity() {
                             findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
                             dismissProgressDialog()
                         }
-                    } catch (e: Exception) {
-                        LogUtil.printStackTrace(e)
                     }
                 }
                 .setOnFailedListener { _, _ ->
-                    try {
-                        runOnUiThread {
+                    runOnUiThread {
+                        LogUtil.catchAndPrint{
                             findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
                             dismissProgressDialog()
                             noDataHint()
                         }
-                    } catch (e: Exception) {
-                        LogUtil.printStackTrace(e)
                     }
                 }
                 .start()
@@ -279,52 +273,46 @@ class MainActivity : BaseActivity() {
                 .positiveAction(getString(R.string.bot_draw_d))
                 .negativeAction(getString(R.string.retry))
         val mDialog = builder.build(this) as SimpleDialog
-        mDialog.cancelable(true)
-        mDialog.positiveActionClickListener {
-            mDialog.dismiss()
-            CommandExecutor.botDraw(this)
-        }
-        mDialog.negativeActionClickListener {
-            mDialog.dismiss()
-            checkPlurkId(object : InputHandler {
-                override fun onEnter(input: String) {
+        mDialog.apply {
+            cancelable(true)
+            positiveActionClickListener {
+                mDialog.dismiss()
+                botDraw()
+            }
+            negativeActionClickListener {
+                mDialog.dismiss()
+                checkPlurkId { input ->
                     FlowJob(this@MainActivity)
-                            .addUIJob{
+                            .addUIJob {
                                 showProgressDialog(getString(R.string.monster_loading))
                             }
-                            .addIOJob{
+                            .addIOJob {
                                 getData(input)
                             }
                             .start()
                 }
-            })
+            }
         }
+
         mDialog.show()
     }
 
     private fun showProgressDialog(text: String) {
-        progressDialog = ProgressDialog(this)
-        progressDialog!!.setContent(text)
-        progressDialog!!.progressDialog
-                .cancelable(false)
-                .show()
+        progressDialog = ProgressDialog(this).apply {
+            setContent(text)
+            progressDialog
+                    .cancelable(false)
+                    .show()
+        }
     }
 
     private fun dismissProgressDialog() {
-        try {
+        LogUtil.catchAndPrint {
             progressDialog!!.dismiss()
-        } catch (e: Exception) {
-            LogUtil.printStackTrace(e)
         }
-
-    }
-
-    private interface InputHandler {
-        fun onEnter(input: String)
     }
 
     companion object {
-
         private const val LATEST_ID_VERSION = 2
         private const val FOR_RESULT_EXP = 0
     }

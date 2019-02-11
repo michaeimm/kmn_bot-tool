@@ -220,12 +220,9 @@ class BoxActivity : BaseActivity() {
     }
 
     private fun dismissProgressDialog() {
-        try {
+        LogUtil.catchAndPrint {
             progressDialog!!.dismiss()
-        } catch (e: Exception) {
-            LogUtil.printStackTrace(e)
         }
-
     }
 
     private fun getPets() : List<Pet>{
