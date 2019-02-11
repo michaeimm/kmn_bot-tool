@@ -16,13 +16,11 @@ import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
-import tw.shounenwind.kmnbottool.util.CommandExecutor
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleHell
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleNormal
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleUltraHell
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
-import tw.shounenwind.kmnbottool.util.StaticCachedThreadPool
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog

@@ -20,7 +20,6 @@ import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
-import tw.shounenwind.kmnbottool.util.CommandExecutor
 import tw.shounenwind.kmnbottool.util.CommandExecutor.botDraw
 import tw.shounenwind.kmnbottool.util.CommandExecutor.expDraw
 import tw.shounenwind.kmnbottool.util.FlowJob
