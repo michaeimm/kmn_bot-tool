@@ -63,35 +63,32 @@ object CommandExecutor {
                 "idv.brianhsu.maidroid.plurk"
         )
 
-        for (aTarget in textSharedTarget) {
-
+        textSharedTarget.asSequence().filter {
             val manager = packageManager
-            val searchIntent = Intent().setPackage(aTarget)
+            val searchIntent = Intent().setPackage(it)
             val infoList = manager.queryIntentActivities(searchIntent, 0)
-
-            if (infoList != null && infoList.size > 0) {
-                val targeted = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
-                    putExtra(Intent.EXTRA_TEXT, command + " " + getString(R.string.bz))
-                    setPackage(aTarget)
-                }
-                targetedShareIntents.add(targeted)
+            (infoList != null && infoList.size > 0)
+        }.forEach {
+            val targeted = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+                putExtra(Intent.EXTRA_TEXT, command + " " + getString(R.string.bz))
+                setPackage(it)
             }
-
+            targetedShareIntents.add(targeted)
         }
 
         val resInfo = packageManager.queryIntentActivities(intent, 0)
 
         if (!resInfo.isEmpty()) {
-            for (info in resInfo) {
-                val activityInfo = info.activityInfo
-                LogUtil.d("packageName", activityInfo.packageName)
-                if (!activityInfo.packageName.equals("com.plurk.android", ignoreCase = true)) {
-                    val targeted = Intent(Intent.ACTION_VIEW, targetUri)
-                    targeted.setPackage(activityInfo.packageName)
-                    targetedShareIntents.add(targeted)
-                }
+            resInfo.asSequence().map {
+                it.activityInfo.packageName
+            }.filterNot {
+                it.equals("com.plurk.android", ignoreCase = true)
+            }.forEach {
+                val targeted = Intent(Intent.ACTION_VIEW, targetUri)
+                targeted.setPackage(it)
+                targetedShareIntents.add(targeted)
             }
         }
 

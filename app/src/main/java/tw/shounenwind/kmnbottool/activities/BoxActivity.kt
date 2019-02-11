@@ -318,7 +318,9 @@ class BoxActivity : BaseActivity() {
                 }
                 val star = StringBuilder()
                 val len = monster.rare!!
-                for (i in 0 until len) star.append("☆")
+                repeat(len) {
+                    star.append("☆")
+                }
                 holder.type.text = star.toString()
             }
             if (mContext.selectFor != null) {

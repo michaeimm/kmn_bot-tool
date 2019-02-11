@@ -288,9 +288,7 @@ class TeamActivity : BaseActivity() {
 
     private fun openChipDialog() {
         val options = ArrayList<String>(KmnBotDataLoader.chipData!!.chips!!.size)
-        val iterator = KmnBotDataLoader.chipData!!.chips!!.iterator()
-        while (iterator.hasNext()) {
-            val chip = iterator.next()
+        KmnBotDataLoader.chipData!!.chips!!.forEach { chip ->
             options.add(chip.name!! + "\n" + chip.component)
         }
         AlertDialog.Builder(this)
