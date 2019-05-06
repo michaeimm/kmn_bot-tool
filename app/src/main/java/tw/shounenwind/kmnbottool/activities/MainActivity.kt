@@ -29,7 +29,7 @@ import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 class MainActivity : BaseActivity() {
-    private var sharedPreferences: SharedPreferences? = null
+    private lateinit var sharedPreferences: SharedPreferences
     private var progressDialog: ProgressDialog? = null
 
     private var boxData: BoxData? = null
@@ -153,8 +153,8 @@ class MainActivity : BaseActivity() {
     }
 
     private inline fun checkPlurkId(crossinline inputHandler: (userId: String) -> Unit) {
-        val userId = sharedPreferences!!.getString("user_id", null)
-        val userIdVer = sharedPreferences!!.getInt("user_id_ver", 0)
+        val userId = sharedPreferences.getString("user_id", null)
+        val userIdVer = sharedPreferences.getInt("user_id_ver", 0)
         if (userId != null && userIdVer == LATEST_ID_VERSION) {
             inputHandler(userId)
             return
@@ -176,7 +176,7 @@ class MainActivity : BaseActivity() {
         @SuppressLint("ApplySharedPref")
         val flowJob = FlowJob(this)
                 .addIOJob{
-                    sharedPreferences!!.edit()
+                    sharedPreferences.edit()
                             .putInt("user_id_ver", LATEST_ID_VERSION)
                             .putString("user_id", input.text.toString())
                             .commit()

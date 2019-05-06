@@ -212,11 +212,12 @@ class BoxActivity : BaseActivity() {
     }
 
     private fun showProgressDialog(text: String) {
-        progressDialog = ProgressDialog(this)
-        progressDialog!!.setContent(text)
-        progressDialog!!.progressDialog
-                .cancelable(false)
-                .show()
+        progressDialog = ProgressDialog(this).apply {
+            setContent(text)
+            progressDialog
+                    .cancelable(false)
+                    .show()
+        }
     }
 
     private fun dismissProgressDialog() {
