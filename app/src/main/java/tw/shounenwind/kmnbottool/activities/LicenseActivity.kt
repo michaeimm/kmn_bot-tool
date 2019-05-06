@@ -101,7 +101,7 @@ class LicenseActivity : BaseActivity() {
             return ListViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: ArrayAdapter.ListViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
             holder.title.text = data[position].title
             holder.content.text = data[position].content
         }

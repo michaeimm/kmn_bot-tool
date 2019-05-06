@@ -123,7 +123,7 @@ class KmnBotDataLoader {
             }
 
             try {
-                KmnBotDataLoader.chipData = this@KmnBotDataLoader.chipsData!!
+                chipData = this@KmnBotDataLoader.chipsData!!
             } catch (e: Exception) {
                 onSuccessListener!!.run(boxData, null)
                 LogUtil.printStackTrace(e)

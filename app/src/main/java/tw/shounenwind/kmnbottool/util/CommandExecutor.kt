@@ -80,7 +80,7 @@ object CommandExecutor {
 
         val resInfo = packageManager.queryIntentActivities(intent, 0)
 
-        if (!resInfo.isEmpty()) {
+        if (resInfo.isNotEmpty()) {
             resInfo.asSequence().map {
                 it.activityInfo.packageName
             }.filterNot {
