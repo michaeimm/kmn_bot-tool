@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -179,8 +178,6 @@ class MainActivity : BaseActivity() {
     }
 
     private inline fun openPlurkIdInputDialog(crossinline inputHandler: (input: String) -> Unit) {
-        val factory = LayoutInflater.from(this)
-        @SuppressLint("InflateParams")
         val dialog = SingleFieldDialog(this)
 
         @SuppressLint("ApplySharedPref")
