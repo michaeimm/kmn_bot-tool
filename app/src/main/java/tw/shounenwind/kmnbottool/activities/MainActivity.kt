@@ -22,6 +22,7 @@ import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor.botDraw
 import tw.shounenwind.kmnbottool.util.CommandExecutor.expDraw
 import tw.shounenwind.kmnbottool.util.FlowJob
+import tw.shounenwind.kmnbottool.util.KmnBotData
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
@@ -40,7 +41,14 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prepareScreen()
-        if (savedInstanceState != null) {
+        KmnBotData.cache?.also { savedData ->
+            boxData = savedData.boxData
+            chipData = savedData.chipsData
+            KmnBotData.cache = null
+            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
+            findViewById<View>(R.id.bot_mons_box).visibility = View.VISIBLE
+            findViewById<View>(R.id.bot_battle).visibility = View.VISIBLE
+            findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
             return
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
@@ -96,6 +104,11 @@ class MainActivity : BaseActivity() {
         GlideApp.with(this)
                 .load(R.mipmap.mikann)
                 .into(findViewById(R.id.bot_mons_box_img))
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        KmnBotData.cache = KmnBotData(boxData, chipData)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
