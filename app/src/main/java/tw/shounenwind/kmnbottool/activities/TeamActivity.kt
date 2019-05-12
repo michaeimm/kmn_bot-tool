@@ -212,11 +212,11 @@ class TeamActivity : BaseActivity() {
     private fun readTeamInfo() {
         if (isFinishing)
             return
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setContent(getString(R.string.loading))
-        progressDialog.progressDialog
-                .cancelable(false)
-                .show()
+        val progressDialog = ProgressDialog(this).apply {
+            setContent(getString(R.string.loading))
+            setCancelable(false)
+            show()
+        }
         GlobalScope.launch {
             val sharedPref =
                     PreferenceManager.getDefaultSharedPreferences(this@TeamActivity)

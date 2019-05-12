@@ -7,15 +7,14 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.*
-import android.view.inputmethod.EditorInfo
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import com.rey.material.app.Dialog
-import com.rey.material.app.SimpleDialog
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
@@ -28,6 +27,8 @@ import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
+import tw.shounenwind.kmnbottool.widget.SimpleDialog
+import tw.shounenwind.kmnbottool.widget.SingleFieldDialog
 
 class MainActivity : BaseActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -44,7 +45,7 @@ class MainActivity : BaseActivity() {
             return
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
-        checkPlurkId{input ->
+        checkPlurkId { input ->
             FlowJob(this@MainActivity)
                     .addUIJob {
                         showProgressDialog(getString(R.string.monster_loading))
@@ -143,12 +144,12 @@ class MainActivity : BaseActivity() {
                 run {
                     val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
                     sharedPreferences.edit().putInt("user_id_ver", 1).commit()
-                    checkPlurkId{input ->
+                    checkPlurkId { input ->
                         FlowJob(this@MainActivity)
-                                .addUIJob{
+                                .addUIJob {
                                     showProgressDialog(getString(R.string.monster_loading))
                                 }
-                                .addIOJob{
+                                .addIOJob {
                                     getData(input)
                                 }
                                 .start()
@@ -172,7 +173,7 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        openPlurkIdInputDialog{
+        openPlurkIdInputDialog {
             inputHandler(it)
         }
     }
@@ -180,29 +181,25 @@ class MainActivity : BaseActivity() {
     private inline fun openPlurkIdInputDialog(crossinline inputHandler: (input: String) -> Unit) {
         val factory = LayoutInflater.from(this)
         @SuppressLint("InflateParams")
-        val pdl = factory.inflate(R.layout.unit_single_field_input, null)
-        val dialog = Dialog(this, R.style.AppTheme)
-        dialog.contentView(pdl)
-        val input = pdl.findViewById<EditText>(R.id.name_input)
+        val dialog = SingleFieldDialog(this)
 
         @SuppressLint("ApplySharedPref")
         val flowJob = FlowJob(this)
-                .addIOJob{
+                .addIOJob {
                     sharedPreferences.edit()
                             .putInt("user_id_ver", LATEST_ID_VERSION)
-                            .putString("user_id", input.text.toString())
+                            .putString("user_id", dialog.text.toString())
                             .commit()
                 }
-                .addUIJob{
-                    inputHandler(input.text.toString())
+                .addUIJob {
+                    inputHandler(dialog.text.toString())
                 }
 
-        input.setSingleLine()
-        input.setOnEditorActionListener { _, actionId, keyEvent ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH
-                    || actionId == EditorInfo.IME_ACTION_DONE
-                    || keyEvent.action == KeyEvent.ACTION_DOWN
-                    && keyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+        dialog.apply {
+            setTitle(R.string.input_plurk_username)
+            setCancelable(true)
+            positiveAction(android.R.string.ok)
+            positiveActionClickListener {
                 dialog.dismiss()
                 val imm =
                         getSystemService(Context.INPUT_METHOD_SERVICE)!! as InputMethodManager
@@ -213,35 +210,18 @@ class MainActivity : BaseActivity() {
                     )
                 }
                 flowJob.start()
-                return@setOnEditorActionListener true
             }
-            false
-        }
-        dialog
-                .title(R.string.input_plurk_username)
-                .cancelable(true)
-                .positiveAction(android.R.string.ok)
-                .positiveActionClickListener {
+            negativeAction(android.R.string.cancel)
+            negativeActionClickListener {
+                try {
                     dialog.dismiss()
-                    val imm =
-                            getSystemService(Context.INPUT_METHOD_SERVICE)!! as InputMethodManager
-                    if (imm.isActive) {
-                        imm.toggleSoftInput(
-                                InputMethodManager.SHOW_IMPLICIT,
-                                InputMethodManager.HIDE_NOT_ALWAYS
-                        )
-                    }
-                    flowJob.start()
+                } catch (e: Exception) {
+                    //Do nothing
                 }
-                .negativeAction(android.R.string.cancel)
-                .negativeActionClickListener {
-                    try {
-                        dialog.dismiss()
-                    } catch (e: Exception) {
-                        //Do nothing
-                    }
-                }
-                .show()
+            }
+            show()
+        }
+
     }
 
     private fun getData(user: String) {
@@ -267,7 +247,7 @@ class MainActivity : BaseActivity() {
                 }
                 .setOnFailedListener {
                     runOnUiThread {
-                        LogUtil.catchAndPrint{
+                        LogUtil.catchAndPrint {
                             findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
                             dismissProgressDialog()
                             noDataHint()
@@ -278,14 +258,13 @@ class MainActivity : BaseActivity() {
     }
 
     private fun noDataHint() {
-        val builder = SimpleDialog.Builder(com.rey.material.R.style.Material_App_Dialog_Simple)
-        builder.title(getString(R.string.load_data_failed))
-        builder.message(getString(R.string.load_data_failed_message))
-                .positiveAction(getString(R.string.bot_draw_d))
-                .negativeAction(getString(R.string.retry))
-        val mDialog = builder.build(this) as SimpleDialog
+        val mDialog = SimpleDialog(this)
         mDialog.apply {
-            cancelable(true)
+            setTitle(getString(R.string.load_data_failed))
+            message(getString(R.string.load_data_failed_message))
+            positiveAction(getString(R.string.bot_draw_d))
+            negativeAction(getString(R.string.retry))
+            setCancelable(true)
             positiveActionClickListener {
                 mDialog.dismiss()
                 botDraw()
@@ -311,9 +290,8 @@ class MainActivity : BaseActivity() {
     private fun showProgressDialog(text: String) {
         progressDialog = ProgressDialog(this).apply {
             setContent(text)
-            progressDialog
-                    .cancelable(false)
-                    .show()
+            setCancelable(false)
+            show()
         }
     }
 

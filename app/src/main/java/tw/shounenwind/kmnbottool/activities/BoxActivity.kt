@@ -215,9 +215,8 @@ class BoxActivity : BaseActivity() {
     private fun showProgressDialog(text: String) {
         progressDialog = ProgressDialog(this).apply {
             setContent(text)
-            progressDialog
-                    .cancelable(false)
-                    .show()
+            setCancelable(false)
+            show()
         }
     }
 
