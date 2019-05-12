@@ -25,11 +25,11 @@ open class Player : Parcelable {
     var name: String? = null
 
     protected constructor(`in`: Parcel) {
-        this.rainbowGear = `in`.readValue(Int::class.java.classLoader) as Int
-        this.completedRate = `in`.readValue(String::class.java.classLoader) as String
-        this.incomingRate = `in`.readValue(Float::class.java.classLoader) as Float
-        this.id = `in`.readValue(String::class.java.classLoader) as String
-        this.name = `in`.readValue(String::class.java.classLoader) as String
+        this.rainbowGear = `in`.readValue(Int::class.java.classLoader) as Int?
+        this.completedRate = `in`.readValue(String::class.java.classLoader) as String?
+        this.incomingRate = `in`.readValue(Float::class.java.classLoader) as Float?
+        this.id = `in`.readValue(String::class.java.classLoader) as String?
+        this.name = `in`.readValue(String::class.java.classLoader) as String?
     }
 
     constructor()

@@ -19,10 +19,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.FlowJob
-import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
@@ -35,11 +35,10 @@ import kotlin.Comparator
 
 class BoxActivity : BaseActivity() {
 
+    private lateinit var boxData: BoxData
     private var selectFor: String? = null
     private var progressDialog: ProgressDialog? = null
-    private val adapter: BoxAdapter by lazy {
-        BoxAdapter(this)
-    }
+    private lateinit var adapter: BoxAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +47,8 @@ class BoxActivity : BaseActivity() {
         bindToolbarHomeButton()
 
         selectFor = intent.getStringExtra("selectFor")
+        boxData = intent.getParcelableExtra("boxData")
+        adapter = BoxAdapter(this)
 
         val listView = findViewById<RecyclerView>(R.id.list)
         listView.layoutManager = LinearLayoutManager(this)
@@ -63,7 +64,7 @@ class BoxActivity : BaseActivity() {
         when (item.itemId) {
             R.id.menu_profile -> {
                 val s: String = try {
-                    KmnBotDataLoader.boxData!!.player!!.completedRate!!
+                    boxData.player!!.completedRate!!
                 } catch (e: Exception) {
                     getString(R.string.no_data)
                 }
@@ -77,11 +78,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_series -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob {
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
                         .addUIJob {
@@ -96,11 +97,11 @@ class BoxActivity : BaseActivity() {
             R.id.sort_name -> {
                 showProgressDialog(getString(R.string.loading))
                 val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             data.sortWith(Comparator { o1, o2 ->
                                 collator.compare(o1.name, o2.name)
                             })
@@ -117,11 +118,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_rare -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             data.sortWith(Comparator { o1, o2 -> o1!!.rare!!.compareTo(o2!!.rare!!) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
@@ -136,11 +137,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_level -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             data.sortWith(Comparator { o1, o2 ->
                                 val r1 = if (o1!!.level == o1.maxLevel) {
                                     Int.MAX_VALUE
@@ -167,11 +168,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_class -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             data.sortWith(Comparator { o1, o2 -> o1!!.petClass!!.compareTo(o2!!.petClass!!) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
@@ -187,11 +188,11 @@ class BoxActivity : BaseActivity() {
             R.id.sort_type -> {
                 showProgressDialog(getString(R.string.loading))
                 val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets!!.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(KmnBotDataLoader.boxData!!.pets!!)
+                            data.addAll(boxData.pets!!)
                             data.sortWith(Comparator { o1, o2 ->
                                 collator.compare(o1.type + o1.name, o2.type + o2.name)
                             })
@@ -227,7 +228,10 @@ class BoxActivity : BaseActivity() {
     }
 
     private fun getPets() : List<Pet>{
-        val monsters = ArrayList<Pet>(KmnBotDataLoader.boxData!!.pets!!.size + 1)
+        val pets = checkNotNull(boxData.pets) {
+            "pets is null"
+        }
+        val monsters = ArrayList<Pet>(pets.size + 1)
 
         if (selectFor != null && selectFor != "exp"){
             val pet = Pet().apply {
@@ -245,7 +249,7 @@ class BoxActivity : BaseActivity() {
             }
             monsters.add(pet)
         }
-        monsters.addAll(KmnBotDataLoader.boxData!!.pets!!)
+        monsters.addAll(pets)
         return monsters
     }
 

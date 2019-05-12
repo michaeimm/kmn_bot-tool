@@ -14,12 +14,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.gson.BoxData
+import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleHell
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleNormal
 import tw.shounenwind.kmnbottool.util.CommandExecutor.battleUltraHell
-import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
@@ -28,6 +29,8 @@ import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 class TeamActivity : BaseActivity() {
 
+    private var boxData: BoxData? = null
+    private var chipData: ChipData? = null
     private var oldTeam: Int = 0
     private val team: Spinner by lazy(LazyThreadSafetyMode.NONE) {
         findViewById<Spinner>(R.id.team)
@@ -37,6 +40,9 @@ class TeamActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
         prepareScreen()
+
+        boxData = intent.getParcelableExtra("boxData")
+        chipData = intent.getParcelableExtra("chipData")
 
         readTeamInfo()
     }
@@ -74,18 +80,20 @@ class TeamActivity : BaseActivity() {
 
         findViewById<CardView>(R.id.attacter_card).setOnClickListener {
             startActivityForResultWithTransition(
-                    intentFor<BoxActivity>("selectFor" to "attacker"),
-                    FOR_RESULT_ATTACKER
+                    intentFor<BoxActivity>(
+                            "selectFor" to "attacker",
+                            "boxData" to boxData
+                    ), FOR_RESULT_ATTACKER
             )
         }
         findViewById<CardView>(R.id.attacter_card).setOnLongClickListener {
             val target = findViewById<TextView>(R.id.attacter_name).text.toString()
             val fakeAttacker = Pet()
             fakeAttacker.name = target
-            val petIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeAttacker)
+            val petIndex = boxData!!.pets!!.indexOf(fakeAttacker)
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
-                intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
+                intent.putExtra("pet", boxData!!.pets!![petIndex])
                 startActivityWithTransition(intent)
                 true
             }else {
@@ -94,7 +102,10 @@ class TeamActivity : BaseActivity() {
         }
         findViewById<CardView>(R.id.supporter_card).setOnClickListener {
             startActivityForResultWithTransition(
-                    intentFor<BoxActivity>("selectFor" to "supporter"),
+                    intentFor<BoxActivity>(
+                            "selectFor" to "supporter",
+                            "boxData" to boxData
+                    ),
                     FOR_RESULT_SUPPORTER
             )
         }
@@ -102,17 +113,17 @@ class TeamActivity : BaseActivity() {
             val target = findViewById<TextView>(R.id.supporter_name).text.toString()
             val fakeSupporter = Pet()
             fakeSupporter.name = target
-            val petIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeSupporter)
+            val petIndex = boxData!!.pets!!.indexOf(fakeSupporter)
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
-                intent.putExtra("pet", KmnBotDataLoader.boxData!!.pets!![petIndex])
+                intent.putExtra("pet", boxData!!.pets!![petIndex])
                 startActivityWithTransition(intent)
                 true
             }else {
                 false
             }
         }
-        if (KmnBotDataLoader.chipData?.chips != null && KmnBotDataLoader.chipData?.chips!!.isNotEmpty()) {
+        if (chipData?.chips != null && chipData?.chips!!.isNotEmpty()) {
             findViewById<CardView>(R.id.chips_card).visibility = View.VISIBLE
         }
 
@@ -229,7 +240,7 @@ class TeamActivity : BaseActivity() {
             }
             val fakeAttacker = Pet()
             fakeAttacker.name = defaultAttacker
-            val attackerIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeAttacker)
+            val attackerIndex = boxData!!.pets!!.indexOf(fakeAttacker)
             if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
@@ -238,7 +249,7 @@ class TeamActivity : BaseActivity() {
                 }
 
             }else{
-                val monster = KmnBotDataLoader.boxData!!.pets!![attackerIndex]
+                val monster = boxData!!.pets!![attackerIndex]
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.attacter_img)
@@ -255,7 +266,7 @@ class TeamActivity : BaseActivity() {
             }
             val fakeSupporter = Pet()
             fakeSupporter.name = defaultSupporter
-            val supporterIndex = KmnBotDataLoader.boxData!!.pets!!.indexOf(fakeSupporter)
+            val supporterIndex = boxData!!.pets!!.indexOf(fakeSupporter)
             if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
@@ -263,7 +274,7 @@ class TeamActivity : BaseActivity() {
                             .clear(findViewById<View>(R.id.supporter_img))
                 }
             }else{
-                val monster = KmnBotDataLoader.boxData!!.pets!![supporterIndex]
+                val monster = boxData!!.pets!![supporterIndex]
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.supporter_img)
@@ -287,15 +298,15 @@ class TeamActivity : BaseActivity() {
     }
 
     private fun openChipDialog() {
-        val options = ArrayList<String>(KmnBotDataLoader.chipData!!.chips!!.size)
-        KmnBotDataLoader.chipData!!.chips!!.forEach { chip ->
+        val options = ArrayList<String>(chipData!!.chips!!.size)
+        chipData!!.chips!!.forEach { chip ->
             options.add(chip.name!! + "\n" + chip.component)
         }
         AlertDialog.Builder(this)
                 .setTitle(R.string.chips)
                 .setItems(options.toTypedArray()) { _, which ->
                     findViewById<TextView>(R.id.chips).text =
-                            KmnBotDataLoader.chipData!!.chips!![which].name
+                            chipData!!.chips!![which].name
                 }
                 .show()
     }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -39,7 +40,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prepareScreen()
-        if (savedInstanceState != null && KmnBotDataLoader.boxData != null) {
+        if (savedInstanceState != null) {
             return
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
@@ -62,13 +63,24 @@ class MainActivity : BaseActivity() {
             botDraw()
         }
         findViewById<CardView>(R.id.bot_exp).setOnClickListener {
-            startActivityForResultWithTransition(intentFor<BoxActivity>("selectFor" to "exp"), FOR_RESULT_EXP)
+            checkNotNull(boxData) {
+                "boxData is null"
+            }
+            startActivityForResultWithTransition(intentFor<BoxActivity>(
+                    "selectFor" to "exp",
+                    "boxData" to (boxData as Parcelable)
+            ), FOR_RESULT_EXP)
         }
         findViewById<CardView>(R.id.bot_mons_box).setOnClickListener {
-            startActivityWithTransition(intentFor<BoxActivity>())
+            startActivityWithTransition(intentFor<BoxActivity>(
+                    "boxData" to (boxData as Parcelable)
+            ))
         }
         findViewById<CardView>(R.id.bot_battle).setOnClickListener {
-            startActivityWithTransition(intentFor<TeamActivity>())
+            startActivityWithTransition(intentFor<TeamActivity>(
+                    "boxData" to boxData,
+                    "chipData" to chipData
+            ))
         }
         if (isFinishing)
             return
@@ -235,10 +247,10 @@ class MainActivity : BaseActivity() {
     private fun getData(user: String) {
         val kmnBotDataLoader = KmnBotDataLoader()
         kmnBotDataLoader.setUser(user)
-                .setOnSuccessListener { boxData, chipData ->
+                .setOnSuccessListener { data ->
                     LogUtil.catchAndPrint {
-                        this@MainActivity.boxData = boxData
-                        this@MainActivity.chipData = chipData
+                        boxData = data.boxData
+                        chipData = data.chipsData
                         runOnUiThread {
                             Toast.makeText(
                                     this@MainActivity,
@@ -253,7 +265,7 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 }
-                .setOnFailedListener { _, _ ->
+                .setOnFailedListener {
                     runOnUiThread {
                         LogUtil.catchAndPrint{
                             findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE

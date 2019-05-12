@@ -16,6 +16,7 @@ open class BoxData : Parcelable {
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player
+        pets = ArrayList()
         `in`.readList(this.pets, tw.shounenwind.kmnbottool.gson.Pet::class.java.classLoader)
     }
 
