@@ -35,11 +35,13 @@ open class Player : Parcelable {
     constructor()
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeValue(rainbowGear)
-        dest.writeValue(completedRate)
-        dest.writeValue(incomingRate)
-        dest.writeValue(id)
-        dest.writeValue(name)
+        dest.apply {
+            writeValue(rainbowGear)
+            writeValue(completedRate)
+            writeValue(incomingRate)
+            writeValue(id)
+            writeValue(name)
+        }
     }
 
     override fun describeContents(): Int {

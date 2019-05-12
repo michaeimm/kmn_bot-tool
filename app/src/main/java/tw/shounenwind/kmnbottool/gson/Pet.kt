@@ -60,17 +60,19 @@ open class Pet : Parcelable {
     constructor()
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeValue(maxClass)
-        dest.writeValue(skill)
-        dest.writeValue(series)
-        dest.writeValue(maxLevel)
-        dest.writeValue(image)
-        dest.writeValue(rare)
-        dest.writeValue(name)
-        dest.writeValue(battleType)
-        dest.writeValue(level)
-        dest.writeValue(petClass)
-        dest.writeValue(type)
+        dest.apply {
+            writeValue(maxClass)
+            writeValue(skill)
+            writeValue(series)
+            writeValue(maxLevel)
+            writeValue(image)
+            writeValue(rare)
+            writeValue(name)
+            writeValue(battleType)
+            writeValue(level)
+            writeValue(petClass)
+            writeValue(type)
+        }
     }
 
     override fun describeContents(): Int {

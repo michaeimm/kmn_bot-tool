@@ -31,10 +31,12 @@ open class Chip : Parcelable {
     constructor()
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeValue(magnification)
-        dest.writeValue(number)
-        dest.writeValue(component)
-        dest.writeValue(name)
+        dest.apply {
+            writeValue(magnification)
+            writeValue(number)
+            writeValue(component)
+            writeValue(name)
+        }
     }
 
     override fun describeContents(): Int {
