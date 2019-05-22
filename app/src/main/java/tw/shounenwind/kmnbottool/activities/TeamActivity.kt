@@ -123,7 +123,7 @@ class TeamActivity : BaseActivity() {
                 false
             }
         }
-        if (chipData?.chips != null && chipData?.chips!!.isNotEmpty()) {
+        if (chipData?.chips?.isNotEmpty() == true) {
             findViewById<CardView>(R.id.chips_card).visibility = View.VISIBLE
         }
 
@@ -223,6 +223,7 @@ class TeamActivity : BaseActivity() {
             val defaultAttacker: String?
             val defaultSupporter: String?
             val defaultTeam = sharedPref.getInt("team", 0)
+            val pets = boxData!!.pets!!
             oldTeam = defaultTeam
             when (defaultTeam) {
                 0 -> {
@@ -240,7 +241,7 @@ class TeamActivity : BaseActivity() {
             }
             val fakeAttacker = Pet()
             fakeAttacker.name = defaultAttacker
-            val attackerIndex = boxData!!.pets!!.indexOf(fakeAttacker)
+            val attackerIndex = pets.indexOf(fakeAttacker)
             if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
@@ -249,7 +250,7 @@ class TeamActivity : BaseActivity() {
                 }
 
             }else{
-                val monster = boxData!!.pets!![attackerIndex]
+                val monster = pets[attackerIndex]
                 runOnUiThread {
                     findViewById<TextView>(R.id.attacter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.attacter_img)
@@ -266,7 +267,7 @@ class TeamActivity : BaseActivity() {
             }
             val fakeSupporter = Pet()
             fakeSupporter.name = defaultSupporter
-            val supporterIndex = boxData!!.pets!!.indexOf(fakeSupporter)
+            val supporterIndex = pets.indexOf(fakeSupporter)
             if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
@@ -274,7 +275,7 @@ class TeamActivity : BaseActivity() {
                             .clear(findViewById<View>(R.id.supporter_img))
                 }
             }else{
-                val monster = boxData!!.pets!![supporterIndex]
+                val monster = pets[supporterIndex]
                 runOnUiThread {
                     findViewById<TextView>(R.id.supporter_name).text = monster.name
                     val imageView = findViewById<ImageView>(R.id.supporter_img)
@@ -298,15 +299,16 @@ class TeamActivity : BaseActivity() {
     }
 
     private fun openChipDialog() {
-        val options = ArrayList<String>(chipData!!.chips!!.size)
-        chipData!!.chips!!.forEach { chip ->
-            options.add(chip.name!! + "\n" + chip.component)
+        val chips = chipData!!.chips!!
+        val options = ArrayList<String>(chips.size)
+        chips.forEach { chip ->
+            options.add(chip.name + "\n" + chip.component)
         }
         AlertDialog.Builder(this)
                 .setTitle(R.string.chips)
                 .setItems(options.toTypedArray()) { _, which ->
                     findViewById<TextView>(R.id.chips).text =
-                            chipData!!.chips!![which].name
+                            chips[which].name
                 }
                 .show()
     }

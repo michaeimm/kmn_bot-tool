@@ -10,16 +10,16 @@ open class Chip : Parcelable {
 
     @SerializedName("倍率")
     @Expose
-    var magnification: Int? = null
+    var magnification: Int = 0
     @SerializedName("編號")
     @Expose
-    var number: Int? = null
+    var number: Int = 0
     @SerializedName("組件")
     @Expose
-    var component: String? = null
+    var component: String = ""
     @SerializedName("名稱")
     @Expose
-    var name: String? = null
+    var name: String = ""
 
     protected constructor(`in`: Parcel) {
         this.magnification = `in`.readValue(Int::class.java.classLoader) as Int

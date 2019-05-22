@@ -11,37 +11,37 @@ open class Pet : Parcelable {
 
     @SerializedName("最大階級")
     @Expose
-    var maxClass: Int? = null
+    var maxClass: Int = 1
     @SerializedName("技能")
     @Expose
-    var skill: String? = null
+    var skill: String = ""
     @SerializedName("系列")
     @Expose
-    var series: String? = null
+    var series: String = ""
     @SerializedName("最大等級")
     @Expose
-    var maxLevel: Int? = null
+    var maxLevel: Int = 1
     @SerializedName("圖片")
     @Expose
-    var image: String? = null
+    var image: String = ""
     @SerializedName("稀有度")
     @Expose
-    var rare: Int? = null
+    var rare: Int = 0
     @SerializedName("寵物名稱")
     @Expose
-    var name: String? = null
+    var name: String = ""
     @SerializedName("下場TYPE")
     @Expose
-    var battleType: String? = null
+    var battleType: String = ""
     @SerializedName("等級")
     @Expose
-    var level: Int? = null
+    var level: Int = 0
     @SerializedName("階級")
     @Expose
-    var petClass: Int? = null
+    var petClass: Int = 0
     @SerializedName("原TYPE")
     @Expose
-    var type: String? = null
+    var type: String = ""
 
     protected constructor(`in`: Parcel) {
         this.maxClass = `in`.readValue(Int::class.java.classLoader) as Int
@@ -80,11 +80,11 @@ open class Pet : Parcelable {
     }
 
     override fun hashCode(): Int {
-        return Arrays.hashCode(name!!.toCharArray())
+        return Arrays.hashCode(name.toCharArray())
     }
 
     override fun toString(): String {
-        return name!!
+        return name
     }
 
     override fun equals(other: Any?): Boolean {

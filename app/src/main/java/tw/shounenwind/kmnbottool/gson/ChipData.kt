@@ -16,6 +16,7 @@ open class ChipData : Parcelable {
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player
+        chips = ArrayList()
         `in`.readList(this.chips, tw.shounenwind.kmnbottool.gson.Pet::class.java.classLoader)
     }
 

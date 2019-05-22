@@ -64,7 +64,7 @@ class BoxActivity : BaseActivity() {
         when (item.itemId) {
             R.id.menu_profile -> {
                 val s: String = try {
-                    boxData.player!!.completedRate!!
+                    boxData.player!!.completedRate
                 } catch (e: Exception) {
                     getString(R.string.no_data)
                 }
@@ -123,7 +123,7 @@ class BoxActivity : BaseActivity() {
                 FlowJob(this)
                         .addIOJob{
                             data.addAll(boxData.pets!!)
-                            data.sortWith(Comparator { o1, o2 -> o1!!.rare!!.compareTo(o2!!.rare!!) * -1 })
+                            data.sortWith(Comparator { o1, o2 -> o1!!.rare.compareTo(o2!!.rare) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
                         .addUIJob{
@@ -153,7 +153,7 @@ class BoxActivity : BaseActivity() {
                                 } else {
                                     o2.level
                                 }
-                                r1!!.compareTo(r2!!) * -1
+                                r1.compareTo(r2) * -1
                             })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
@@ -173,7 +173,7 @@ class BoxActivity : BaseActivity() {
                 FlowJob(this)
                         .addIOJob{
                             data.addAll(boxData.pets!!)
-                            data.sortWith(Comparator { o1, o2 -> o1!!.petClass!!.compareTo(o2!!.petClass!!) * -1 })
+                            data.sortWith(Comparator { o1, o2 -> o1!!.petClass.compareTo(o2!!.petClass) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
                         .addUIJob{
@@ -313,7 +313,7 @@ class BoxActivity : BaseActivity() {
                     )
                     .centerCrop()
                     .into(CircularViewTarget(mContext, imageView))
-            holder.type.setTextColor(getMonsterColor(monster.type!!))
+            holder.type.setTextColor(getMonsterColor(monster.type))
             if (monster.name != getString(R.string.no_select)) {
                 if (monster.petClass == monster.maxClass) {
                     holder.monsterClass.text = "階級：${monster.petClass}(最大)"
@@ -321,7 +321,7 @@ class BoxActivity : BaseActivity() {
                     holder.monsterClass.text = "階級：${monster.petClass}"
                 }
                 val star = StringBuilder()
-                val len = monster.rare!!
+                val len = monster.rare
                 repeat(len) {
                     star.append("☆")
                 }

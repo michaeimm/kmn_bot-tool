@@ -26,11 +26,11 @@ class DetailActivity : BaseActivity() {
         title = pet.name
         findViewById<TextView>(R.id.name).text = pet.name
         findViewById<TextView>(R.id.rare).text =
-                "${getString(R.string.sort_rare)}\n${pet.rare.toString()}"
+                "${getString(R.string.sort_rare)}\n${pet.rare}"
         findViewById<TextView>(R.id.level).text =
-                "${getString(R.string.monster_level)}\n${pet.level.toString()}"
+                "${getString(R.string.monster_level)}\n${pet.level}"
         findViewById<TextView>(R.id.monster_class).text =
-                "${getString(R.string.monster_class)}\n${pet.petClass.toString()}"
+                "${getString(R.string.monster_class)}\n${pet.petClass}"
         findViewById<TextView>(R.id.text_holder).text = pet.skill
         val avatar = findViewById<ImageView>(R.id.avatar)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
