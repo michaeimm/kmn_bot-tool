@@ -227,29 +227,28 @@ class BoxActivity : BaseActivity() {
     }
 
     private fun getPets() : List<Pet>{
-        val pets = checkNotNull(boxData.pets) {
-            "pets is null"
-        }
-        val monsters = ArrayList<Pet>(pets.size + 1)
+        boxData.pets.also { pets ->
+            val monsters = ArrayList<Pet>(pets.size + 1)
 
-        if (selectFor != null && selectFor != "exp"){
-            val pet = Pet().apply {
-                name = getString(R.string.no_select)
-                image = "https://i.imgur.com/6sPlPEzb.jpg"
-                battleType = ""
-                maxLevel = Integer.MAX_VALUE
-                level = 0
-                maxClass = Integer.MAX_VALUE
-                petClass = 0
-                rare = 0
-                series = ""
-                skill = ""
-                type = ""
+            if (selectFor != null && selectFor != "exp") {
+                val pet = Pet().apply {
+                    name = getString(R.string.no_select)
+                    image = "https://i.imgur.com/6sPlPEzb.jpg"
+                    battleType = ""
+                    maxLevel = Integer.MAX_VALUE
+                    level = 0
+                    maxClass = Integer.MAX_VALUE
+                    petClass = 0
+                    rare = 0
+                    series = ""
+                    skill = ""
+                    type = ""
+                }
+                monsters.add(pet)
             }
-            monsters.add(pet)
+            monsters.addAll(pets)
+            return monsters
         }
-        monsters.addAll(pets)
-        return monsters
     }
 
 

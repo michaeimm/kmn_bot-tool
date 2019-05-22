@@ -12,11 +12,10 @@ open class ChipData : Parcelable {
     lateinit var player: Player
     @SerializedName("晶片")
     @Expose
-    lateinit var chips: List<Chip>
+    var chips: List<Chip> = ArrayList()
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player
-        chips = ArrayList()
         `in`.readList(this.chips, tw.shounenwind.kmnbottool.gson.Pet::class.java.classLoader)
     }
 

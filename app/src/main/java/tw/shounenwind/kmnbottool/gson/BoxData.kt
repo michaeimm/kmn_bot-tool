@@ -12,11 +12,10 @@ open class BoxData : Parcelable {
     lateinit var player: Player
     @SerializedName("寵物")
     @Expose
-    lateinit var pets: List<Pet>
+    var pets: List<Pet> = ArrayList()
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player
-        pets = ArrayList()
         `in`.readList(this.pets, tw.shounenwind.kmnbottool.gson.Pet::class.java.classLoader)
     }
 
