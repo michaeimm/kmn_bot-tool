@@ -26,13 +26,11 @@ import tw.shounenwind.kmnbottool.util.KmnBotData
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
-import tw.shounenwind.kmnbottool.widget.ProgressDialog
 import tw.shounenwind.kmnbottool.widget.SimpleDialog
 import tw.shounenwind.kmnbottool.widget.SingleFieldDialog
 
 class MainActivity : BaseActivity() {
     private lateinit var sharedPreferences: SharedPreferences
-    private var progressDialog: ProgressDialog? = null
 
     private var boxData: BoxData? = null
     private var chipData: ChipData? = null
@@ -295,20 +293,6 @@ class MainActivity : BaseActivity() {
         }
 
         mDialog.show()
-    }
-
-    private fun showProgressDialog(text: String) {
-        progressDialog = ProgressDialog(this).apply {
-            setContent(text)
-            setCancelable(false)
-            show()
-        }
-    }
-
-    private fun dismissProgressDialog() {
-        LogUtil.catchAndPrint {
-            progressDialog!!.dismiss()
-        }
     }
 
     companion object {

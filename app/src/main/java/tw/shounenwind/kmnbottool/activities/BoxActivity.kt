@@ -23,10 +23,8 @@ import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.FlowJob
-import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
-import tw.shounenwind.kmnbottool.widget.ProgressDialog
 import java.lang.ref.WeakReference
 import java.text.Collator
 import java.util.*
@@ -37,7 +35,6 @@ class BoxActivity : BaseActivity() {
 
     private lateinit var boxData: BoxData
     private var selectFor: String? = null
-    private var progressDialog: ProgressDialog? = null
     private lateinit var adapter: BoxAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,14 +60,19 @@ class BoxActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_profile -> {
-                val s: String = try {
-                    boxData.player.completedRate
-                } catch (e: Exception) {
+                val s: String = if (boxData.player.completedRate != "0%") {
+                    boxData.player.name +
+                            "\n" +
+                            getString(R.string.completion) +
+                            ": " +
+                            boxData.player.completedRate
+                } else {
                     getString(R.string.no_data)
                 }
 
+
                 val alertDialog = AlertDialog.Builder(this)
-                        .setMessage(getString(R.string.completion) + ": " + s)
+                        .setMessage(s)
                         .setPositiveButton(R.string.confirm, null)
                         .create()
                 alertDialog.show()
@@ -210,20 +212,6 @@ class BoxActivity : BaseActivity() {
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showProgressDialog(text: String) {
-        progressDialog = ProgressDialog(this).apply {
-            setContent(text)
-            setCancelable(false)
-            show()
-        }
-    }
-
-    private fun dismissProgressDialog() {
-        LogUtil.catchAndPrint {
-            progressDialog!!.dismiss()
-        }
     }
 
     private fun getPets() : List<Pet>{

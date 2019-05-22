@@ -12,9 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.appbar.AppBarLayout
 import tw.shounenwind.kmnbottool.R
+import tw.shounenwind.kmnbottool.util.LogUtil
+import tw.shounenwind.kmnbottool.widget.ProgressDialog
 
 @SuppressLint("Registered")
 open class BaseActivity : AppCompatActivity() {
+
+    private var progressDialog: ProgressDialog? = null
 
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -104,6 +108,20 @@ open class BaseActivity : AppCompatActivity() {
             startActivityForResult(intent, responseCode, options.toBundle())
         } else {
             startActivityForResult(intent, responseCode)
+        }
+    }
+
+    protected fun showProgressDialog(text: String) {
+        progressDialog = ProgressDialog(this).apply {
+            setContent(text)
+            setCancelable(false)
+            show()
+        }
+    }
+
+    protected fun dismissProgressDialog() {
+        LogUtil.catchAndPrint {
+            progressDialog!!.dismiss()
         }
     }
 }
