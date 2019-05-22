@@ -64,7 +64,7 @@ class BoxActivity : BaseActivity() {
         when (item.itemId) {
             R.id.menu_profile -> {
                 val s: String = try {
-                    boxData.player!!.completedRate
+                    boxData.player.completedRate
                 } catch (e: Exception) {
                     getString(R.string.no_data)
                 }
@@ -78,11 +78,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_series -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob {
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
                         .addUIJob {
@@ -97,11 +97,11 @@ class BoxActivity : BaseActivity() {
             R.id.sort_name -> {
                 showProgressDialog(getString(R.string.loading))
                 val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             data.sortWith(Comparator { o1, o2 ->
                                 collator.compare(o1.name, o2.name)
                             })
@@ -118,11 +118,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_rare -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             data.sortWith(Comparator { o1, o2 -> o1!!.rare.compareTo(o2!!.rare) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
@@ -137,11 +137,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_level -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             data.sortWith(Comparator { o1, o2 ->
                                 val r1 = if (o1!!.level == o1.maxLevel) {
                                     Int.MAX_VALUE
@@ -168,11 +168,11 @@ class BoxActivity : BaseActivity() {
             }
             R.id.sort_class -> {
                 showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             data.sortWith(Comparator { o1, o2 -> o1!!.petClass.compareTo(o2!!.petClass) * -1 })
                             diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
                         }
@@ -188,11 +188,11 @@ class BoxActivity : BaseActivity() {
             R.id.sort_type -> {
                 showProgressDialog(getString(R.string.loading))
                 val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(boxData.pets!!.size)
+                val data = ArrayList<Pet>(boxData.pets.size)
                 var diffResult: DiffUtil.DiffResult? = null
                 FlowJob(this)
                         .addIOJob{
-                            data.addAll(boxData.pets!!)
+                            data.addAll(boxData.pets)
                             data.sortWith(Comparator { o1, o2 ->
                                 collator.compare(o1.type + o1.name, o2.type + o2.name)
                             })

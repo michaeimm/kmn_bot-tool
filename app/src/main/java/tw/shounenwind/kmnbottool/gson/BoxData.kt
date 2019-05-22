@@ -9,10 +9,10 @@ open class BoxData : Parcelable {
 
     @SerializedName("玩家")
     @Expose
-    var player: Player? = null
+    lateinit var player: Player
     @SerializedName("寵物")
     @Expose
-    var pets: List<Pet>? = null
+    lateinit var pets: List<Pet>
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player

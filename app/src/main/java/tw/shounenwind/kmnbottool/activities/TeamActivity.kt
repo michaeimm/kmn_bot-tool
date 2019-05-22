@@ -90,10 +90,10 @@ class TeamActivity : BaseActivity() {
             val target = findViewById<TextView>(R.id.attacter_name).text.toString()
             val fakeAttacker = Pet()
             fakeAttacker.name = target
-            val petIndex = boxData!!.pets!!.indexOf(fakeAttacker)
+            val petIndex = boxData!!.pets.indexOf(fakeAttacker)
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
-                intent.putExtra("pet", boxData!!.pets!![petIndex])
+                intent.putExtra("pet", boxData!!.pets[petIndex])
                 startActivityWithTransition(intent)
                 true
             }else {
@@ -113,10 +113,10 @@ class TeamActivity : BaseActivity() {
             val target = findViewById<TextView>(R.id.supporter_name).text.toString()
             val fakeSupporter = Pet()
             fakeSupporter.name = target
-            val petIndex = boxData!!.pets!!.indexOf(fakeSupporter)
+            val petIndex = boxData!!.pets.indexOf(fakeSupporter)
             if (petIndex != -1) {
                 val intent = intentFor<DetailActivity>()
-                intent.putExtra("pet", boxData!!.pets!![petIndex])
+                intent.putExtra("pet", boxData!!.pets[petIndex])
                 startActivityWithTransition(intent)
                 true
             }else {
@@ -223,7 +223,7 @@ class TeamActivity : BaseActivity() {
             val defaultAttacker: String?
             val defaultSupporter: String?
             val defaultTeam = sharedPref.getInt("team", 0)
-            val pets = boxData!!.pets!!
+            val pets = boxData!!.pets
             oldTeam = defaultTeam
             when (defaultTeam) {
                 0 -> {
@@ -299,7 +299,7 @@ class TeamActivity : BaseActivity() {
     }
 
     private fun openChipDialog() {
-        val chips = chipData!!.chips!!
+        val chips = chipData!!.chips
         val options = ArrayList<String>(chips.size)
         chips.forEach { chip ->
             options.add(chip.name + "\n" + chip.component)

@@ -9,10 +9,10 @@ open class ChipData : Parcelable {
 
     @SerializedName("玩家")
     @Expose
-    var player: Player? = null
+    lateinit var player: Player
     @SerializedName("晶片")
     @Expose
-    var chips: List<Chip>? = null
+    lateinit var chips: List<Chip>
 
     protected constructor(`in`: Parcel) {
         this.player = `in`.readValue(Player::class.java.classLoader) as Player
