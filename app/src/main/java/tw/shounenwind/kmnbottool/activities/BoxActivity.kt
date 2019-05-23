@@ -391,14 +391,14 @@ class BoxActivity : BaseActivity() {
 
     companion object {
         @JvmStatic
-        private val RED_TYPE = Color.parseColor("#ff4081")
+        private val RED_TYPE = Color.parseColor("#fc699a")
         @JvmStatic
-        private val GREEN_TYPE = Color.parseColor("#8bc34a")
+        private val GREEN_TYPE = Color.parseColor("#aae467")
         @JvmStatic
-        private val BLUE_TYPE = Color.parseColor("#00b0ff")
+        private val BLUE_TYPE = Color.parseColor("#5ac2f2")
         @JvmStatic
-        private val YELLOW_TYPE = Color.parseColor("#ffea00")
+        private val YELLOW_TYPE = Color.parseColor("#f4e225")
         @JvmStatic
-        private val BLACK_TYPE = Color.parseColor("#673AB7")
+        private val BLACK_TYPE = Color.parseColor("#a379ec")
     }
 }
