@@ -17,6 +17,7 @@
 # project.properties file.
 
 -keepattributes *Annotation*
+-keepattributes InnerClasses
 -keep public class com.google.vending.licensing.ILicensingService
 -keep public class com.android.vending.licensing.ILicensingService
 
