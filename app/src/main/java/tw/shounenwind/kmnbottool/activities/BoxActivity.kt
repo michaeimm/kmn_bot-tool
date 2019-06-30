@@ -17,18 +17,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
-import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.glide.CircularViewTarget
 import tw.shounenwind.kmnbottool.util.glide.GlideApp
 import java.lang.ref.WeakReference
 import java.text.Collator
 import java.util.*
 import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 
 class BoxActivity : BaseActivity() {
@@ -79,133 +82,107 @@ class BoxActivity : BaseActivity() {
                 return true
             }
             R.id.sort_series -> {
-                showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob {
-                            data.addAll(boxData.pets)
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                        }
-                        .addUIJob {
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
-                        }
-                        .start()
-                item.isChecked = true
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                    item.isChecked = true
+                }
                 return true
             }
             R.id.sort_name -> {
-                showProgressDialog(getString(R.string.loading))
-                val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob{
-                            data.addAll(boxData.pets)
-                            data.sortWith(Comparator { o1, o2 ->
-                                collator.compare(o1.name, o2.name)
-                            })
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                        }
-                        .addUIJob{
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
-                        }
-                        .start()
-                item.isChecked = true
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val collator = Collator.getInstance(Locale.CHINESE)
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    sort(data, Comparator { o1, o2 ->
+                        collator.compare(o1.name, o2.name)
+                    })
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                    item.isChecked = true
+                }
                 return true
             }
             R.id.sort_rare -> {
-                showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob{
-                            data.addAll(boxData.pets)
-                            data.sortWith(Comparator { o1, o2 -> o1!!.rare.compareTo(o2!!.rare) * -1 })
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                        }
-                        .addUIJob{
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
-                        }
-                        .start()
-                item.isChecked = true
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    sort(data, Comparator { o1, o2 ->
+                        o1.rare.compareTo(o2.rare) * -1
+                    })
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                    item.isChecked = true
+                }
                 return true
             }
             R.id.sort_level -> {
-                showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob{
-                            data.addAll(boxData.pets)
-                            data.sortWith(Comparator { o1, o2 ->
-                                val r1 = if (o1!!.level == o1.maxLevel) {
-                                    Int.MAX_VALUE
-                                } else {
-                                    o1.level
-                                }
-                                val r2 = if (o2!!.level == o2.maxLevel) {
-                                    Int.MAX_VALUE
-                                } else {
-                                    o2.level
-                                }
-                                r1.compareTo(r2) * -1
-                            })
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    data.sortWith(Comparator { o1, o2 ->
+                        val r1 = if (o1!!.level == o1.maxLevel) {
+                            Int.MAX_VALUE
+                        } else {
+                            o1.level
                         }
-                        .addUIJob{
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
+                        val r2 = if (o2!!.level == o2.maxLevel) {
+                            Int.MAX_VALUE
+                        } else {
+                            o2.level
                         }
-                        .start()
-                item.isChecked = true
+                        r1.compareTo(r2) * -1
+                    })
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                    item.isChecked = true
+                }
                 return true
             }
             R.id.sort_class -> {
-                showProgressDialog(getString(R.string.loading))
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob{
-                            data.addAll(boxData.pets)
-                            data.sortWith(Comparator { o1, o2 -> o1!!.petClass.compareTo(o2!!.petClass) * -1 })
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                        }
-                        .addUIJob{
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
-                        }
-                        .start()
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    sort(data, Comparator { o1, o2 ->
+                        o1.petClass.compareTo(o2.petClass) * -1
+                    })
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                }
                 item.isChecked = true
                 return true
             }
             R.id.sort_type -> {
-                showProgressDialog(getString(R.string.loading))
-                val collator = Collator.getInstance(Locale.CHINESE)
-                val data = ArrayList<Pet>(boxData.pets.size)
-                var diffResult: DiffUtil.DiffResult? = null
-                FlowJob(this)
-                        .addIOJob{
-                            data.addAll(boxData.pets)
-                            data.sortWith(Comparator { o1, o2 ->
-                                collator.compare(o1.type + o1.name, o2.type + o2.name)
-                            })
-                            diffResult = DiffUtil.calculateDiff(BoxDiffCallback(adapter.monsters, data))
-                        }
-                        .addUIJob{
-                            dismissProgressDialog()
-                            adapter.monsters = data
-                            diffResult!!.dispatchUpdatesTo(adapter)
-                        }
-                        .start()
+                mainScope?.launch {
+                    showProgressDialog(getString(R.string.loading))
+                    val collator = Collator.getInstance(Locale.CHINESE)
+                    val data = ArrayList<Pet>(boxData.pets.size)
+                    data.addAll(boxData.pets)
+                    sort(data, Comparator { o1, o2 ->
+                        collator.compare(o1.type + o1.name, o2.type + o2.name)
+                    })
+                    val diffResult = calculateDiff(adapter.monsters, data)
+                    dismissProgressDialog()
+                    adapter.monsters = data
+                    diffResult.dispatchUpdatesTo(adapter)
+                }
                 item.isChecked = true
                 return true
             }
@@ -239,6 +216,19 @@ class BoxActivity : BaseActivity() {
         }
     }
 
+    private suspend fun calculateDiff(
+            oldData: List<Pet>,
+            newData: List<Pet>
+    ) = withContext(Dispatchers.IO) {
+        DiffUtil.calculateDiff(BoxDiffCallback(oldData, newData))
+    }
+
+    private suspend fun <T> sort(
+            data: ArrayList<T>,
+            comparator: Comparator<T>
+    ) = withContext(Dispatchers.IO) {
+        data.sortWith(comparator)
+    }
 
     private class BoxDiffCallback(private val oldData: List<Pet>, private val newData: List<Pet>) : DiffUtil.Callback() {
         override fun areItemsTheSame(p0: Int, p1: Int): Boolean {

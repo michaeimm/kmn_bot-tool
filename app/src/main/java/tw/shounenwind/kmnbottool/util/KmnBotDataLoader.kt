@@ -3,8 +3,8 @@ package tw.shounenwind.kmnbottool.util
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -16,18 +16,20 @@ class KmnBotDataLoader {
     private var chipUrl: String? = null
     private var onSuccessListener: Func? = null
     private var onFailedListener: Func? = null
+    private val cacheControl by lazy {
+        CacheControl.Builder()
+                .noCache()
+                .build()
+    }
 
     @Throws(Exception::class)
-    private fun loadBoxData(): BoxData {
+    private suspend fun loadBoxData() = withContext(Dispatchers.IO) {
         var body: ResponseBody? = null
         val boxData: BoxData
         try {
             val request = Request.Builder()
-                    .cacheControl(
-                            CacheControl.Builder()
-                                    .noCache()
-                                    .build()
-                    ).url(boxUrl!!)
+                    .cacheControl(cacheControl)
+                    .url(boxUrl!!)
                     .build()
             val response = LinkUtil.instance.newCall(request).execute()
 
@@ -36,27 +38,24 @@ class KmnBotDataLoader {
             }
 
             body = response.body()!!
-            boxData = Gson().fromJson<BoxData>(body.charStream(), BoxData::class.java)
+            boxData = Gson().fromJson(body.charStream(), BoxData::class.java)
             LogUtil.boxData(TAG, boxData)
         } catch (e: Exception) {
             throw(e)
         } finally {
             body?.close()
         }
-        return boxData
+        boxData
     }
 
     @Throws(Exception::class)
-    private fun loadChipData(): ChipData {
+    private suspend fun loadChipData() = withContext(Dispatchers.IO) {
         var body: ResponseBody? = null
         val chipsData: ChipData
         try {
             val request = Request.Builder()
-                    .cacheControl(
-                            CacheControl.Builder()
-                                    .noCache()
-                                    .build()
-                    ).url(chipUrl!!)
+                    .cacheControl(cacheControl)
+                    .url(chipUrl!!)
                     .build()
             val response = LinkUtil.instance.newCall(request).execute()
 
@@ -69,7 +68,7 @@ class KmnBotDataLoader {
         } finally {
             body?.close()
         }
-        return chipsData
+        chipsData
     }
 
     fun setUser(user: String): KmnBotDataLoader {
@@ -110,7 +109,7 @@ class KmnBotDataLoader {
         })
     }
 
-    fun start() {
+    suspend fun start() = withContext(Dispatchers.IO) {
         checkNotNull(boxUrl) {
             "機器狼 box 網址未設定"
         }
@@ -121,31 +120,31 @@ class KmnBotDataLoader {
             "onFailedListener 未設定"
         }
 
-        GlobalScope.launch {
-            val boxData: BoxData
-            try {
-                boxData = loadBoxData()
-            } catch (e: Exception) {
+        val boxData: BoxData
+        try {
+            boxData = loadBoxData()
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
                 onFailedListener.run(KmnBotData())
-                LogUtil.printStackTrace(e)
-                return@launch
             }
-
-            val chipsData: ChipData
-            try {
-                chipsData = loadChipData()
-            } catch (e: Exception) {
-                onSuccessListener.run(
-                        KmnBotData(boxData)
-                )
-                LogUtil.printStackTrace(e)
-                return@launch
-            }
-
-            onSuccessListener.run(
-                    KmnBotData(boxData, chipsData)
-            )
+            LogUtil.printStackTrace(e)
+            return@withContext
         }
+
+        val chipsData: ChipData
+        try {
+            chipsData = loadChipData()
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onSuccessListener.run(KmnBotData(boxData))
+            }
+            LogUtil.printStackTrace(e)
+            return@withContext
+        }
+
+        onSuccessListener.run(
+                KmnBotData(boxData, chipsData)
+        )
 
     }
 

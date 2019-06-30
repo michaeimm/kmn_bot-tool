@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.appbar.AppBarLayout
+import kotlinx.coroutines.*
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.util.LogUtil
 import tw.shounenwind.kmnbottool.widget.ProgressDialog
@@ -19,6 +20,7 @@ import tw.shounenwind.kmnbottool.widget.ProgressDialog
 open class BaseActivity : AppCompatActivity() {
 
     private var progressDialog: ProgressDialog? = null
+    protected var mainScope: CoroutineScope? = MainScope()
 
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -111,17 +113,23 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun showProgressDialog(text: String) {
-        progressDialog = ProgressDialog(this).apply {
+    protected suspend fun showProgressDialog(text: String) = withContext(Dispatchers.Main) {
+        progressDialog = ProgressDialog(this@BaseActivity).apply {
             setContent(text)
             setCancelable(false)
             show()
         }
     }
 
-    protected fun dismissProgressDialog() {
+    protected suspend fun dismissProgressDialog() = withContext(Dispatchers.Main) {
         LogUtil.catchAndPrint {
             progressDialog!!.dismiss()
         }
+    }
+
+    override fun onDestroy() {
+        mainScope?.cancel()
+        mainScope = null
+        super.onDestroy()
     }
 }

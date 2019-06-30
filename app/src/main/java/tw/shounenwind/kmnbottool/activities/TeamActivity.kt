@@ -32,8 +32,8 @@ class TeamActivity : BaseActivity() {
     private var boxData: BoxData? = null
     private var chipData: ChipData? = null
     private var oldTeam: Int = 0
-    private val team: Spinner by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById<Spinner>(R.id.team)
+    private val team by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById<Spinner>(R.id.team)!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

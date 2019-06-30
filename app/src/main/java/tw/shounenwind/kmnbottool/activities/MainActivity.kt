@@ -14,6 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.intentFor
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.BoxData
@@ -21,7 +24,6 @@ import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
 import tw.shounenwind.kmnbottool.util.CommandExecutor.botDraw
 import tw.shounenwind.kmnbottool.util.CommandExecutor.expDraw
-import tw.shounenwind.kmnbottool.util.FlowJob
 import tw.shounenwind.kmnbottool.util.KmnBotData
 import tw.shounenwind.kmnbottool.util.KmnBotDataLoader
 import tw.shounenwind.kmnbottool.util.LogUtil
@@ -51,14 +53,10 @@ class MainActivity : BaseActivity() {
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         checkPlurkId { input ->
-            FlowJob(this@MainActivity)
-                    .addUIJob {
-                        showProgressDialog(getString(R.string.monster_loading))
-                    }
-                    .addIOJob {
-                        getData(input)
-                    }
-                    .start()
+            mainScope?.launch {
+                showProgressDialog(getString(R.string.monster_loading))
+                getData(input)
+            }
         }
     }
 
@@ -155,14 +153,10 @@ class MainActivity : BaseActivity() {
                     val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
                     sharedPreferences.edit().putInt("user_id_ver", 1).commit()
                     checkPlurkId { input ->
-                        FlowJob(this@MainActivity)
-                                .addUIJob {
-                                    showProgressDialog(getString(R.string.monster_loading))
-                                }
-                                .addIOJob {
-                                    getData(input)
-                                }
-                                .start()
+                        mainScope?.launch {
+                            showProgressDialog(getString(R.string.monster_loading))
+                            getData(input)
+                        }
                     }
                 }
                 return true
@@ -188,20 +182,9 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    @SuppressLint("ApplySharedPref")
     private inline fun openPlurkIdInputDialog(crossinline inputHandler: (input: String) -> Unit) {
         val dialog = SingleFieldDialog(this)
-
-        @SuppressLint("ApplySharedPref")
-        val flowJob = FlowJob(this)
-                .addIOJob {
-                    sharedPreferences.edit()
-                            .putInt("user_id_ver", LATEST_ID_VERSION)
-                            .putString("user_id", dialog.text.toString())
-                            .commit()
-                }
-                .addUIJob {
-                    inputHandler(dialog.text.toString())
-                }
 
         dialog.apply {
             setTitle(R.string.input_plurk_username)
@@ -217,7 +200,11 @@ class MainActivity : BaseActivity() {
                             InputMethodManager.HIDE_NOT_ALWAYS
                     )
                 }
-                flowJob.start()
+                sharedPreferences.edit()
+                        .putInt("user_id_ver", LATEST_ID_VERSION)
+                        .putString("user_id", dialog.text.toString())
+                        .commit()
+                inputHandler(dialog.text.toString())
             }
             negativeAction(android.R.string.cancel)
             negativeActionClickListener {
@@ -232,14 +219,14 @@ class MainActivity : BaseActivity() {
 
     }
 
-    private fun getData(user: String) {
+    private suspend fun getData(user: String) = withContext(Dispatchers.Default) {
         val kmnBotDataLoader = KmnBotDataLoader()
         kmnBotDataLoader.setUser(user)
                 .setOnSuccessListener { data ->
-                    LogUtil.catchAndPrint {
-                        boxData = data.boxData
-                        chipData = data.chipsData
-                        runOnUiThread {
+                    mainScope?.launch {
+                        LogUtil.catchAndPrint {
+                            boxData = data.boxData
+                            chipData = data.chipsData
                             Toast.makeText(
                                     this@MainActivity,
                                     R.string.data_loaded,
@@ -254,7 +241,7 @@ class MainActivity : BaseActivity() {
                     }
                 }
                 .setOnFailedListener {
-                    runOnUiThread {
+                    mainScope?.launch {
                         LogUtil.catchAndPrint {
                             findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
                             dismissProgressDialog()
@@ -280,14 +267,10 @@ class MainActivity : BaseActivity() {
             negativeActionClickListener {
                 mDialog.dismiss()
                 checkPlurkId { input ->
-                    FlowJob(this@MainActivity)
-                            .addUIJob {
-                                showProgressDialog(getString(R.string.monster_loading))
-                            }
-                            .addIOJob {
-                                getData(input)
-                            }
-                            .start()
+                    mainScope?.launch {
+                        showProgressDialog(getString(R.string.monster_loading))
+                        getData(input)
+                    }
                 }
             }
         }
