@@ -3,11 +3,11 @@ package tw.shounenwind.kmnbottool.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.GlobalScope
@@ -240,7 +240,7 @@ class TeamActivity : BaseActivity() {
                 }
             }
             val fakeAttacker = Pet()
-            fakeAttacker.name = defaultAttacker
+            fakeAttacker.name = defaultAttacker!!
             val attackerIndex = pets.indexOf(fakeAttacker)
             if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
                 runOnUiThread {
@@ -266,7 +266,7 @@ class TeamActivity : BaseActivity() {
 
             }
             val fakeSupporter = Pet()
-            fakeSupporter.name = defaultSupporter
+            fakeSupporter.name = defaultSupporter!!
             val supporterIndex = pets.indexOf(fakeSupporter)
             if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
                 runOnUiThread {

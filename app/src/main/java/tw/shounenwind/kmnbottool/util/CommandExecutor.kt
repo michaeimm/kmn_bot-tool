@@ -67,7 +67,7 @@ object CommandExecutor {
             val manager = packageManager
             val searchIntent = Intent().setPackage(it)
             val infoList = manager.queryIntentActivities(searchIntent, 0)
-            (infoList != null && infoList.size > 0)
+            (infoList.size > 0)
         }.forEach {
             val targeted = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"

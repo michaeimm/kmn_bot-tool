@@ -359,22 +359,11 @@ class BoxActivity : BaseActivity() {
         }
 
         inner class MonsterDataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-            val item by lazy(LazyThreadSafetyMode.NONE){
-                itemView.findViewById<ConstraintLayout>(R.id.monster_unit)!!
-            }
-            val image by lazy(LazyThreadSafetyMode.NONE){
-                itemView.findViewById<ImageView>(R.id.monster_img)!!
-            }
-            val name by lazy(LazyThreadSafetyMode.NONE){
-                itemView.findViewById<TextView>(R.id.monster_name)!!
-            }
-            val type by lazy(LazyThreadSafetyMode.NONE){
-                itemView.findViewById<TextView>(R.id.monster_type)!!
-            }
-            val monsterClass by lazy(LazyThreadSafetyMode.NONE){
-                itemView.findViewById<TextView>(R.id.monster_class)!!
-            }
+            val item = itemView.findViewById<ConstraintLayout>(R.id.monster_unit)!!
+            val image = itemView.findViewById<ImageView>(R.id.monster_img)!!
+            val name = itemView.findViewById<TextView>(R.id.monster_name)!!
+            val type = itemView.findViewById<TextView>(R.id.monster_type)!!
+            val monsterClass = itemView.findViewById<TextView>(R.id.monster_class)!!
         }
 
     }

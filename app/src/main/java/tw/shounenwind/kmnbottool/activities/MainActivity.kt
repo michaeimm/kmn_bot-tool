@@ -102,7 +102,7 @@ class MainActivity : BaseActivity() {
                 .into(findViewById(R.id.bot_mons_box_img))
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         KmnBotData.cache = KmnBotData(boxData, chipData)
     }
@@ -113,7 +113,7 @@ class MainActivity : BaseActivity() {
             return
         when (requestCode) {
             FOR_RESULT_EXP -> {
-                expDraw(data!!.getStringExtra("name"))
+                expDraw(data!!.getStringExtra("name")!!)
             }
         }
     }
