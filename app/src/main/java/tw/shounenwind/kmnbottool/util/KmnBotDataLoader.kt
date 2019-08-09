@@ -2,7 +2,6 @@ package tw.shounenwind.kmnbottool.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
@@ -10,6 +9,8 @@ import okhttp3.Request
 import okhttp3.ResponseBody
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
+import tw.shounenwind.kmnbottool.gson.fromJson
+import tw.shounenwind.kmnbottool.gson.gsonInstances
 
 class KmnBotDataLoader {
     private var boxUrl: String? = null
@@ -38,7 +39,7 @@ class KmnBotDataLoader {
             }
 
             body = response.body()!!
-            boxData = Gson().fromJson(body.charStream(), BoxData::class.java)
+            boxData = gsonInstances.fromJson(body.charStream())
             LogUtil.boxData(TAG, boxData)
         } catch (e: Exception) {
             throw(e)
@@ -61,7 +62,7 @@ class KmnBotDataLoader {
 
             body = response.body()!!
             val data = body.string()
-            chipsData = Gson().fromJson(data, ChipData::class.java)
+            chipsData = gsonInstances.fromJson(data)
             LogUtil.d(TAG, data)
         } catch (e: Exception) {
             throw(e)

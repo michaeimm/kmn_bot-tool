@@ -1,12 +1,9 @@
 package tw.shounenwind.kmnbottool.util
 
 import android.util.Log
-
-import com.google.gson.Gson
-
 import tw.shounenwind.kmnbottool.BuildConfig
 import tw.shounenwind.kmnbottool.gson.BoxData
-import java.lang.Exception
+import tw.shounenwind.kmnbottool.gson.gsonInstances
 
 object LogUtil {
 
@@ -22,7 +19,7 @@ object LogUtil {
 
     fun boxData(tag: String, boxData: BoxData) {
         if (BuildConfig.DEBUG) {
-            val msg = Gson().toJson(boxData, BoxData::class.java)
+            val msg = gsonInstances.toJson(boxData)
             Log.d(tag, msg)
         }
     }
