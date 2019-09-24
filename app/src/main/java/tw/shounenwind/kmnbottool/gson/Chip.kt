@@ -22,10 +22,10 @@ open class Chip : Parcelable {
     var name: String = ""
 
     protected constructor(`in`: Parcel) {
-        this.magnification = `in`.readValue(Int::class.java.classLoader) as Int
-        this.number = `in`.readValue(String::class.java.classLoader) as Int
-        this.component = `in`.readValue(Float::class.java.classLoader) as String
-        this.name = `in`.readValue(String::class.java.classLoader) as String
+        this.magnification = `in`.readValue()
+        this.number = `in`.readValue()
+        this.component = `in`.readValue()
+        this.name = `in`.readValue()
     }
 
     constructor()

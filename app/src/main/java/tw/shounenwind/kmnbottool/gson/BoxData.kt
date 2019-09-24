@@ -15,7 +15,7 @@ open class BoxData : Parcelable {
     var pets: List<Pet> = ArrayList()
 
     protected constructor(`in`: Parcel) {
-        this.player = `in`.readValue(Player::class.java.classLoader) as Player
+        this.player = `in`.readValue()
         `in`.readList(this.pets, Pet::class.java.classLoader)
     }
 

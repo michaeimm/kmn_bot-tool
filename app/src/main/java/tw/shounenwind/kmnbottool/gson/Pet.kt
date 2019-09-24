@@ -42,17 +42,17 @@ open class Pet : Parcelable {
     var type: String = ""
 
     protected constructor(`in`: Parcel) {
-        this.maxClass = `in`.readValue(Int::class.java.classLoader) as Int
-        this.skill = `in`.readValue(String::class.java.classLoader) as String
-        this.series = `in`.readValue(String::class.java.classLoader) as String
-        this.maxLevel = `in`.readValue(Int::class.java.classLoader) as Int
-        this.image = `in`.readValue(String::class.java.classLoader) as String
-        this.rare = `in`.readValue(Int::class.java.classLoader) as Int
-        this.name = `in`.readValue(String::class.java.classLoader) as String
-        this.battleType = `in`.readValue(String::class.java.classLoader) as String
-        this.level = `in`.readValue(Int::class.java.classLoader) as Int
-        this.petClass = `in`.readValue(Int::class.java.classLoader) as Int
-        this.type = `in`.readValue(String::class.java.classLoader) as String
+        this.maxClass = `in`.readValue()
+        this.skill = `in`.readValue()
+        this.series = `in`.readValue()
+        this.maxLevel = `in`.readValue()
+        this.image = `in`.readValue()
+        this.rare = `in`.readValue()
+        this.name = `in`.readValue()
+        this.battleType = `in`.readValue()
+        this.level = `in`.readValue()
+        this.petClass = `in`.readValue()
+        this.type = `in`.readValue()
     }
 
     constructor()

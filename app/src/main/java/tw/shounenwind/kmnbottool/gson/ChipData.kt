@@ -15,7 +15,7 @@ open class ChipData : Parcelable {
     var chips: List<Chip> = ArrayList()
 
     protected constructor(`in`: Parcel) {
-        this.player = `in`.readValue(Player::class.java.classLoader) as Player
+        this.player = `in`.readValue()
         `in`.readList(this.chips, Pet::class.java.classLoader)
     }
 
