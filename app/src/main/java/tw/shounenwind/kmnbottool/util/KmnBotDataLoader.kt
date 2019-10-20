@@ -1,7 +1,5 @@
 package tw.shounenwind.kmnbottool.util
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
@@ -73,13 +71,8 @@ class KmnBotDataLoader {
     }
 
     fun setUser(user: String): KmnBotDataLoader {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            this.boxUrl = PETS_URL_PREFIX_TRANSFER + user
-            this.chipUrl = CHIPS_URL_PREFIX_TRANSFER + user
-        }else{
-            this.boxUrl = PETS_URL_PREFIX + user + FILE_EXTENSION
-            this.chipUrl = CHIPS_URL_PREFIX + user + FILE_EXTENSION
-        }
+        this.boxUrl = PETS_URL_PREFIX + user + FILE_EXTENSION
+        this.chipUrl = CHIPS_URL_PREFIX + user + FILE_EXTENSION
         return this
     }
 
@@ -156,10 +149,6 @@ class KmnBotDataLoader {
     companion object {
         private const val PETS_URL_PREFIX = "http://www.kmnbot.ga/pets/"
         private const val CHIPS_URL_PREFIX = "http://www.kmnbot.ga/chips/"
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        private const val PETS_URL_PREFIX_TRANSFER = "https://shounenwind.tw/kmnbot/pets.php?username="
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        private const val CHIPS_URL_PREFIX_TRANSFER = "https://shounenwind.tw/kmnbot/chips.php?username="
         private const val FILE_EXTENSION = ".json"
 
         private val TAG = KmnBotDataLoader::class.java.simpleName
