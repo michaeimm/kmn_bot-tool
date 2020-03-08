@@ -18,7 +18,7 @@ class LicenseActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setLicenses()
         screenPrepare()
-        val listView = findViewById<RecyclerView>(R.id.list)
+        val listView = findViewById<RecyclerView>(R.id.listView)
 
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = RecyclerView.VERTICAL

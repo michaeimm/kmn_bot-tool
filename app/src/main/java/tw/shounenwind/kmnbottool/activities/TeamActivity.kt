@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.activity_team.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.intentFor
@@ -76,9 +76,9 @@ class TeamActivity : BaseActivity() {
             }
         }
 
-        findViewById<CardView>(R.id.team_card).setOnClickListener { team.performClick() }
+        cardViewTeam.setOnClickListener { team.performClick() }
 
-        findViewById<CardView>(R.id.attacter_card).setOnClickListener {
+        cardViewAttacter.setOnClickListener {
             startActivityForResultWithTransition(
                     intentFor<BoxActivity>(
                             "selectFor" to "attacker",
@@ -86,8 +86,8 @@ class TeamActivity : BaseActivity() {
                     ), FOR_RESULT_ATTACKER
             )
         }
-        findViewById<CardView>(R.id.attacter_card).setOnLongClickListener {
-            val target = findViewById<TextView>(R.id.attacter_name).text.toString()
+        cardViewAttacter.setOnLongClickListener {
+            val target = tvAttacterName.text.toString()
             val fakeAttacker = Pet()
             fakeAttacker.name = target
             val petIndex = boxData!!.pets.indexOf(fakeAttacker)
@@ -100,7 +100,7 @@ class TeamActivity : BaseActivity() {
                 false
             }
         }
-        findViewById<CardView>(R.id.supporter_card).setOnClickListener {
+        cardViewSupporter.setOnClickListener {
             startActivityForResultWithTransition(
                     intentFor<BoxActivity>(
                             "selectFor" to "supporter",
@@ -109,8 +109,8 @@ class TeamActivity : BaseActivity() {
                     FOR_RESULT_SUPPORTER
             )
         }
-        findViewById<CardView>(R.id.supporter_card).setOnLongClickListener {
-            val target = findViewById<TextView>(R.id.supporter_name).text.toString()
+        cardViewSupporter.setOnLongClickListener {
+            val target = tvSupporterName.text.toString()
             val fakeSupporter = Pet()
             fakeSupporter.name = target
             val petIndex = boxData!!.pets.indexOf(fakeSupporter)
@@ -124,46 +124,46 @@ class TeamActivity : BaseActivity() {
             }
         }
         if (chipData?.chips?.isNotEmpty() == true) {
-            findViewById<CardView>(R.id.chips_card).visibility = View.VISIBLE
+            cardViewChips.visibility = View.VISIBLE
         }
 
-        findViewById<Button>(R.id.bot_battle_normal).setOnClickListener {
-            var target = findViewById<TextView>(R.id.attacter_name).text.toString()
+        btnBotBattleNormal.setOnClickListener {
+            var target = tvAttacterName.text.toString()
             if (target == getString(R.string.no_select)) {
                 Toast.makeText(this, R.string.no_selection, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
-                target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
+            if (tvSupporterName.text.toString() != getString(R.string.no_select)) {
+                target += " " + tvSupporterName.text.toString()
             }
-            target += " " + findViewById<TextView>(R.id.chips).text
+            target += " " + tvChips.text
             battleNormal(target)
         }
-        findViewById<Button>(R.id.bot_battle_hell).setOnClickListener {
-            var target = findViewById<TextView>(R.id.attacter_name).text.toString()
+        btnBotBattleHell.setOnClickListener {
+            var target = tvAttacterName.text.toString()
             if (target == getString(R.string.no_select)) {
                 Toast.makeText(this, R.string.no_selection, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
-                target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
+            if (tvSupporterName.text.toString() != getString(R.string.no_select)) {
+                target += " " + tvSupporterName.text.toString()
             }
-            target += " " + findViewById<TextView>(R.id.chips).text
+            target += " " + tvChips.text
             battleHell(target)
         }
-        findViewById<Button>(R.id.bot_battle_ultra_hell).setOnClickListener {
-            var target = findViewById<TextView>(R.id.attacter_name).text.toString()
+        btnBotBattleUltraHell.setOnClickListener {
+            var target = tvAttacterName.text.toString()
             if (target == getString(R.string.no_select)) {
                 Toast.makeText(this, R.string.no_selection, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (findViewById<TextView>(R.id.supporter_name).text.toString() != getString(R.string.no_select)) {
-                target += " " + findViewById<TextView>(R.id.supporter_name).text.toString()
+            if (tvSupporterName.text.toString() != getString(R.string.no_select)) {
+                target += " " + tvSupporterName.text.toString()
             }
-            target += " " + findViewById<TextView>(R.id.chips).text
+            target += " " + tvChips.text
             battleUltraHell(target)
         }
-        findViewById<CardView>(R.id.chips_card).setOnClickListener {
+        cardViewChips.setOnClickListener {
             openChipDialog()
         }
     }
@@ -175,13 +175,13 @@ class TeamActivity : BaseActivity() {
         when (requestCode) {
             FOR_RESULT_ATTACKER -> {
                 val monsterName = data!!.getStringExtra("name")
-                findViewById<TextView>(R.id.attacter_name).text = monsterName
+                tvAttacterName.text = monsterName
                 writeTeamInfo()
                 readTeamInfo()
             }
             FOR_RESULT_SUPPORTER -> {
                 val monsterName = data!!.getStringExtra("name")
-                findViewById<TextView>(R.id.supporter_name).text = monsterName
+                tvSupporterName.text = monsterName
                 writeTeamInfo()
                 readTeamInfo()
             }
@@ -203,8 +203,8 @@ class TeamActivity : BaseActivity() {
         PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .edit()
-                .putString(defaultAttacker, findViewById<TextView>(R.id.attacter_name).text.toString())
-                .putString(defaultSupporter, findViewById<TextView>(R.id.supporter_name).text.toString())
+                .putString(defaultAttacker, tvAttacterName.text.toString())
+                .putString(defaultSupporter, tvSupporterName.text.toString())
                 .putInt("team", team.selectedItemPosition)
                 .commit()
     }
@@ -244,7 +244,7 @@ class TeamActivity : BaseActivity() {
             val attackerIndex = pets.indexOf(fakeAttacker)
             if (attackerIndex == -1 || defaultAttacker == getString(R.string.no_select)){
                 runOnUiThread {
-                    findViewById<TextView>(R.id.attacter_name).text = getString(R.string.no_select)
+                    tvAttacterName.text = getString(R.string.no_select)
                     GlideApp.with(this@TeamActivity)
                             .clear(findViewById<View>(R.id.attacter_img))
                 }
@@ -252,7 +252,7 @@ class TeamActivity : BaseActivity() {
             }else{
                 val monster = pets[attackerIndex]
                 runOnUiThread {
-                    findViewById<TextView>(R.id.attacter_name).text = monster.name
+                    tvAttacterName.text = monster.name
                     val imageView = findViewById<ImageView>(R.id.attacter_img)
                     GlideApp.with(this@TeamActivity)
                             .asBitmap()
@@ -270,14 +270,14 @@ class TeamActivity : BaseActivity() {
             val supporterIndex = pets.indexOf(fakeSupporter)
             if (supporterIndex == -1 || defaultSupporter == getString(R.string.no_select)){
                 runOnUiThread {
-                    findViewById<TextView>(R.id.supporter_name).text = getString(R.string.no_select)
+                    tvSupporterName.text = getString(R.string.no_select)
                     GlideApp.with(this@TeamActivity)
                             .clear(findViewById<View>(R.id.supporter_img))
                 }
             }else{
                 val monster = pets[supporterIndex]
                 runOnUiThread {
-                    findViewById<TextView>(R.id.supporter_name).text = monster.name
+                    tvSupporterName.text = monster.name
                     val imageView = findViewById<ImageView>(R.id.supporter_img)
                     GlideApp.with(this@TeamActivity)
                             .asBitmap()
@@ -307,7 +307,7 @@ class TeamActivity : BaseActivity() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.chips)
                 .setItems(options.toTypedArray()) { _, which ->
-                    findViewById<TextView>(R.id.chips).text =
+                    tvChips.text =
                             chips[which].name
                 }
                 .show()

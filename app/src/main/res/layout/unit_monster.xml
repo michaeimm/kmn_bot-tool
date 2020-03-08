@@ -28,12 +28,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@id/monster_class"
+        app:layout_constraintBottom_toTopOf="@id/tvMonsterClass"
         app:layout_constraintStart_toEndOf="@id/monster_img"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/monster_class"
+        android:id="@+id/tvMonsterClass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -51,5 +51,5 @@
         android:layout_marginLeft="16dp"
         android:textColor="#F5F5F5"
         app:layout_constraintStart_toEndOf="@id/monster_img"
-        app:layout_constraintTop_toBottomOf="@id/monster_class" />
+        app:layout_constraintTop_toBottomOf="@id/tvMonsterClass" />
 </androidx.constraintlayout.widget.ConstraintLayout>

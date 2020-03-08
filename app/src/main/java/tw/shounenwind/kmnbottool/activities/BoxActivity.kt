@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.activity_mons_data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,10 +48,9 @@ class BoxActivity : BaseActivity() {
         bindToolbarHomeButton()
 
         selectFor = intent.getStringExtra("selectFor")
-        boxData = intent.getParcelableExtra("boxData")
+        boxData = intent.getParcelableExtra("boxData")!!
         adapter = BoxAdapter(this)
 
-        val listView = findViewById<RecyclerView>(R.id.list)
         listView.layoutManager = LinearLayoutManager(this)
         listView.adapter = adapter
     }
@@ -363,7 +363,7 @@ class BoxActivity : BaseActivity() {
             val image = itemView.findViewById<ImageView>(R.id.monster_img)!!
             val name = itemView.findViewById<TextView>(R.id.monster_name)!!
             val type = itemView.findViewById<TextView>(R.id.monster_type)!!
-            val monsterClass = itemView.findViewById<TextView>(R.id.monster_class)!!
+            val monsterClass = itemView.findViewById<TextView>(R.id.tvMonsterClass)!!
         }
 
     }

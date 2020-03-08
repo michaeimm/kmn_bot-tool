@@ -12,8 +12,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.unit_toolbar.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,10 +45,10 @@ class MainActivity : BaseActivity() {
             boxData = savedData.boxData
             chipData = savedData.chipsData
             KmnBotData.cache = null
-            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
-            findViewById<View>(R.id.bot_mons_box).visibility = View.VISIBLE
-            findViewById<View>(R.id.bot_battle).visibility = View.VISIBLE
-            findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
+            btnBotDraw.visibility = View.VISIBLE
+            btnBotMonsBox.visibility = View.VISIBLE
+            btnBotBattle.visibility = View.VISIBLE
+            btnBotExp.visibility = View.VISIBLE
             return
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
@@ -61,12 +61,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun prepareScreen() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        findViewById<CardView>(R.id.bot_draw).setOnClickListener {
+        btnBotDraw.setOnClickListener {
             botDraw()
         }
-        findViewById<CardView>(R.id.bot_exp).setOnClickListener {
+        btnBotExp.setOnClickListener {
             checkNotNull(boxData) {
                 "boxData is null"
             }
@@ -75,12 +74,12 @@ class MainActivity : BaseActivity() {
                     "boxData" to (boxData as Parcelable)
             ), FOR_RESULT_EXP)
         }
-        findViewById<CardView>(R.id.bot_mons_box).setOnClickListener {
+        btnBotMonsBox.setOnClickListener {
             startActivityWithTransition(intentFor<BoxActivity>(
                     "boxData" to (boxData as Parcelable)
             ))
         }
-        findViewById<CardView>(R.id.bot_battle).setOnClickListener {
+        btnBotBattle.setOnClickListener {
             startActivityWithTransition(intentFor<TeamActivity>(
                     "boxData" to boxData,
                     "chipData" to chipData
@@ -90,16 +89,16 @@ class MainActivity : BaseActivity() {
             return
         GlideApp.with(this)
                 .load(R.mipmap.bot_draw)
-                .into(findViewById(R.id.bot_draw_img))
+                .into(imgBotDraw)
         GlideApp.with(this)
                 .load(R.mipmap.exp)
-                .into(findViewById(R.id.bot_exp_img))
+                .into(imgBotExp)
         GlideApp.with(this)
                 .load(R.mipmap.tsume)
-                .into(findViewById(R.id.bot_battle_img))
+                .into(imgBotBattle)
         GlideApp.with(this)
                 .load(R.mipmap.mikann)
-                .into(findViewById(R.id.bot_mons_box_img))
+                .into(imgBotMonsBox)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -232,10 +231,10 @@ class MainActivity : BaseActivity() {
                                     R.string.data_loaded,
                                     Toast.LENGTH_SHORT
                             ).show()
-                            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
-                            findViewById<View>(R.id.bot_mons_box).visibility = View.VISIBLE
-                            findViewById<View>(R.id.bot_battle).visibility = View.VISIBLE
-                            findViewById<View>(R.id.bot_exp).visibility = View.VISIBLE
+                            btnBotDraw.visibility = View.VISIBLE
+                            btnBotMonsBox.visibility = View.VISIBLE
+                            btnBotBattle.visibility = View.VISIBLE
+                            btnBotExp.visibility = View.VISIBLE
                             dismissProgressDialog()
                         }
                     }
@@ -243,7 +242,7 @@ class MainActivity : BaseActivity() {
                 .setOnFailedListener {
                     mainScope?.launch {
                         LogUtil.catchAndPrint {
-                            findViewById<View>(R.id.bot_draw).visibility = View.VISIBLE
+                            btnBotDraw.visibility = View.VISIBLE
                             dismissProgressDialog()
                             noDataHint()
                         }

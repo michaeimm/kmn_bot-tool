@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/team_card"
+                android:id="@+id/cardViewTeam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -54,7 +54,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/attacter_card"
+                android:id="@+id/cardViewAttacter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -95,7 +95,7 @@
                             android:layout_marginBottom="8dp" />
 
                         <TextView
-                            android:id="@+id/attacter_name"
+                            android:id="@+id/tvAttacterName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -111,7 +111,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/supporter_card"
+                android:id="@+id/cardViewSupporter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -152,7 +152,7 @@
                             android:layout_marginBottom="8dp" />
 
                         <TextView
-                            android:id="@+id/supporter_name"
+                            android:id="@+id/tvSupporterName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -168,7 +168,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/chips_card"
+                android:id="@+id/cardViewChips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -195,7 +195,7 @@
                         android:text="@string/chips" />
 
                     <TextView
-                        android:id="@+id/chips"
+                        android:id="@+id/tvChips"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
@@ -218,7 +218,7 @@
                     android:orientation="vertical">
 
                     <Button
-                        android:id="@+id/bot_battle_normal"
+                        android:id="@+id/btnBotBattleNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -229,7 +229,7 @@
                         android:text="@string/bot_battle_normal" />
 
                     <Button
-                        android:id="@+id/bot_battle_hell"
+                        android:id="@+id/btnBotBattleHell"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -240,7 +240,7 @@
                         android:text="@string/bot_battle_hell" />
 
                     <Button
-                        android:id="@+id/bot_battle_ultra_hell"
+                        android:id="@+id/btnBotBattleUltraHell"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"

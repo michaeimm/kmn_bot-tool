@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
 import okhttp3.Request
-import okhttp3.ResponseBody
 import tw.shounenwind.kmnbottool.gson.BoxData
 import tw.shounenwind.kmnbottool.gson.ChipData
 import tw.shounenwind.kmnbottool.gson.fromJson
@@ -23,8 +22,6 @@ class KmnBotDataLoader {
 
     @Throws(Exception::class)
     private suspend fun loadBoxData() = withContext(Dispatchers.IO) {
-        var body: ResponseBody? = null
-        val boxData: BoxData
         try {
             val request = Request.Builder()
                     .cacheControl(cacheControl)
@@ -36,21 +33,18 @@ class KmnBotDataLoader {
                 throw Exception("box")
             }
 
-            body = response.body()!!
-            boxData = gsonInstances.fromJson(body.charStream())
-            LogUtil.boxData(TAG, boxData)
+            response.body!!.use { resBody ->
+                val boxData = gsonInstances.fromJson<BoxData>(resBody.charStream())
+                LogUtil.boxData(TAG, boxData)
+                boxData
+            }
         } catch (e: Exception) {
             throw(e)
-        } finally {
-            body?.close()
         }
-        boxData
     }
 
     @Throws(Exception::class)
     private suspend fun loadChipData() = withContext(Dispatchers.IO) {
-        var body: ResponseBody? = null
-        val chipsData: ChipData
         try {
             val request = Request.Builder()
                     .cacheControl(cacheControl)
@@ -58,16 +52,14 @@ class KmnBotDataLoader {
                     .build()
             val response = LinkUtil.instance.newCall(request).execute()
 
-            body = response.body()!!
-            val data = body.string()
-            chipsData = gsonInstances.fromJson(data)
-            LogUtil.d(TAG, data)
+            response.body!!.use { resBody ->
+                val chipsData = gsonInstances.fromJson<ChipData>(resBody.charStream())
+                LogUtil.d(TAG, chipsData.toString())
+                chipsData
+            }
         } catch (e: Exception) {
             throw(e)
-        } finally {
-            body?.close()
         }
-        chipsData
     }
 
     fun setUser(user: String): KmnBotDataLoader {

@@ -3,10 +3,9 @@ package tw.shounenwind.kmnbottool.activities
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.activity_monster_detail.*
 import tw.shounenwind.kmnbottool.R
 import tw.shounenwind.kmnbottool.gson.Pet
 import tw.shounenwind.kmnbottool.skeleton.BaseActivity
@@ -21,20 +20,16 @@ class DetailActivity : BaseActivity() {
         bindToolbarHomeButton()
 
         val intent = intent
-        val pet = intent.getParcelableExtra<Pet>("pet")
+        val pet = intent.getParcelableExtra<Pet>("pet")!!
         val position = intent.getIntExtra("position", -1)
         title = pet.name
-        findViewById<TextView>(R.id.name).text = pet.name
-        findViewById<TextView>(R.id.rare).text =
-                "${getString(R.string.sort_rare)}\n${pet.rare}"
-        findViewById<TextView>(R.id.level).text =
-                "${getString(R.string.monster_level)}\n${pet.level}"
-        findViewById<TextView>(R.id.monster_class).text =
-                "${getString(R.string.monster_class)}\n${pet.petClass}"
-        findViewById<TextView>(R.id.text_holder).text = pet.skill
-        val avatar = findViewById<ImageView>(R.id.avatar)
+        tvName.text = pet.name
+        tvRare.text = "${getString(R.string.sort_rare)}\n${pet.rare}"
+        tvLevel.text = "${getString(R.string.monster_level)}\n${pet.level}"
+        tvMonsterClass.text = "${getString(R.string.monster_class)}\n${pet.petClass}"
+        tvMonsterDetail.text = pet.skill
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            avatar.transitionName = "list_p$position"
+            imgMonster.transitionName = "list_p$position"
         }
         GlideApp.with(this)
                 .asBitmap()
@@ -43,6 +38,6 @@ class DetailActivity : BaseActivity() {
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                 )
                 .fitCenter()
-                .into(avatar)
+                .into(imgMonster)
     }
 }
