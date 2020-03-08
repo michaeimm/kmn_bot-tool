@@ -13,7 +13,7 @@
 
 ## Licensed
 
-Copyright 2016-2019 少年ウィンド
+Copyright 2016-2020 少年ウィンド
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
