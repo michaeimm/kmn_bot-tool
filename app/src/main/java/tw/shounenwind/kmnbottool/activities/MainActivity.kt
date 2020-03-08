@@ -53,9 +53,14 @@ class MainActivity : BaseActivity() {
         }
         sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         checkPlurkId { input ->
-            mainScope?.launch {
+            mainScope?.launch(Dispatchers.Main) {
                 showProgressDialog(getString(R.string.monster_loading))
                 getData(input)
+                tvUserName.apply {
+                    @SuppressLint("SetTextI18n")
+                    text = getString(R.string.welcome) + input
+                    visibility = View.VISIBLE
+                }
             }
         }
     }

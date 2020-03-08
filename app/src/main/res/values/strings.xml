@@ -63,4 +63,5 @@
     <string name="load_data_failed">無法載入寵物資料</string>
     <string name="load_data_failed_message">載入資料失敗，你可能還沒有寵物或無法連上網路。\n你可以重試或進行一次轉蛋。</string>
     <string name="team_member_select">選擇出戰隊伍</string>
+    <string name="welcome">您好 @</string>
 </resources>
