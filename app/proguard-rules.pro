@@ -3,6 +3,7 @@
 
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
+-keepattributes SourceFile,LineNumberTable
 -verbose
 
 # Optimization is turned off by default. Dex does not like code run
