@@ -102,7 +102,7 @@ object CommandExecutor {
                         putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toTypedArray<Parcelable>())
                     }
             startActivity(chooserIntent)
-        } catch (ex: android.content.ActivityNotFoundException) {
+        } catch (ex: Exception) {
             Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show()
         }
 
