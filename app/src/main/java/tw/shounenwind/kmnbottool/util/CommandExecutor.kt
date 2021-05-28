@@ -78,11 +78,11 @@ object CommandExecutor {
             targetedShareIntents.add(targeted)
         }
 
-        val resInfo = packageManager.queryIntentActivities(intent, 0)
+        val resInfo = packageManager.getInstalledPackages(0)
 
         if (resInfo.isNotEmpty()) {
             resInfo.asSequence().map {
-                it.activityInfo.packageName
+                it.packageName
             }.filterNot {
                 it.equals("com.plurk.android", ignoreCase = true)
             }.forEach {
@@ -96,11 +96,14 @@ object CommandExecutor {
             if (targetedShareIntents.size == 0) {
                 throw Exception()
             }
-            val chooserIntent = Intent.createChooser(targetedShareIntents.removeAt(0), "Open...")
-                    .apply {
-                        putExtra(Intent.EXTRA_TITLE, "Open...")
-                        putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toTypedArray<Parcelable>())
-                    }
+            val chooserIntent = Intent.createChooser(intent, "Open...")
+                .apply {
+                    putExtra(Intent.EXTRA_TITLE, "Open...")
+                    putExtra(
+                        Intent.EXTRA_INITIAL_INTENTS,
+                        targetedShareIntents.toTypedArray<Parcelable>()
+                    )
+                }
             startActivity(chooserIntent)
         } catch (ex: Exception) {
             Toast.makeText(this, R.string.no_available_app, Toast.LENGTH_SHORT).show()

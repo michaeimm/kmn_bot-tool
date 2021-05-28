@@ -4,7 +4,15 @@
     package="tw.shounenwind.kmnbottool">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <queries>
+        <package android:name="com.plurk.android" />
+        <package android:name="tw.anddev.aplurk" />
+        <package android:name="com.skystar.plurk" />
+        <package android:name="com.roguso.plurk" />
+        <package android:name="com.nauj27.android.pifeb" />
+        <package android:name="idv.brianhsu.maidroid.plurk" />
+        <package android:name="tw.shounenwind.healingplurk" />
+    </queries>
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
