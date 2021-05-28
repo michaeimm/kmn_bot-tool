@@ -139,8 +139,8 @@ class KmnBotDataLoader {
     }
 
     companion object {
-        private const val PETS_URL_PREFIX = "https://www.kmnbot.ga/pets/"
-        private const val CHIPS_URL_PREFIX = "https://www.kmnbot.ga/chips/"
+        private const val PETS_URL_PREFIX = "https://www.kmnbot.com/pets/"
+        private const val CHIPS_URL_PREFIX = "https://www.kmnbot.com/chips/"
         private const val FILE_EXTENSION = ".json"
 
         private val TAG = KmnBotDataLoader::class.java.simpleName

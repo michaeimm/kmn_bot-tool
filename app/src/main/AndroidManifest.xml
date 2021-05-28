@@ -38,7 +38,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="www.kmnbot.ga"
+                    android:host="www.kmnbot.com"
                     android:pathPrefix="/pets"
                     android:scheme="http" />
             </intent-filter>
